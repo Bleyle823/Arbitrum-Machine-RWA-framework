@@ -1,0 +1,33 @@
+{
+  "name": "rwa-arbitrum-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone Hardhat project — RWA + ERC-3643 T-REX for Arbitrum (optional did:peaq)",
+  "license": "Apache-2.0",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js",
+    "deploy:local": "hardhat run scripts/deploy.js --network hardhat",
+    "deploy:arbitrum-sepolia": "hardhat run scripts/deploy.js --network arbitrumSepolia",
+    "deploy:arbitrum": "hardhat run scripts/deploy.js --network arbitrum",
+    "demo:flow": "hardhat run scripts/fullFlowDemo.js --network hardhat",
+    "demo:flow:node": "hardhat run scripts/fullFlowDemo.js --network localhost",
+    "clean": "hardhat clean"
+  },
+  "dependencies": {
+    "@onchain-id/solidity": "^2.2.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "@openzeppelin/contracts": "^4.8.3",
+    "@openzeppelin/contracts-upgradeable": "^4.8.3",
+    "chai": "^4.5.0",
+    "ethers": "^6.13.4",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
