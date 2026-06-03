@@ -33,7 +33,7 @@ Compared against official peaq docs:
 |-----------------|-------------------|-------|
 | `did:peaq:` machine DIDs | Default `did:arbitrum:`; set `InfoDesk.setValue(4, 1)` for `did:peaq:` | Protobuf DID blob in `registerMachine` unchanged; only URI prefix differs |
 | InfoDesk precompile addresses | Not used | Point `setContract(0, feeToken)` at any ERC-20 on your chain |
-| On-chain regulator claim check | `addMachineRegulator` by Framework Owner | Regulator **claim** is still required by docs for governance; call `setIssuerIdentity` before `addMachineIssuer` |
+| On-chain regulator claim check | `addMachineRegulator` by Framework Owner | Regulator must hold valid ONCHAINID claim topic **8** from configured ClaimIssuer |
 | `PeaqVaultFactory` bytecode size | ~34 KB | Enable `allowUnlimitedContractSize` on testnets (Agung does this) or split factory in a future release |
 
 ---
@@ -58,7 +58,7 @@ You need **seven distinct EOAs** (or fewer if one wallet plays multiple roles in
 
 | Role | Env prefix | Responsibilities |
 |------|------------|------------------|
-| Framework Owner / Admin | `ADMIN_*` | Deploy framework, `IdFactory.createIdentity`, `createVault`, `unpauseVaultToken`, `registerIdentity` |
+| Framework Owner / Admin | `ADMIN_*` | Deploy framework, ONCHAINID `IdFactory.createIdentity`, `createVault`, `unpauseVaultToken`, `registerIdentity` |
 | Claim Issuer | `CLAIM_ISSUER_*` | Sign KYC and role claims |
 | Machine Regulator | `MACHINE_REGULATOR_*` | `addMachineIssuer`, `setMachineNftBlockState` |
 | Machine Issuer | `MACHINE_ISSUER_*` | `registerMachine` |
@@ -150,7 +150,7 @@ Wire `Chain.LOCAL` in SDK enums/config if not present, or test with raw addresse
 |---|--------|---------------------|--------|
 | 1 | Add machine regulator | `PeaqRwaNft.addMachineRegulator(regulatorAddr)` | `getMachineRegulators()` includes address |
 | 2 | Deploy Contract NFT instance | `PeaqRwaNft.deployContractNft()` or `addContractNft()` | Event `ContractNftAdded`; save address |
-| 3 | Register issuer identity mapping | `PeaqRwaNft.setIssuerIdentity(issuer, identity)` | Required before step 4 in our contracts |
+| 3 | Issue machine issuer claim (topic 7) on ONCHAINID identity | `issueClaims.js` or manual `addClaim` | Required before `addMachineIssuer` |
 
 ### Step B.2 — Machine issuer onboarding
 
@@ -161,7 +161,7 @@ Follow [Machine Issuer flow](https://docs.peaq.xyz/peaqchain/sdk-reference/rwa/w
 | 1 | Admin | `onchainid.createIdentity({ subject: issuer })` | `getIdentity` → `found` |
 | 2 | Claim Issuer | `onchainid.issueRoleClaim({ topic: CT_MNFT_ISSUER })` | Returns `{ claim, signature }` |
 | 3 | Issuer | `onchainid.addClaimToIdentity(...)` | `getClaim` returns KYC/role data |
-| 4 | Admin | `setIssuerIdentity(issuer, identity)` on PeaqRwaNft | On-chain mapping set |
+| 4 | Admin | `addMachineRegulator` + `addMachineIssuer` (claims validated on-chain) | No manual identity mapping |
 | 5 | Regulator | `rwanft.addMachineIssuer({ newMachineIssuer })` | Event `MachineIssuerAdded(issuer, machineNft)`; save **machineNft** address |
 
 ### Step B.3 — Common flow (10 steps)
@@ -309,7 +309,7 @@ Run these to confirm regulation works:
 
 | Symptom | Likely cause | Fix |
 |---------|--------------|-----|
-| `Missing issuer claim` on `addMachineIssuer` | Issuer identity not mapped | Call `setIssuerIdentity(issuer, identity)` as Framework Owner |
+| `Missing issuer claim` on `addMachineIssuer` | No valid topic-7 claim on ONCHAINID identity | Run `issue-claims` or `addClaim` with configured ClaimIssuer |
 | `ERC20: insufficient allowance` on `registerMachine` | Wrong approve spender | Approve **MachineNft contract address** (returned by `registrationFeeAndAccount`) |
 | `Recipient not verified` on transfer | Missing vault IR registration | Admin calls `registerIdentity` for recipient |
 | `Compliance rejected` on transfer | Fee module allowance | Run `ensureTransferFeeAllowance` first |

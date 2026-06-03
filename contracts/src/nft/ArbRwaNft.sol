@@ -3,7 +3,9 @@ pragma solidity 0.8.17;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IArbRwaNft} from "../interfaces/IArbRwaNft.sol";
-import {RwaIdentity} from "../identity/Identity.sol";
+import {IClaimIssuer} from "@onchain-id/solidity/contracts/interface/IClaimIssuer.sol";
+import {IIdentity} from "@onchain-id/solidity/contracts/interface/IIdentity.sol";
+import {IIdFactory} from "@onchain-id/solidity/contracts/factory/IIdFactory.sol";
 import {MachineNft} from "./MachineNft.sol";
 import {ContractNft} from "./ContractNft.sol";
 import {RwaConstants} from "../core/RwaConstants.sol";
@@ -13,6 +15,8 @@ import {IInfoDesk} from "../interfaces/IInfoDesk.sol";
 contract ArbRwaNft is IArbRwaNft, Ownable {
     address public infoDesk;
     address public feeToken;
+    address public identityFactory;
+    address public claimIssuer;
 
     address[] private _machineIssuers;
     address[] private _machineRegulators;
@@ -29,13 +33,16 @@ contract ArbRwaNft is IArbRwaNft, Ownable {
 
     event MachineNftDeployed(address indexed issuer, address indexed machineNft);
 
-    constructor(address owner_, address infoDesk_, address feeToken_) {
+    constructor(address owner_, address infoDesk_, address feeToken_, address identityFactory_, address claimIssuer_) {
         _transferOwnership(owner_);
         infoDesk = infoDesk_;
         feeToken = feeToken_;
+        identityFactory = identityFactory_;
+        claimIssuer = claimIssuer_;
     }
 
     function addMachineRegulator(address regulator) external override onlyOwner {
+        require(_hasValidClaimTopic(regulator, RwaConstants.CT_MNFT_REGULATOR), "Missing regulator claim");
         require(!_isRegulator[regulator], "Exists");
         _isRegulator[regulator] = true;
         _machineRegulators.push(regulator);
@@ -51,7 +58,7 @@ contract ArbRwaNft is IArbRwaNft, Ownable {
     function addMachineIssuer(address issuer) external override {
         require(_isRegulator[msg.sender] || msg.sender == owner(), "Not regulator");
         require(!_isIssuer[issuer], "Exists");
-        require(_hasRoleClaim(issuer, RwaConstants.CT_MNFT_ISSUER), "Missing issuer claim");
+        require(_hasValidClaimTopic(issuer, RwaConstants.CT_MNFT_ISSUER), "Missing issuer claim");
 
         string memory issuerDid = string(abi.encodePacked(_didPrefix(), "issuer:", _addressToString(issuer)));
         string memory regulatorDid = string(abi.encodePacked(_didPrefix(), "regulator:", _addressToString(msg.sender)));
@@ -104,7 +111,6 @@ contract ArbRwaNft is IArbRwaNft, Ownable {
         }
     }
 
-    // Renamed getters/helper overrides
     function getMachineIssuers() external view override returns (address[] memory) {
         return _machineIssuers;
     }
@@ -129,19 +135,26 @@ contract ArbRwaNft is IArbRwaNft, Ownable {
         return _isContractNft[addr] || _isMachineNftAddr[addr];
     }
 
-    mapping(address => address) public issuerIdentities;
-
-    function _hasRoleClaim(address issuer, uint256 topic) internal view returns (bool) {
-        address id = issuerIdentities[issuer];
+    function _hasValidClaimTopic(address wallet, uint256 topic) internal view returns (bool) {
+        address id = IIdFactory(identityFactory).getIdentity(wallet);
         if (id == address(0)) return false;
-        return RwaIdentity(id).hasClaimTopic(topic);
+
+        bytes32[] memory claimIds = IIdentity(id).getClaimIdsByTopic(topic);
+        for (uint256 i = 0; i < claimIds.length; i++) {
+            (uint256 t, uint256 scheme, address issuer, bytes memory sig, bytes memory data,) = IIdentity(id).getClaim(
+                claimIds[i]
+            );
+
+            if (t != topic) continue;
+            if (scheme != RwaConstants.SCHEME_ECDSA) continue;
+            if (issuer != claimIssuer) continue;
+
+            if (IClaimIssuer(issuer).isClaimValid(IIdentity(id), topic, sig, data)) return true;
+        }
+
+        return false;
     }
 
-    function setIssuerIdentity(address issuer, address identity) external onlyOwner {
-        issuerIdentities[issuer] = identity;
-    }
-
-    /// @dev DID prefix from InfoDesk: `did:arbitrum:` (default), `did:peaq:`, or `did:rwa:`
     function _didPrefix() internal view returns (string memory) {
         uint256 method = IInfoDesk(infoDesk).getValue(RwaConstants.VAL_DID_METHOD);
         if (method == RwaConstants.DID_METHOD_PEAQ) {

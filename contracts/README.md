@@ -12,9 +12,10 @@ npm install
 cp .env.example .env   # edit DEPLOYER_PRIVATE_KEY for live networks
 npm test
 npm run deploy:local
+npm run issue-claims:local   # after deploy — KYC + machine role claims
 ```
 
-Deploy output: `deployments/deployment-<chainId>.json`
+Deploy output: `deployments/deployment-<chainId>.json` (includes ONCHAINID `idFactory` and `claimIssuer` addresses).
 
 ## Deploy to Arbitrum Sepolia
 
@@ -29,7 +30,8 @@ npm run deploy:arbitrum-sepolia
 | Path | Purpose |
 |------|---------|
 | `src/` | RWA contracts + vendored ERC-3643 T-REX |
-| `scripts/deploy.js` | Bootstrap framework |
+| `scripts/deploy.js` | Bootstrap framework + ONCHAINID stack |
+| `scripts/issueClaims.js` | KYC (666) + machine issuer/regulator claims (7/8) |
 | `scripts/fullFlowDemo.js` | End-to-end demo (no SDK) |
 | `test/` | Hardhat tests |
 | `ARBITRUM.md` | Network-specific deploy guide |

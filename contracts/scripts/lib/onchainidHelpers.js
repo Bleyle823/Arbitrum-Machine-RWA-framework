@@ -1,4 +1,43 @@
 const hre = require("hardhat");
+const OnchainID = require("@onchain-id/solidity");
+
+/**
+ * Deploy official ONCHAINID stack (Identity impl, ImplementationAuthority, IdFactory).
+ */
+async function deployOidStack(deployer) {
+  const identityImplementation = await new hre.ethers.ContractFactory(
+    OnchainID.contracts.Identity.abi,
+    OnchainID.contracts.Identity.bytecode,
+    deployer
+  ).deploy(deployer.address, true);
+  await identityImplementation.waitForDeployment();
+  const identityImplementationAddr = await identityImplementation.getAddress();
+
+  const implementationAuthority = await new hre.ethers.ContractFactory(
+    OnchainID.contracts.ImplementationAuthority.abi,
+    OnchainID.contracts.ImplementationAuthority.bytecode,
+    deployer
+  ).deploy(identityImplementationAddr);
+  await implementationAuthority.waitForDeployment();
+  const implementationAuthorityAddr = await implementationAuthority.getAddress();
+
+  const onchainIdFactory = await new hre.ethers.ContractFactory(
+    OnchainID.contracts.Factory.abi,
+    OnchainID.contracts.Factory.bytecode,
+    deployer
+  ).deploy(implementationAuthorityAddr);
+  await onchainIdFactory.waitForDeployment();
+  const onchainIdFactoryAddr = await onchainIdFactory.getAddress();
+
+  return {
+    identityImplementation,
+    implementationAuthority,
+    onchainIdFactory,
+    identityImplementationAddr,
+    implementationAuthorityAddr,
+    onchainIdFactoryAddr,
+  };
+}
 
 /**
  * Deploy official ONCHAINID ClaimIssuer (required for T-REX TrustedIssuersRegistry).
@@ -18,4 +57,4 @@ async function deployOidClaimIssuer(managementAccount, signingAccount) {
   return issuer;
 }
 
-module.exports = { deployOidClaimIssuer };
+module.exports = { deployOidStack, deployOidClaimIssuer };

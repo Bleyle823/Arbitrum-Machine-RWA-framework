@@ -9,7 +9,7 @@ This framework is built for **Arbitrum** (Sepolia first, then mainnet). The work
 │  Arbitrum Sepolia / One                                     │
 ├─────────────────────────────────────────────────────────────┤
 │  Fee token (USDC) ──► InfoDesk (fees, DID method, treasuries) │
-│  IdFactory + ONCHAINID ClaimIssuer ──► RwaIdentity / KYC    │
+│  ONCHAINID IdFactory + ClaimIssuer ──► proxy identities / KYC │
 │  TREXFactory ──► per-vault: Token + IR + ModularCompliance  │
 │  PeaqRwaNft ──► MachineNft / ContractNft (collateral)       │
 │  PeaqVaultFactory ──► PeaqVault + RewardDistributor         │
@@ -84,15 +84,15 @@ Machine NFT **DID document bytes** are still stored on-chain in the NFT; only th
 |------|----------------|
 | Regulator | `PeaqRwaNft.addMachineRegulator(addr)` |
 | Contract NFT | `PeaqRwaNft.deployContractNft()` |
-| Issuer mapping | `setIssuerIdentity(issuer, identity)` then `addMachineIssuer(issuer)` |
+| Machine roles | Issue claims topics **7** (issuer) / **8** (regulator) on ONCHAINID identity, then `addMachineRegulator` / `addMachineIssuer` |
 
 ## 5. Investor onboarding
 
 Same as any T-REX deployment:
 
-1. `IdFactory.createIdentity(wallet, salt)`
-2. ONCHAINID `ClaimIssuer` signs KYC (topic `666`)
-3. `RwaIdentity.addClaim(...)`
+1. ONCHAINID `IdFactory.createIdentity(wallet, salt)`
+2. `ClaimIssuer` signs KYC (topic `666`) — use `npm run issue-claims` after deploy
+3. Identity owner calls `addClaim` on the proxy identity (or use `scripts/lib/claims.js`)
 4. After vault exists: `IdentityRegistry.registerIdentity(wallet, identity, countryCode)` on **that vault’s** T-REX IR
 
 ## 6. Create a vault (two transactions recommended)

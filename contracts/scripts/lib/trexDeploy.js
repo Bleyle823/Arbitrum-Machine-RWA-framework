@@ -3,33 +3,15 @@ const OnchainID = require("@onchain-id/solidity");
 
 /**
  * Deploy full ERC-3643 T-REX infrastructure (from ERC-3643/ERC-3643 repo).
- * Mirrors test/fixtures/deploy-full-suite.fixture.ts
+ * Uses a single shared ONCHAINID IdFactory (deploy via deployOidStack).
  */
-async function deployTrexSuite(deployer) {
+async function deployTrexSuite(deployer, onchainIdFactoryAddress) {
   const claimTopicsRegistryImplementation = await hre.ethers.deployContract("ClaimTopicsRegistry", deployer);
   const trustedIssuersRegistryImplementation = await hre.ethers.deployContract("TrustedIssuersRegistry", deployer);
   const identityRegistryStorageImplementation = await hre.ethers.deployContract("IdentityRegistryStorage", deployer);
   const identityRegistryImplementation = await hre.ethers.deployContract("IdentityRegistry", deployer);
   const modularComplianceImplementation = await hre.ethers.deployContract("ModularCompliance", deployer);
   const tokenImplementation = await hre.ethers.deployContract("Token", deployer);
-
-  const identityImplementation = await new hre.ethers.ContractFactory(
-    OnchainID.contracts.Identity.abi,
-    OnchainID.contracts.Identity.bytecode,
-    deployer
-  ).deploy(deployer.address, true);
-
-  const identityImplementationAuthority = await new hre.ethers.ContractFactory(
-    OnchainID.contracts.ImplementationAuthority.abi,
-    OnchainID.contracts.ImplementationAuthority.bytecode,
-    deployer
-  ).deploy(await identityImplementation.getAddress());
-
-  const identityFactory = await new hre.ethers.ContractFactory(
-    OnchainID.contracts.Factory.abi,
-    OnchainID.contracts.Factory.bytecode,
-    deployer
-  ).deploy(await identityImplementationAuthority.getAddress());
 
   const trexImplementationAuthority = await hre.ethers.deployContract(
     "TREXImplementationAuthority",
@@ -51,11 +33,16 @@ async function deployTrexSuite(deployer) {
 
   const trexFactory = await hre.ethers.deployContract(
     "TREXFactory",
-    [await trexImplementationAuthority.getAddress(), await identityFactory.getAddress()],
+    [await trexImplementationAuthority.getAddress(), onchainIdFactoryAddress],
     deployer
   );
 
-  await identityFactory.connect(deployer).addTokenFactory(await trexFactory.getAddress());
+  const identityFactory = new hre.ethers.Contract(
+    onchainIdFactoryAddress,
+    OnchainID.contracts.Factory.abi,
+    deployer
+  );
+  await identityFactory.addTokenFactory(await trexFactory.getAddress());
 
   const trexGateway = await hre.ethers.deployContract(
     "TREXGateway",
@@ -68,10 +55,6 @@ async function deployTrexSuite(deployer) {
     trexFactory,
     trexGateway,
     identityFactory,
-    identityImplementationAuthority,
-    implementations: {
-      nativeTransferFeeModule: null,
-    },
   };
 }
 

@@ -2,7 +2,7 @@ const hre = require("hardhat");
 const fs = require("fs");
 const path = require("path");
 const { deployTrexSuite, deployFeeModuleProxy } = require("./lib/trexDeploy");
-const { deployOidClaimIssuer } = require("./lib/onchainidHelpers");
+const { deployOidStack, deployOidClaimIssuer } = require("./lib/onchainidHelpers");
 
 /**
  * Deploy RWA framework + ERC-3643 T-REX (primary target: Arbitrum).
@@ -17,6 +17,12 @@ const { deployOidClaimIssuer } = require("./lib/onchainidHelpers");
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
   console.log("Deploying with:", deployer.address);
+
+  console.log("\nDeploying ONCHAINID stack...");
+  const oid = await deployOidStack(deployer);
+  console.log("ONCHAINID Identity implementation:", oid.identityImplementationAddr);
+  console.log("ONCHAINID ImplementationAuthority:", oid.implementationAuthorityAddr);
+  console.log("ONCHAINID IdFactory:", oid.onchainIdFactoryAddr);
 
   let feeTokenAddress = process.env.FEE_TOKEN_ADDRESS;
   if (!feeTokenAddress) {
@@ -38,28 +44,19 @@ async function main() {
   await infoDesk.setAccount(1, deployer.address);
   await infoDesk.setAccount(2, deployer.address);
   await infoDesk.setValue(3, hre.ethers.parseEther("0.01"));
-  // VAL_DID_METHOD = 4 → DID_METHOD_ARBITRUM (0); use setValue(4, 1) for did:peaq:
-
-  const IdFactory = await hre.ethers.getContractFactory("IdFactory");
-  const idFactory = await IdFactory.deploy(deployer.address, deployer.address);
-  await idFactory.waitForDeployment();
-  const idFactoryAddr = await idFactory.getAddress();
-  console.log("IdFactory:", idFactoryAddr);
 
   const kycIssuer = await deployOidClaimIssuer(deployer, deployer);
   const kycIssuerAddr = await kycIssuer.getAddress();
   console.log("ClaimIssuer ONCHAINID (KYC):", kycIssuerAddr);
 
   console.log("\nDeploying ERC-3643 T-REX suite...");
-  const trex = await deployTrexSuite(deployer);
+  const trex = await deployTrexSuite(deployer, oid.onchainIdFactoryAddr);
   const trexFactoryAddr = await trex.trexFactory.getAddress();
   const trexGatewayAddr = await trex.trexGateway.getAddress();
   const trexIaAddr = await trex.trexImplementationAuthority.getAddress();
-  const oidFactoryAddr = await trex.identityFactory.getAddress();
   console.log("TREXImplementationAuthority:", trexIaAddr);
   console.log("TREXFactory:", trexFactoryAddr);
   console.log("TREXGateway:", trexGatewayAddr);
-  console.log("ONCHAINID IdFactory:", oidFactoryAddr);
 
   const { impl: feeModuleImpl, proxy: feeModuleProxy } = await deployFeeModuleProxy(deployer, infoDeskAddr);
   console.log("NativeTransferFeeModule impl:", await feeModuleImpl.getAddress());
@@ -68,7 +65,13 @@ async function main() {
   await infoDesk.setImplementation(4, await feeModuleImpl.getAddress());
 
   const ArbRwaNft = await hre.ethers.getContractFactory("ArbRwaNft");
-  const rwaNft = await ArbRwaNft.deploy(deployer.address, infoDeskAddr, feeTokenAddress);
+  const rwaNft = await ArbRwaNft.deploy(
+    deployer.address,
+    infoDeskAddr,
+    feeTokenAddress,
+    oid.onchainIdFactoryAddr,
+    kycIssuerAddr
+  );
   await rwaNft.waitForDeployment();
   const rwaNftAddr = await rwaNft.getAddress();
   console.log("ArbRwaNft:", rwaNftAddr);
@@ -83,16 +86,16 @@ async function main() {
   await trex.trexFactory.transferOwnership(vaultFactoryAddr);
   console.log("TREXFactory ownership → ArbVaultFactory");
 
-  await idFactory.addTokenFactory(vaultFactoryAddr);
+  await oid.onchainIdFactory.addTokenFactory(vaultFactoryAddr);
 
   const addresses = {
     chainId: (await hre.ethers.provider.getNetwork()).chainId.toString(),
     deployedAt: new Date().toISOString(),
     onchainid: {
-      idFactory: idFactoryAddr,
-      kycVerifier: kycIssuerAddr,
-      implementationAuthority: await trex.identityImplementationAuthority.getAddress(),
-      oidFactory: oidFactoryAddr,
+      identityImplementation: oid.identityImplementationAddr,
+      implementationAuthority: oid.implementationAuthorityAddr,
+      idFactory: oid.onchainIdFactoryAddr,
+      claimIssuer: kycIssuerAddr,
     },
     trex: {
       trexImplementationAuthority: trexIaAddr,
@@ -114,6 +117,8 @@ async function main() {
   const outFile = path.join(outDir, `deployment-${addresses.chainId}.json`);
   fs.writeFileSync(outFile, JSON.stringify(addresses, null, 2));
   console.log("\nWrote", outFile);
+  console.log("\nNext: npx hardhat run scripts/issueClaims.js --network <same>");
+  console.log("Set CLAIM_ISSUER_ADDRESS=" + kycIssuerAddr);
 }
 
 main().catch((err) => {
