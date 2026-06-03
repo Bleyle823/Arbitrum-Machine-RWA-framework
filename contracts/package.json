@@ -13,6 +13,8 @@
     "deploy:arbitrum": "hardhat run scripts/deploy.js --network arbitrum",
     "demo:flow": "hardhat run scripts/fullFlowDemo.js --network hardhat",
     "demo:flow:node": "hardhat run scripts/fullFlowDemo.js --network localhost",
+    "issue-claims": "hardhat run scripts/issueClaims.js",
+    "issue-claims:local": "hardhat run scripts/issueClaims.js --network localhost",
     "clean": "hardhat clean"
   },
   "dependencies": {

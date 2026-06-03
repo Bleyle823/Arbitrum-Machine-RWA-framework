@@ -39,7 +39,33 @@ export async function keyHashForAddress(addr: string) {
 }
 
 /**
+ * True if identity already has a claim for `topic` from `claimIssuerAddress` that passes isClaimValid.
+ */
+export async function identityHasValidClaim(
+  identityAddress: string,
+  claimIssuerAddress: string,
+  topic: bigint,
+): Promise<boolean> {
+  const ethers = await getEthers();
+  const identity = new ethers.Contract(identityAddress, OnchainID.contracts.Identity.abi, ethers.provider);
+  const claimIssuer = new ethers.Contract(
+    claimIssuerAddress,
+    OnchainID.contracts.ClaimIssuer.abi,
+    ethers.provider,
+  );
+
+  const claimIds: string[] = await identity.getClaimIdsByTopic(topic);
+  for (const claimId of claimIds) {
+    const [, , issuer, sig, data] = await identity.getClaim(claimId);
+    if (issuer.toLowerCase() !== claimIssuerAddress.toLowerCase()) continue;
+    if (await claimIssuer.isClaimValid(identityAddress, topic, sig, data)) return true;
+  }
+  return false;
+}
+
+/**
  * Sign with ClaimIssuer key and attach claim (identity owner sends addClaim).
+ * Idempotent: skips if a valid claim for the same topic + issuer already exists.
  */
 export async function addClaim(
   identityOwner: Signer,
@@ -49,12 +75,15 @@ export async function addClaim(
   topic: bigint,
   data: string,
 ) {
+  if (await identityHasValidClaim(identityAddress, claimIssuerAddress, topic)) {
+    return;
+  }
+
   const ethers = await getEthers();
   const payload = await buildClaimPayloadHash(identityAddress, topic, data);
   const signature = await claimIssuerSigner.signMessage(ethers.getBytes(payload));
 
   const identity = new ethers.Contract(identityAddress, OnchainID.contracts.Identity.abi, identityOwner);
-  // Ensure the identityOwner can add claims (ERC-735 requires a purpose-3 key)
   const claimKey = await keyHashForAddress(await identityOwner.getAddress());
   const hasClaimPurpose = await identity.keyHasPurpose(claimKey, 3);
   if (!hasClaimPurpose) {
