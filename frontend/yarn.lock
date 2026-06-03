@@ -4385,12 +4385,14 @@ __metadata:
     next: "npm:^16.2.4"
     next-nprogress-bar: "npm:^2.4.7"
     next-themes: "npm:^0.4.6"
+    pinata: "npm:^2.5.6"
     postcss: "npm:^8.5.10"
     prettier: "npm:^3.8.3"
     qrcode.react: "npm:^4.2.0"
     react: "npm:^19.2.5"
     react-dom: "npm:^19.2.5"
     react-hot-toast: "npm:^2.6.0"
+    server-only: "npm:^0.0.1"
     tailwindcss: "npm:^4.2.4"
     type-fest: "npm:^5.6.0"
     typescript: "npm:^5.8.2"
@@ -14699,6 +14701,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pinata@npm:^2.5.6":
+  version: 2.5.6
+  resolution: "pinata@npm:2.5.6"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 10/e84fb93223d01d04a9fb4a72411e32ac529b9bc3872945826e5f0b343bfc1cd1bc13f313e80fa252b928a3f8284d9f20102b93f55b0d9824a62c895b4c9aae0e
+  languageName: node
+  linkType: hard
+
 "pino-abstract-transport@npm:v0.5.0":
   version: 0.5.0
   resolution: "pino-abstract-transport@npm:0.5.0"
@@ -15791,6 +15808,13 @@ __metadata:
   dependencies:
     randombytes: "npm:^2.1.0"
   checksum: 10/445a420a6fa2eaee4b70cbd884d538e259ab278200a2ededd73253ada17d5d48e91fb1f4cd224a236ab62ea7ba0a70c6af29fc93b4f3d3078bf7da1c031fde58
+  languageName: node
+  linkType: hard
+
+"server-only@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "server-only@npm:0.0.1"
+  checksum: 10/c432348956641ea3f460af8dc3765f3a1bdbcf7a1e0205b0756d868e6e6fe8934cdee6bff68401a1dd49ba4a831c75916517a877446d54b334f7de36fa273e53
   languageName: node
   linkType: hard
 
