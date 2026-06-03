@@ -14,6 +14,7 @@ contract ContractNft is ERC721 {
     event ContractCancelled(uint256 indexed contractId);
     event ContractCompleted(uint256 indexed contractId, address indexed signer);
     event ContractInitiated(uint256 indexed contractId, address indexed initiator);
+    event ContractInitiatedMeta(uint256 indexed contractId, address indexed initiator, uint256 hashDigest, string url);
     event ContractSigned(uint256 indexed contractId, address indexed signer);
 
     struct ContractContent {
@@ -38,6 +39,7 @@ contract ContractNft is ERC721 {
 
     mapping(uint256 => ContractDraft) private _drafts;
     mapping(uint256 => ContractContent) private _contracts;
+    mapping(address => uint256[]) private _contractsByInitiator;
 
     modifier notBlocked() {
         require(!isBlocked, "Blocked");
@@ -48,6 +50,71 @@ contract ContractNft is ERC721 {
         infoDesk = _infoDesk;
         feeToken = _feeToken;
         rwaNftRegistry = _rwaNftRegistry;
+    }
+
+    function computeContractId(
+        address initiator,
+        address[] memory counterparties,
+        uint256 hashDigest,
+        string memory url
+    ) external pure returns (uint256) {
+        return uint256(keccak256(abi.encode(initiator, counterparties, hashDigest, url)));
+    }
+
+    function getContractIdsByInitiator(address initiator) external view returns (uint256[] memory) {
+        return _contractsByInitiator[initiator];
+    }
+
+    function getDraftStatus(uint256 contractId)
+        external
+        view
+        returns (bool exists, bool completed, bool cancelled, uint256 requiredSignatures, uint256 currentSignatures)
+    {
+        ContractDraft storage draft = _drafts[contractId];
+        exists = draft.content.initiator != address(0);
+        if (!exists) {
+            return (false, false, false, 0, 0);
+        }
+        completed = draft.completed;
+        cancelled = draft.cancelled;
+        requiredSignatures = draft.content.counterparties.length + 1;
+        currentSignatures = draft.signatures.length;
+    }
+
+    function getContractDetails(uint256 contractId)
+        external
+        view
+        returns (
+            address initiator,
+            address[] memory counterparties,
+            uint256 hashDigest,
+            string memory url,
+            bool completed,
+            bool cancelled,
+            uint256 signatureCount
+        )
+    {
+        ContractDraft storage draft = _drafts[contractId];
+        if (draft.content.initiator != address(0)) {
+            initiator = draft.content.initiator;
+            counterparties = draft.content.counterparties;
+            hashDigest = draft.content.hashDigest;
+            url = draft.content.url;
+            completed = draft.completed;
+            cancelled = draft.cancelled;
+            signatureCount = draft.signatures.length;
+            return (initiator, counterparties, hashDigest, url, completed, cancelled, signatureCount);
+        }
+
+        ContractContent storage c = _contracts[contractId];
+        require(c.initiator != address(0), "Unknown contract");
+        initiator = c.initiator;
+        counterparties = c.counterparties;
+        hashDigest = c.hashDigest;
+        url = c.url;
+        completed = true;
+        cancelled = false;
+        signatureCount = c.counterparties.length + 1;
     }
 
     function initContractAndSign(address[] memory counterparties, uint256 hashDigest, string memory url)
@@ -65,8 +132,10 @@ contract ContractNft is ERC721 {
         ContractDraft storage draft = _drafts[contractId];
         draft.content = ContractContent(msg.sender, counterparties, hashDigest, url);
         draft.signatures.push(msg.sender);
+        _contractsByInitiator[msg.sender].push(contractId);
 
         emit ContractInitiated(contractId, msg.sender);
+        emit ContractInitiatedMeta(contractId, msg.sender, hashDigest, url);
         emit ContractSigned(contractId, msg.sender);
 
         _tryComplete(contractId);
