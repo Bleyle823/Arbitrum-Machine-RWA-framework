@@ -5,9 +5,20 @@
  * Terminal 2: npx hardhat run scripts/fullFlowDemo.js --network localhost
  */
 const hre = require("hardhat");
+const OnchainID = require("@onchain-id/solidity");
 const { deployTrexSuite, deployFeeModuleProxy } = require("./lib/trexDeploy");
-const { deployOidClaimIssuer } = require("./lib/onchainidHelpers");
-const { CT_KYC_APPROVED, CT_MNFT_ISSUER, addClaim, kycData } = require("./lib/claims");
+const { deployOidStack, deployOidClaimIssuer } = require("./lib/onchainidHelpers");
+const { CT_KYC_APPROVED, CT_MNFT_ISSUER, CT_MNFT_REGULATOR, addClaim, kycData, roleData } = require("./lib/claims");
+const {
+  DEMO_MACHINE_TOKEN_ID,
+  DEMO_MACHINE_VALUE,
+  DEMO_ASSET_SERIAL,
+  DEMO_AGREEMENT_IPFS_URL,
+  demoAgreementHashDigest,
+  demoMachineDidBytes,
+  DEMO_VAULT_NAME,
+  DEMO_VAULT_SYMBOL,
+} = require("./lib/demoProductionAssets");
 
 async function main() {
   const signers = await hre.ethers.getSigners();
@@ -40,24 +51,27 @@ async function main() {
   await infoDesk.setAccount(2, admin.address);
   await infoDesk.setValue(3, hre.ethers.parseEther("0.01"));
 
-  const IdFactory = await hre.ethers.getContractFactory("IdFactory");
-  const idFactory = await IdFactory.deploy(admin.address, admin.address);
-  await idFactory.waitForDeployment();
+  const oid = await deployOidStack(admin);
+  const idFactory = new hre.ethers.Contract(oid.onchainIdFactoryAddr, OnchainID.contracts.Factory.abi, admin);
 
   const kycIssuer = await deployOidClaimIssuer(admin, claimIssuerSigner);
   const kycIssuerAddr = await kycIssuer.getAddress();
 
   const ArbRwaNft = await hre.ethers.getContractFactory("ArbRwaNft");
-  const rwaNft = await ArbRwaNft.deploy(admin.address, await infoDesk.getAddress(), await feeToken.getAddress());
+  const rwaNft = await ArbRwaNft.deploy(
+    admin.address,
+    await infoDesk.getAddress(),
+    await feeToken.getAddress(),
+    oid.onchainIdFactoryAddr,
+    kycIssuerAddr
+  );
   await rwaNft.waitForDeployment();
   await infoDesk.setContract(1, await rwaNft.getAddress());
 
-  await rwaNft.addMachineRegulator(admin.address);
   const contractNftAddr = await rwaNft.deployContractNft.staticCall();
   await rwaNft.deployContractNft();
   console.log("ContractNft deployed at:", contractNftAddr);
 
-  // Identities + KYC
   await idFactory.createIdentity(alice.address, "alice");
   await idFactory.createIdentity(bob.address, "bob");
   await idFactory.createIdentity(charlie.address, "charlie");
@@ -80,46 +94,37 @@ async function main() {
     );
   }
 
-  // Machine issuer
   await idFactory.createIdentity(admin.address, "issuer");
   const issuerId = await idFactory.getIdentity(admin.address);
-  const roleData = hre.ethers.AbiCoder.defaultAbiCoder().encode(["string"], ["machine issuer"]);
-  await addClaim(
-    admin,
-    issuerId,
-    claimIssuerSigner,
-    kycIssuerAddr,
-    CT_MNFT_ISSUER,
-    roleData
-  );
-  await rwaNft.setIssuerIdentity(admin.address, issuerId);
+  await addClaim(admin, issuerId, claimIssuerSigner, kycIssuerAddr, CT_MNFT_ISSUER, roleData("machine issuer"));
+  await addClaim(admin, issuerId, claimIssuerSigner, kycIssuerAddr, CT_MNFT_REGULATOR, roleData("machine regulator"));
+
+  await rwaNft.addMachineRegulator(admin.address);
   await rwaNft.addMachineIssuer(admin.address);
   const machineNftAddr = await rwaNft.getMachineNftByIssuer(admin.address);
   const machineNft = await hre.ethers.getContractAt("MachineNft", machineNftAddr);
 
-  const machineValue = hre.ethers.parseEther("10");
-  const machineId = 1001n;
-  const did = hre.ethers.toUtf8Bytes("0x" + "cd".repeat(32));
+  const machineValue = DEMO_MACHINE_VALUE;
+  const machineId = DEMO_MACHINE_TOKEN_ID;
+  const did = demoMachineDidBytes();
   await feeToken.connect(alice).approve(machineNftAddr, machineValue);
   await machineNft.connect(admin).registerMachine(alice.address, machineValue, machineId, did);
-  console.log("Machine NFT registered, tokenId:", machineId.toString());
+  console.log("Machine NFT registered, tokenId:", machineId.toString(), `(${DEMO_ASSET_SERIAL}, Tesla Cybertruck fleet unit)`);
 
-  // Contract NFT
   const contractNft = await hre.ethers.getContractAt("ContractNft", contractNftAddr);
-  const hashDigest = hre.ethers.keccak256(hre.ethers.toUtf8Bytes("solar-lease-v1"));
+  const hashDigest = demoAgreementHashDigest();
   const setupFee = await infoDesk.getValue(3);
   await feeToken.connect(alice).approve(contractNftAddr, setupFee);
   const contractId = await contractNft
     .connect(alice)
-    .initContractAndSign.staticCall([bob.address, charlie.address], hashDigest, "ipfs://demo");
-  await contractNft.connect(alice).initContractAndSign([bob.address, charlie.address], hashDigest, "ipfs://demo");
+    .initContractAndSign.staticCall([bob.address, charlie.address], hashDigest, DEMO_AGREEMENT_IPFS_URL);
+  await contractNft.connect(alice).initContractAndSign([bob.address, charlie.address], hashDigest, DEMO_AGREEMENT_IPFS_URL);
   await contractNft.connect(bob).signContract(contractId);
   await contractNft.connect(charlie).signContract(contractId);
   console.log("Contract NFT completed, contractId:", contractId.toString());
 
-  // Deploy TREX Suite
   console.log("Deploying ERC-3643 suite...");
-  const trex = await deployTrexSuite(admin);
+  const trex = await deployTrexSuite(admin, oid.onchainIdFactoryAddr);
   const trexFactoryAddr = await trex.trexFactory.getAddress();
 
   const { proxy: feeModule } = await deployFeeModuleProxy(admin, await infoDesk.getAddress());
@@ -133,10 +138,10 @@ async function main() {
 
   const tokenAddr = await vaultFactory
     .connect(admin)
-    .deployTrexVault.staticCall("Solar Vault", "SOLAR", [kycIssuerAddr], [CT_KYC_APPROVED], [feeModuleAddr]);
+    .deployTrexVault.staticCall(DEMO_VAULT_NAME, DEMO_VAULT_SYMBOL, [kycIssuerAddr], [CT_KYC_APPROVED], [feeModuleAddr]);
   await vaultFactory
     .connect(admin)
-    .deployTrexVault("Solar Vault", "SOLAR", [kycIssuerAddr], [CT_KYC_APPROVED], [feeModuleAddr]);
+    .deployTrexVault(DEMO_VAULT_NAME, DEMO_VAULT_SYMBOL, [kycIssuerAddr], [CT_KYC_APPROVED], [feeModuleAddr]);
 
   const attachTx = await vaultFactory
     .connect(admin)
@@ -183,7 +188,7 @@ async function main() {
   await distributor.connect(bob).claim();
   console.log("Bob claimed yield, fee token balance:", hre.ethers.formatEther(await feeToken.balanceOf(bob.address)));
 
-  console.log("\nDone — full flow completed without peaq SDK.");
+  console.log("\nDone — full flow completed with ONCHAINID identities.");
 }
 
 main().catch((err) => {

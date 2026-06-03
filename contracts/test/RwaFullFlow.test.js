@@ -1,8 +1,16 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const OnchainID = require("@onchain-id/solidity");
 const { deployTrexSuite, deployFeeModuleProxy } = require("../scripts/lib/trexDeploy");
-const { deployOidClaimIssuer } = require("../scripts/lib/onchainidHelpers");
-const { CT_KYC_APPROVED, CT_MNFT_ISSUER, addClaim, kycData } = require("../scripts/lib/claims");
+const { deployOidStack, deployOidClaimIssuer } = require("../scripts/lib/onchainidHelpers");
+const { CT_KYC_APPROVED, CT_MNFT_ISSUER, CT_MNFT_REGULATOR, addClaim, kycData, roleData } = require("../scripts/lib/claims");
+const {
+  DEMO_MACHINE_TOKEN_ID,
+  DEMO_MACHINE_VALUE,
+  demoMachineDidBytes,
+  DEMO_VAULT_NAME,
+  DEMO_VAULT_SYMBOL,
+} = require("../scripts/lib/demoProductionAssets");
 
 describe("RWA full flow (ERC-3643 T-REX)", function () {
   it("deploys framework and runs identity → machine → T-REX vault → transfer", async function () {
@@ -21,17 +29,23 @@ describe("RWA full flow (ERC-3643 T-REX)", function () {
     await infoDesk.setAccount(2, admin.address);
     await infoDesk.setValue(3, ethers.parseEther("0.01"));
 
-    const IdFactory = await ethers.getContractFactory("IdFactory");
-    const idFactory = await IdFactory.deploy(admin.address, admin.address);
+    const oid = await deployOidStack(admin);
+    const idFactory = new ethers.Contract(oid.onchainIdFactoryAddr, OnchainID.contracts.Factory.abi, admin);
 
     const kycIssuer = await deployOidClaimIssuer(admin, claimIssuerSigner);
     const kycIssuerAddr = await kycIssuer.getAddress();
 
-    const trex = await deployTrexSuite(admin);
+    const trex = await deployTrexSuite(admin, oid.onchainIdFactoryAddr);
     const trexFactory = trex.trexFactory;
 
     const ArbRwaNft = await ethers.getContractFactory("ArbRwaNft");
-    const rwaNft = await ArbRwaNft.deploy(admin.address, await infoDesk.getAddress(), await feeToken.getAddress());
+    const rwaNft = await ArbRwaNft.deploy(
+      admin.address,
+      await infoDesk.getAddress(),
+      await feeToken.getAddress(),
+      oid.onchainIdFactoryAddr,
+      kycIssuerAddr
+    );
     await infoDesk.setContract(1, await rwaNft.getAddress());
 
     const { proxy: feeModule } = await deployFeeModuleProxy(admin, await infoDesk.getAddress());
@@ -40,8 +54,6 @@ describe("RWA full flow (ERC-3643 T-REX)", function () {
     const ArbVaultFactory = await ethers.getContractFactory("ArbVaultFactory");
     const vaultFactory = await ArbVaultFactory.deploy(admin.address, await infoDesk.getAddress(), await trexFactory.getAddress());
     await trexFactory.transferOwnership(await vaultFactory.getAddress());
-
-    await rwaNft.addMachineRegulator(admin.address);
 
     await idFactory.createIdentity(alice.address, "alice-salt");
     await idFactory.createIdentity(bob.address, "bob-salt");
@@ -53,25 +65,26 @@ describe("RWA full flow (ERC-3643 T-REX)", function () {
 
     await idFactory.createIdentity(admin.address, "issuer-salt");
     const issuerIdentity = await idFactory.getIdentity(admin.address);
-    const roleData = ethers.AbiCoder.defaultAbiCoder().encode(["string"], ["machine issuer"]);
-    await addClaim(admin, issuerIdentity, claimIssuerSigner, kycIssuerAddr, CT_MNFT_ISSUER, roleData);
-    await rwaNft.setIssuerIdentity(admin.address, issuerIdentity);
+    await addClaim(admin, issuerIdentity, claimIssuerSigner, kycIssuerAddr, CT_MNFT_ISSUER, roleData("machine issuer"));
+    await addClaim(admin, issuerIdentity, claimIssuerSigner, kycIssuerAddr, CT_MNFT_REGULATOR, roleData("machine regulator"));
+
+    await rwaNft.addMachineRegulator(admin.address);
     await rwaNft.addMachineIssuer(admin.address);
     const machineNftAddr = await rwaNft.getMachineNftByIssuer(admin.address);
 
     const machineNft = await ethers.getContractAt("MachineNft", machineNftAddr);
-    const machineValue = ethers.parseEther("10");
-    const tokenId = 12345n;
-    const did = ethers.toUtf8Bytes("0x" + "ab".repeat(32));
+    const machineValue = DEMO_MACHINE_VALUE;
+    const tokenId = DEMO_MACHINE_TOKEN_ID;
+    const did = demoMachineDidBytes();
     await feeToken.connect(alice).approve(machineNftAddr, machineValue);
     await machineNft.connect(admin).registerMachine(alice.address, machineValue, tokenId, did);
 
     const tokenAddr = await vaultFactory
       .connect(admin)
-      .deployTrexVault.staticCall("Solar Vault", "SOLAR", [kycIssuerAddr], [CT_KYC_APPROVED], [feeModuleAddr]);
+      .deployTrexVault.staticCall(DEMO_VAULT_NAME, DEMO_VAULT_SYMBOL, [kycIssuerAddr], [CT_KYC_APPROVED], [feeModuleAddr]);
     await vaultFactory
       .connect(admin)
-      .deployTrexVault("Solar Vault", "SOLAR", [kycIssuerAddr], [CT_KYC_APPROVED], [feeModuleAddr]);
+      .deployTrexVault(DEMO_VAULT_NAME, DEMO_VAULT_SYMBOL, [kycIssuerAddr], [CT_KYC_APPROVED], [feeModuleAddr]);
 
     const attachTx = await vaultFactory
       .connect(admin)
@@ -100,7 +113,6 @@ describe("RWA full flow (ERC-3643 T-REX)", function () {
     await token.connect(alice).transfer(bob.address, transferAmt);
     expect(await token.balanceOf(bob.address)).to.equal(transferAmt);
 
-    // Test RewardDistributor hook (settleOnTransfer) during standard flows
     const yieldAmt = ethers.parseEther("10");
     const distributorAddr = await vault.rewardDistributor();
     const distributor = await ethers.getContractAt("RewardDistributor", distributorAddr);
@@ -108,24 +120,20 @@ describe("RWA full flow (ERC-3643 T-REX)", function () {
     await feeToken.connect(alice).approve(distributorAddr, yieldAmt);
     await distributor.connect(alice).depositYield(yieldAmt);
 
-    // Transfer back to Alice to trigger transfer hook & settle Bob's balance
     const bobBal = await token.balanceOf(bob.address);
     const [fee2] = await vault.transactionFeeAndAccount(bobBal);
     await feeToken.connect(bob).approve(feeModuleAddr, fee2 * 2n);
     await token.connect(bob).transfer(alice.address, bobBal);
 
-    // Claim yield
     await distributor.connect(bob).claim();
     const bobFeeBalance = await feeToken.balanceOf(bob.address);
-    expect(bobFeeBalance > ethers.parseEther("1000")).to.be.true; // Bob gets yield in feeToken
+    expect(bobFeeBalance > ethers.parseEther("1000")).to.be.true;
 
-    // Test burnAndRedeem flow
     const aliceBal = await token.balanceOf(alice.address);
     await vault.connect(alice).burnAndRedeem(aliceBal);
     expect(await token.balanceOf(alice.address)).to.equal(0n);
     expect(await vault.redeemed()).to.be.true;
 
-    // Verify machineNft is back in Alice's wallet
     expect(await machineNft.ownerOf(tokenId)).to.equal(alice.address);
   });
 });
