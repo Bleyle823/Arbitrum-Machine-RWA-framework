@@ -2,6 +2,17 @@ import { network } from "hardhat";
 import { deployScript, artifacts } from "../rocketh/deploy.js";
 import { deployFeeModuleProxy, deployTrexSuite } from "../deploy-helpers/trexDeploy.js";
 import { deployOidClaimIssuer } from "../deploy-helpers/onchainidHelpers.js";
+import { runDebugBootstrap } from "../deploy-helpers/debugBootstrap.js";
+import { writeRwaManifest } from "../deploy-helpers/writeRwaManifest.js";
+import {
+  DEMO_AGREEMENT_IPFS_URL,
+  DEMO_AGREEMENT_METADATA,
+  DEMO_ASSET_SERIAL,
+  DEMO_DEAL_REFERENCE,
+  DEMO_MACHINE_DID_URI,
+  DEMO_MACHINE_VALUE,
+  demoAgreementHashDigest,
+} from "../deploy-helpers/demoProductionAssets.js";
 import OnchainID from "@onchain-id/solidity";
 
 /**
@@ -131,6 +142,14 @@ export default deployScript(
     console.log("NativeTransferFeeModule impl:", feeModuleImplAddr);
     console.log("NativeTransferFeeModule proxy:", feeModuleProxyAddr);
 
+    await env.save("NativeTransferFeeModule", {
+      address: feeModuleProxyAddr as `0x${string}`,
+      abi: artifacts.NativeTransferFeeModule.abi,
+      bytecode: artifacts.NativeTransferFeeModule.bytecode,
+      argsData: "0x",
+      metadata: "{}",
+    });
+
     await infoDeskContract.setImplementation(4, feeModuleImplAddr);
 
     const rwaNft = await env.deploy("ArbRwaNft", {
@@ -159,12 +178,56 @@ export default deployScript(
     await onchainIdFactoryContract.addTokenFactory(vaultFactory.address);
 
     // Fund default burner wallets (accounts 1–4) for manual UI testing
+    const signers = await ethers.getSigners();
     if (!process.env.FEE_TOKEN_ADDRESS) {
       const fee = await ethers.getContractAt("MockFeeToken", feeTokenAddress);
-      const signers = await ethers.getSigners();
       for (let i = 1; i <= 4 && i < signers.length; i++) {
         await fee.mint(signers[i].address, ethers.parseEther("10000"));
       }
+    }
+
+    if (process.env.SKIP_DEBUG_BOOTSTRAP !== "true") {
+      const [adminSigner, aliceSigner, bobSigner, charlieSigner] = signers;
+      const demo = await runDebugBootstrap(async (name, data) => env.save(name, data), {
+          admin: adminSigner,
+          alice: aliceSigner,
+          bob: bobSigner,
+          charlie: charlieSigner,
+          feeTokenAddr: feeTokenAddr,
+          infoDeskAddr: infoDesk.address,
+          idFactoryAddr: onchainIdFactoryAddr,
+          claimIssuerAddr: kycIssuerAddr,
+          rwaNftAddr: rwaNft.address,
+          vaultFactoryAddr: vaultFactory.address,
+          feeModuleProxyAddr: feeModuleProxyAddr,
+          seedDemoAssets: process.env.SKIP_DEMO_ASSETS !== "true",
+      });
+      console.log("\nDebug UI ready — use these IDs for depositAndMint:");
+      console.log("  assetSerial:", DEMO_ASSET_SERIAL, "→ machineTokenId:", demo.machineTokenId.toString());
+      console.log("  dealReference:", DEMO_DEAL_REFERENCE);
+      console.log("  contractId:", demo.contractId.toString());
+      console.log("  agreementUrl:", DEMO_AGREEMENT_IPFS_URL);
+      console.log("  rwaNftAddresses:", [demo.machineNftAddr, demo.contractNftAddr]);
+
+      const chainId = Number((await ethers.provider.getNetwork()).chainId);
+      writeRwaManifest(demo, {
+        chainId,
+        feeToken: feeTokenAddr,
+        feeModule: feeModuleProxyAddr,
+        arbRwaNft: rwaNft.address,
+        assetSerial: DEMO_ASSET_SERIAL,
+        dealReference: DEMO_DEAL_REFERENCE,
+        machineDidUri: DEMO_MACHINE_DID_URI,
+        machineValueWei: DEMO_MACHINE_VALUE.toString(),
+        agreementMetadataHash: demoAgreementHashDigest(),
+        agreementUrl: DEMO_AGREEMENT_IPFS_URL,
+        alice: await aliceSigner.getAddress(),
+        bob: await bobSigner.getAddress(),
+        charlie: await charlieSigner.getAddress(),
+        admin: await adminSigner.getAddress(),
+      });
+    } else {
+      console.log("\nSkipped debug bootstrap (SKIP_DEBUG_BOOTSTRAP=true). Run yarn issue-claims and wire NFTs manually.");
     }
 
     console.log("\nRWA framework deployed");
