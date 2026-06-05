@@ -1,0 +1,552 @@
+{
+  "address": "0xcae0bb0e82bbcbed3eb3089df64cc4071b53524f",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner_",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "contractType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newAddress",
+          "type": "address"
+        }
+      ],
+      "name": "ContractUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "implementationType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newAddress",
+          "type": "address"
+        }
+      ],
+      "name": "ImplementationUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "precompileType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newAddress",
+          "type": "address"
+        }
+      ],
+      "name": "PrecompileUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner_",
+          "type": "address"
+        }
+      ],
+      "name": "InfoDesk_init",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "machineValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "computeMachineRegistrationFee",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "computeTransactionFee",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "accountType",
+          "type": "uint8"
+        }
+      ],
+      "name": "getAccount",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "contractType",
+          "type": "uint8"
+        }
+      ],
+      "name": "getContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "implementationType",
+          "type": "uint8"
+        }
+      ],
+      "name": "getImplementation",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "precompileType",
+          "type": "uint8"
+        }
+      ],
+      "name": "getPrecompile",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "valueType",
+          "type": "uint8"
+        }
+      ],
+      "name": "getValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "resetToDefaults",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "accountType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "newAccount",
+          "type": "address"
+        }
+      ],
+      "name": "setAccount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "contractType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "newAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setContract",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "implementationType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "newImplementation",
+          "type": "address"
+        }
+      ],
+      "name": "setImplementation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "precompileType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "newAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setPrecompile",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "valueType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "newValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "setValue",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "contractName": "InfoDesk",
+  "sourceName": "contracts/src/core/InfoDesk.sol",
+  "bytecode": "0x6080346100a057601f61090038819003918201601f191683019291906001600160401b038411838510176100a55781602092849260409687528339810103126100a057516001600160a01b03811681036100a05761006590610060336100bb565b6100bb565b60008080526005602052612710828220556001815260648282205560028152610500828220556004815281812055516107fd90816101038239f35b600080fd5b634e487b7160e01b600052604160045260246000fd5b600080546001600160a01b039283166001600160a01b03198216811783559216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09080a356fe608060408181526004908136101561001657600080fd5b600092833560e01c908163181be00d14610690575080631cac57621461065a57806345583b7a146105b457806349f08b5f1461058657806363157e461461054f57806367f4bd91146104f75780636c3aa54d146104bb578063715018a61461045e578063865e6fd3146103b85780638da5cb5b14610390578063a1e402951461031a578063a7616419146102de57838163aec71c531461029357508063afbc92e914610258578063de981f1b14610218578063f2fde38b146101865763fb7350e9146100e157600080fd5b346101825780600319360112610182576100f96106be565b906101026106d3565b9261010b6106ff565b60ff9290921680855260208381528286205483518381526001600160a01b039182169281019290925285811660408301529391907f07cb9126f6e11b8d05af2071c4fd3264671ce4fcb135ca32861214c384f10ae090606090a18552602052832091166001600160601b0360a01b82541617905580f35b8280fd5b509034610182576020366003190112610182576101a16106e9565b916101aa6106ff565b6001600160a01b038316156101c657836101c384610757565b80f35b906020608492519162461bcd60e51b8352820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b6064820152fd5b8382346102545760203660031901126102545760209160ff6102386106be565b168152600283528190205490516001600160a01b039091168152f35b5080fd5b509034610182576020366003190112610182579160209260ff6102796106be565b16825283528190205490516001600160a01b039091168152f35b929050346102da57826003193601126102da576102ae6106ff565b828052600560205261271082842055600183526064828420556002835261050082842055825281205580f35b5050fd5b8382346102545760203660031901126102545760209160ff6102fe6106be565b168152600183528190205490516001600160a01b039091168152f35b50919034610254576020366003190112610254576103366106e9565b906006549060ff8216610357575060ff19166001176006556101c390610757565b606490602086519162461bcd60e51b83528201526013602482015272105b1c9958591e481a5b9a5d1a585b1a5e9959606a1b6044820152fd5b838234610254578160031936011261025457905490516001600160a01b039091168152602090f35b8382346102545780600319360112610254576103d26106be565b6103da6106d3565b916103e36106ff565b60ff91909116808452600260209081528285205483518381526001600160a01b039182169281019290925284811660408301529291907fca72e4cbbf73f106c1f1ac835ad882bb0a15981080bd1be51077c63d729c940790606090a184526002602052832091166001600160601b0360a01b82541617905580f35b83346104b857806003193601126104b8576104776106ff565b80546001600160a01b03198116825581906001600160a01b03167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e08280a380f35b80fd5b8382346102545760203660031901126102545760209160ff6104db6106be565b168152600383528190205490516001600160a01b039091168152f35b8382346102545780600319360112610254576105116106be565b9060ff61051c6106d3565b926105256106ff565b1683526003602052822080546001600160a01b0319166001600160a01b0390921691909117905580f35b5090346101825760203660031901126101825761057e612710918385600160209752600587522054903561079e565b049051908152f35b5090346101825760203660031901126101825761057e6127109183858060209752600587522054903561079e565b8382346102545780600319360112610254576105ce6106be565b6105d66106d3565b916105df6106ff565b60ff91909116808452600160209081528285205483518381526001600160a01b039182169281019290925284811660408301529291907fee98ab479506a480f6aaf2f74e304414ff825cb97856ec07c9c0da0cb97b439290606090a184526001602052832091166001600160601b0360a01b82541617905580f35b83823461025457806003193601126102545760ff6106766106be565b61067e6106ff565b16825260056020526024359082205580f35b925050346101825760203660031901126101825760209260ff6106b16106be565b1681526005845220548152f35b6004359060ff821682036106ce57565b600080fd5b602435906001600160a01b03821682036106ce57565b600435906001600160a01b03821682036106ce57565b6000546001600160a01b0316330361071357565b606460405162461bcd60e51b815260206004820152602060248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e65726044820152fd5b600080546001600160a01b039283166001600160a01b03198216811783559216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09080a3565b818102929181159184041417156107b157565b634e487b7160e01b600052601160045260246000fdfea26469706673582212206b3313381b4596cacd28df0bc63efaf8efc303174f8bc0f9f37ce39268b25ce564736f6c63430008110033",
+  "deployedBytecode": "0x608060408181526004908136101561001657600080fd5b600092833560e01c908163181be00d14610690575080631cac57621461065a57806345583b7a146105b457806349f08b5f1461058657806363157e461461054f57806367f4bd91146104f75780636c3aa54d146104bb578063715018a61461045e578063865e6fd3146103b85780638da5cb5b14610390578063a1e402951461031a578063a7616419146102de57838163aec71c531461029357508063afbc92e914610258578063de981f1b14610218578063f2fde38b146101865763fb7350e9146100e157600080fd5b346101825780600319360112610182576100f96106be565b906101026106d3565b9261010b6106ff565b60ff9290921680855260208381528286205483518381526001600160a01b039182169281019290925285811660408301529391907f07cb9126f6e11b8d05af2071c4fd3264671ce4fcb135ca32861214c384f10ae090606090a18552602052832091166001600160601b0360a01b82541617905580f35b8280fd5b509034610182576020366003190112610182576101a16106e9565b916101aa6106ff565b6001600160a01b038316156101c657836101c384610757565b80f35b906020608492519162461bcd60e51b8352820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b6064820152fd5b8382346102545760203660031901126102545760209160ff6102386106be565b168152600283528190205490516001600160a01b039091168152f35b5080fd5b509034610182576020366003190112610182579160209260ff6102796106be565b16825283528190205490516001600160a01b039091168152f35b929050346102da57826003193601126102da576102ae6106ff565b828052600560205261271082842055600183526064828420556002835261050082842055825281205580f35b5050fd5b8382346102545760203660031901126102545760209160ff6102fe6106be565b168152600183528190205490516001600160a01b039091168152f35b50919034610254576020366003190112610254576103366106e9565b906006549060ff8216610357575060ff19166001176006556101c390610757565b606490602086519162461bcd60e51b83528201526013602482015272105b1c9958591e481a5b9a5d1a585b1a5e9959606a1b6044820152fd5b838234610254578160031936011261025457905490516001600160a01b039091168152602090f35b8382346102545780600319360112610254576103d26106be565b6103da6106d3565b916103e36106ff565b60ff91909116808452600260209081528285205483518381526001600160a01b039182169281019290925284811660408301529291907fca72e4cbbf73f106c1f1ac835ad882bb0a15981080bd1be51077c63d729c940790606090a184526002602052832091166001600160601b0360a01b82541617905580f35b83346104b857806003193601126104b8576104776106ff565b80546001600160a01b03198116825581906001600160a01b03167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e08280a380f35b80fd5b8382346102545760203660031901126102545760209160ff6104db6106be565b168152600383528190205490516001600160a01b039091168152f35b8382346102545780600319360112610254576105116106be565b9060ff61051c6106d3565b926105256106ff565b1683526003602052822080546001600160a01b0319166001600160a01b0390921691909117905580f35b5090346101825760203660031901126101825761057e612710918385600160209752600587522054903561079e565b049051908152f35b5090346101825760203660031901126101825761057e6127109183858060209752600587522054903561079e565b8382346102545780600319360112610254576105ce6106be565b6105d66106d3565b916105df6106ff565b60ff91909116808452600160209081528285205483518381526001600160a01b039182169281019290925284811660408301529291907fee98ab479506a480f6aaf2f74e304414ff825cb97856ec07c9c0da0cb97b439290606090a184526001602052832091166001600160601b0360a01b82541617905580f35b83823461025457806003193601126102545760ff6106766106be565b61067e6106ff565b16825260056020526024359082205580f35b925050346101825760203660031901126101825760209260ff6106b16106be565b1681526005845220548152f35b6004359060ff821682036106ce57565b600080fd5b602435906001600160a01b03821682036106ce57565b600435906001600160a01b03821682036106ce57565b6000546001600160a01b0316330361071357565b606460405162461bcd60e51b815260206004820152602060248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e65726044820152fd5b600080546001600160a01b039283166001600160a01b03198216811783559216907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09080a3565b818102929181159184041417156107b157565b634e487b7160e01b600052601160045260246000fdfea26469706673582212206b3313381b4596cacd28df0bc63efaf8efc303174f8bc0f9f37ce39268b25ce564736f6c63430008110033",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "immutableReferences": {},
+  "inputSourceName": "project/contracts/src/core/InfoDesk.sol",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      }
+    },
+    "title": "InfoDesk — central configuration registry for fees, implementations, and treasury accounts",
+    "version": 1
+  },
+  "evm": {
+    "gasEstimates": {
+      "creation": {
+        "codeDepositCost": "409000",
+        "executionCost": "infinite",
+        "totalCost": "infinite"
+      },
+      "external": {
+        "InfoDesk_init(address)": "50509",
+        "computeMachineRegistrationFee(uint256)": "2504",
+        "computeTransactionFee(uint256)": "2526",
+        "getAccount(uint8)": "2562",
+        "getContract(uint8)": "2743",
+        "getImplementation(uint8)": "2672",
+        "getPrecompile(uint8)": "2720",
+        "getValue(uint8)": "2393",
+        "owner()": "2501",
+        "renounceOwnership()": "28232",
+        "resetToDefaults()": "74127",
+        "setAccount(uint8,address)": "26897",
+        "setContract(uint8,address)": "30749",
+        "setImplementation(uint8,address)": "30617",
+        "setPrecompile(uint8,address)": "30918",
+        "setValue(uint8,uint256)": "24576",
+        "transferOwnership(address)": "28576"
+      }
+    }
+  },
+  "metadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner_\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"contractType\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"oldAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newAddress\",\"type\":\"address\"}],\"name\":\"ContractUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"implementationType\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"oldAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newAddress\",\"type\":\"address\"}],\"name\":\"ImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"precompileType\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"oldAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newAddress\",\"type\":\"address\"}],\"name\":\"PrecompileUpdated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner_\",\"type\":\"address\"}],\"name\":\"InfoDesk_init\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"machineValue\",\"type\":\"uint256\"}],\"name\":\"computeMachineRegistrationFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"computeTransactionFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"accountType\",\"type\":\"uint8\"}],\"name\":\"getAccount\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"contractType\",\"type\":\"uint8\"}],\"name\":\"getContract\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"implementationType\",\"type\":\"uint8\"}],\"name\":\"getImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"precompileType\",\"type\":\"uint8\"}],\"name\":\"getPrecompile\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"valueType\",\"type\":\"uint8\"}],\"name\":\"getValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"resetToDefaults\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"accountType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"newAccount\",\"type\":\"address\"}],\"name\":\"setAccount\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"contractType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"newAddress\",\"type\":\"address\"}],\"name\":\"setContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"implementationType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"setImplementation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"precompileType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"newAddress\",\"type\":\"address\"}],\"name\":\"setPrecompile\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"valueType\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"newValue\",\"type\":\"uint256\"}],\"name\":\"setValue\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"title\":\"InfoDesk \\u2014 central configuration registry for fees, implementations, and treasury accounts\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Chain-agnostic config hub (Arbitrum, peaq, etc.); fee token is any ERC-20 (e.g. USDC on Arbitrum)\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"project/contracts/src/core/InfoDesk.sol\":\"InfoDesk\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\"npm/@onchain-id/solidity@2.2.1/:@openzeppelin/contracts/=npm/@openzeppelin/contracts@4.9.6/\",\"project/:@onchain-id/solidity/=npm/@onchain-id/solidity@2.2.1/\",\"project/:@openzeppelin/contracts-upgradeable/=npm/@openzeppelin/contracts-upgradeable@4.9.6/\",\"project/:@openzeppelin/contracts/=npm/@openzeppelin/contracts@4.9.6/\"],\"viaIR\":true},\"sources\":{\"npm/@openzeppelin/contracts@4.9.6/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.9.0) (access/Ownable.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * By default, the owner account will be the one that deploys the contract. This\\n * can later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the deployer as the initial owner.\\n     */\\n    constructor() {\\n        _transferOwnership(_msgSender());\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        _checkOwner();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if the sender is not the owner.\\n     */\\n    function _checkOwner() internal view virtual {\\n        require(owner() == _msgSender(), \\\"Ownable: caller is not the owner\\\");\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby disabling any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        require(newOwner != address(0), \\\"Ownable: new owner is the zero address\\\");\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0xba43b97fba0d32eb4254f6a5a297b39a19a247082a02d6e69349e071e2946218\",\"license\":\"MIT\"},\"npm/@openzeppelin/contracts@4.9.6/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.9.4) (utils/Context.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n\\n    function _contextSuffixLength() internal view virtual returns (uint256) {\\n        return 0;\\n    }\\n}\\n\",\"keccak256\":\"0xa92e4fa126feb6907daa0513ddd816b2eb91f30a808de54f63c17d0e162c3439\",\"license\":\"MIT\"},\"project/contracts/src/core/InfoDesk.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\r\\npragma solidity 0.8.17;\\r\\n\\r\\nimport {Ownable} from \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\r\\nimport {IInfoDesk} from \\\"../interfaces/IInfoDesk.sol\\\";\\r\\nimport {RwaConstants} from \\\"./RwaConstants.sol\\\";\\r\\n\\r\\n/// @title InfoDesk \\u2014 central configuration registry for fees, implementations, and treasury accounts\\r\\n/// @notice Chain-agnostic config hub (Arbitrum, peaq, etc.); fee token is any ERC-20 (e.g. USDC on Arbitrum)\\r\\ncontract InfoDesk is IInfoDesk, Ownable {\\r\\n    mapping(uint8 => address) private _implementations;\\r\\n    mapping(uint8 => address) private _contracts;\\r\\n    mapping(uint8 => address) private _accounts;\\r\\n    mapping(uint8 => address) private _precompiles;\\r\\n    mapping(uint8 => uint256) private _values;\\r\\n\\r\\n    bool private _initialized;\\r\\n\\r\\n    constructor(address owner_) {\\r\\n        _transferOwnership(owner_);\\r\\n        _values[RwaConstants.VAL_MACHINE_FEE_BPS] = 10_000; // 100% of machine value\\r\\n        _values[RwaConstants.VAL_TX_FEE_BPS] = 100; // 1% transfer fee\\r\\n        _values[RwaConstants.VAL_MAX_DID_BYTES] = RwaConstants.MAX_DID_BYTES;\\r\\n        _values[RwaConstants.VAL_DID_METHOD] = RwaConstants.DID_METHOD_ARBITRUM;\\r\\n    }\\r\\n\\r\\n    function InfoDesk_init(address owner_) external override {\\r\\n        require(!_initialized, \\\"Already initialized\\\");\\r\\n        _initialized = true;\\r\\n        _transferOwnership(owner_);\\r\\n    }\\r\\n\\r\\n    function setImplementation(uint8 implementationType, address newImplementation) external override onlyOwner {\\r\\n        emit ImplementationUpdated(implementationType, _implementations[implementationType], newImplementation);\\r\\n        _implementations[implementationType] = newImplementation;\\r\\n    }\\r\\n\\r\\n    function getImplementation(uint8 implementationType) external view override returns (address) {\\r\\n        return _implementations[implementationType];\\r\\n    }\\r\\n\\r\\n    function setContract(uint8 contractType, address newAddress) external override onlyOwner {\\r\\n        emit ContractUpdated(contractType, _contracts[contractType], newAddress);\\r\\n        _contracts[contractType] = newAddress;\\r\\n    }\\r\\n\\r\\n    function getContract(uint8 contractType) external view override returns (address) {\\r\\n        return _contracts[contractType];\\r\\n    }\\r\\n\\r\\n    function setAccount(uint8 accountType, address newAccount) external override onlyOwner {\\r\\n        _accounts[accountType] = newAccount;\\r\\n    }\\r\\n\\r\\n    function getAccount(uint8 accountType) external view override returns (address) {\\r\\n        return _accounts[accountType];\\r\\n    }\\r\\n\\r\\n    function setPrecompile(uint8 precompileType, address newAddress) external override onlyOwner {\\r\\n        emit PrecompileUpdated(precompileType, _precompiles[precompileType], newAddress);\\r\\n        _precompiles[precompileType] = newAddress;\\r\\n    }\\r\\n\\r\\n    function getPrecompile(uint8 precompileType) external view override returns (address) {\\r\\n        return _precompiles[precompileType];\\r\\n    }\\r\\n\\r\\n    function setValue(uint8 valueType, uint256 newValue) external override onlyOwner {\\r\\n        _values[valueType] = newValue;\\r\\n    }\\r\\n\\r\\n    function getValue(uint8 valueType) external view override returns (uint256) {\\r\\n        return _values[valueType];\\r\\n    }\\r\\n\\r\\n    function computeMachineRegistrationFee(uint256 machineValue) external view override returns (uint256) {\\r\\n        return (machineValue * _values[RwaConstants.VAL_MACHINE_FEE_BPS]) / 10_000;\\r\\n    }\\r\\n\\r\\n    function computeTransactionFee(uint256 amount) external view override returns (uint256) {\\r\\n        return (amount * _values[RwaConstants.VAL_TX_FEE_BPS]) / 10_000;\\r\\n    }\\r\\n\\r\\n    function resetToDefaults() external override onlyOwner {\\r\\n        _values[RwaConstants.VAL_MACHINE_FEE_BPS] = 10_000;\\r\\n        _values[RwaConstants.VAL_TX_FEE_BPS] = 100;\\r\\n        _values[RwaConstants.VAL_MAX_DID_BYTES] = RwaConstants.MAX_DID_BYTES;\\r\\n        _values[RwaConstants.VAL_DID_METHOD] = RwaConstants.DID_METHOD_ARBITRUM;\\r\\n    }\\r\\n}\\r\\n\",\"keccak256\":\"0xa2828d9615476477fab1c9d8c7728b32c033d45c205463aad555d66648665fdb\",\"license\":\"MIT\"},\"project/contracts/src/core/RwaConstants.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\r\\npragma solidity 0.8.17;\\r\\n\\r\\n/// @title RwaConstants \\u2014 shared enums and claim topics for the RWA framework\\r\\nlibrary RwaConstants {\\r\\n    // Claim topics (compatible with peaq SDK ClaimTopics enum; used on any EVM chain)\\r\\n    uint256 internal constant CT_KYC_APPROVED = 666;\\r\\n    uint256 internal constant CT_MNFT_ISSUER = 7;\\r\\n    uint256 internal constant CT_MNFT_REGULATOR = 8;\\r\\n\\r\\n    // ECDSA claim scheme used by the SDK\\r\\n    uint256 internal constant SCHEME_ECDSA = 1;\\r\\n\\r\\n    // ONCHAINID key purposes\\r\\n    uint256 internal constant KEY_PURPOSE_MANAGEMENT = 1;\\r\\n    uint256 internal constant KEY_PURPOSE_CLAIM = 3;\\r\\n\\r\\n    // ONCHAINID key types\\r\\n    uint256 internal constant KEY_TYPE_ECDSA = 1;\\r\\n\\r\\n    // InfoDesk implementation types (match SDK IDImplementationType)\\r\\n    uint8 internal constant IMPL_ARB_VAULT = 0;\\r\\n    uint8 internal constant IMPL_MACHINE_NFT = 1;\\r\\n    uint8 internal constant IMPL_CONTRACT_NFT = 2;\\r\\n    uint8 internal constant IMPL_REWARD_DISTRIBUTOR = 3;\\r\\n    uint8 internal constant IMPL_NATIVE_TRANSFER_FEE = 4;\\r\\n\\r\\n    // InfoDesk account types\\r\\n    uint8 internal constant ACCT_FEE_TREASURY = 0;\\r\\n    uint8 internal constant ACCT_MACHINE_FEE = 1;\\r\\n    uint8 internal constant ACCT_CONTRACT_FEE = 2;\\r\\n\\r\\n    // InfoDesk value types\\r\\n    uint8 internal constant VAL_MACHINE_FEE_BPS = 0;\\r\\n    uint8 internal constant VAL_TX_FEE_BPS = 1;\\r\\n    uint8 internal constant VAL_MAX_DID_BYTES = 2;\\r\\n    uint8 internal constant VAL_CONTRACT_SETUP_FEE = 3;\\r\\n    /// @dev InfoDesk.getValue(VAL_DID_METHOD) \\u2014 see DID_METHOD_* below\\r\\n    uint8 internal constant VAL_DID_METHOD = 4;\\r\\n\\r\\n    /// @dev Default on Arbitrum deployments: did:arbitrum:issuer:0x...\\r\\n    uint256 internal constant DID_METHOD_ARBITRUM = 0;\\r\\n    /// @dev Optional peaq interoperability: did:peaq:issuer:0x...\\r\\n    uint256 internal constant DID_METHOD_PEAQ = 1;\\r\\n    /// @dev Legacy generic prefix: did:rwa:issuer:0x...\\r\\n    uint256 internal constant DID_METHOD_RWA = 2;\\r\\n\\r\\n    // Max serialized DID blob (SDK enforces 2561 hex chars \\u2248 1280 bytes)\\r\\n    uint256 internal constant MAX_DID_BYTES = 1280;\\r\\n}\\r\\n\",\"keccak256\":\"0xa3669bbb7e279ed0a3bf2c9a74e402bfad1533e8d40c16cc48f5b540d334d775\",\"license\":\"MIT\"},\"project/contracts/src/interfaces/IInfoDesk.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\r\\npragma solidity 0.8.17;\\r\\n\\r\\ninterface IInfoDesk {\\r\\n    event ContractUpdated(uint8 contractType, address oldAddress, address newAddress);\\r\\n    event ImplementationUpdated(uint8 implementationType, address oldAddress, address newAddress);\\r\\n    event PrecompileUpdated(uint8 precompileType, address oldAddress, address newAddress);\\r\\n\\r\\n    function InfoDesk_init(address owner) external;\\r\\n    function computeMachineRegistrationFee(uint256 machineValue) external view returns (uint256 out0);\\r\\n    function computeTransactionFee(uint256 amount) external view returns (uint256 out0);\\r\\n    function getAccount(uint8 accountType) external view returns (address out0);\\r\\n    function getContract(uint8 contractType) external view returns (address out0);\\r\\n    function getImplementation(uint8 implementationType) external view returns (address out0);\\r\\n    function getPrecompile(uint8 precompileType) external view returns (address out0);\\r\\n    function getValue(uint8 valueType) external view returns (uint256 out0);\\r\\n    function resetToDefaults() external;\\r\\n    function setAccount(uint8 accountType, address newAccount) external;\\r\\n    function setContract(uint8 contractType, address newAddress) external;\\r\\n    function setImplementation(uint8 implementationType, address newImplementation) external;\\r\\n    function setPrecompile(uint8 precompileType, address newAddress) external;\\r\\n    function setValue(uint8 valueType, uint256 newValue) external;\\r\\n}\\r\\n\",\"keccak256\":\"0xf3936f04046e5379138729552a7bd8b86d3cb0e0eab47003fa9bc7e38f4eeb1e\",\"license\":\"MIT\"}},\"version\":1}",
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 3468,
+        "contract": "project/contracts/src/core/InfoDesk.sol:InfoDesk",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 8288,
+        "contract": "project/contracts/src/core/InfoDesk.sol:InfoDesk",
+        "label": "_implementations",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_uint8,t_address)"
+      },
+      {
+        "astId": 8292,
+        "contract": "project/contracts/src/core/InfoDesk.sol:InfoDesk",
+        "label": "_contracts",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_uint8,t_address)"
+      },
+      {
+        "astId": 8296,
+        "contract": "project/contracts/src/core/InfoDesk.sol:InfoDesk",
+        "label": "_accounts",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_uint8,t_address)"
+      },
+      {
+        "astId": 8300,
+        "contract": "project/contracts/src/core/InfoDesk.sol:InfoDesk",
+        "label": "_precompiles",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_uint8,t_address)"
+      },
+      {
+        "astId": 8304,
+        "contract": "project/contracts/src/core/InfoDesk.sol:InfoDesk",
+        "label": "_values",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_uint8,t_uint256)"
+      },
+      {
+        "astId": 8306,
+        "contract": "project/contracts/src/core/InfoDesk.sol:InfoDesk",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_bool"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_uint8,t_address)": {
+        "encoding": "mapping",
+        "key": "t_uint8",
+        "label": "mapping(uint8 => address)",
+        "numberOfBytes": "32",
+        "value": "t_address"
+      },
+      "t_mapping(t_uint8,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_uint8",
+        "label": "mapping(uint8 => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint8": {
+        "encoding": "inplace",
+        "label": "uint8",
+        "numberOfBytes": "1"
+      }
+    }
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "notice": "Chain-agnostic config hub (Arbitrum, peaq, etc.); fee token is any ERC-20 (e.g. USDC on Arbitrum)",
+    "version": 1
+  },
+  "argsData": "0x000000000000000000000000d41587f9d5df02662afa4ac60626154985e9149a",
+  "transaction": {
+    "hash": "0x285516ed1bcad1ed966c1f81f431a26077e5b96eb50f0592eb778bc070a61d33",
+    "nonce": "0xa",
+    "origin": "0xd41587f9d5df02662afa4ac60626154985e9149a"
+  },
+  "receipt": {
+    "blockHash": "0x6ec1f8f1864153792b8adb299bead596e85e2df441d27d79a658b120564e9cad",
+    "blockNumber": "0x10506e3b",
+    "transactionIndex": "0x2"
+  }
+}

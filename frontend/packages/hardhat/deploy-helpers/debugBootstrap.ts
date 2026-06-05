@@ -33,6 +33,11 @@ export type DebugBootstrapResult = {
   contractId: bigint;
 };
 
+export type BootstrapParticipant = {
+  address: string;
+  signer: Signer | null;
+};
+
 type EnvSave = (name: string, data: Record<string, unknown>) => Promise<void>;
 
 async function persistContract(envSave: EnvSave, name: string, address: string) {
@@ -55,9 +60,9 @@ export async function runDebugBootstrap(
   envSave: EnvSave,
   params: {
     admin: Signer;
-    alice: Signer;
-    bob: Signer;
-    charlie: Signer;
+    alice: BootstrapParticipant;
+    bob: BootstrapParticipant;
+    charlie: BootstrapParticipant;
     feeTokenAddr: string;
     infoDeskAddr: string;
     idFactoryAddr: string;
@@ -81,11 +86,18 @@ export async function runDebugBootstrap(
     rwaNftAddr,
     vaultFactoryAddr,
     feeModuleProxyAddr,
-    seedDemoAssets = true,
+    seedDemoAssets: seedDemoAssetsParam = true,
   } = params;
 
+  const canSeedDemoAssets =
+    seedDemoAssetsParam && alice.signer !== null && bob.signer !== null && charlie.signer !== null;
+
   console.log("\n--- Debug bootstrap: identities + claims ---");
-  const identities = await issueParticipantClaims(idFactoryAddr, claimIssuerAddr, admin, alice, bob, charlie);
+  const identities = await issueParticipantClaims(idFactoryAddr, claimIssuerAddr, admin, {
+    alice,
+    bob,
+    charlie,
+  });
 
   const infoDesk = await ethers.getContractAt("InfoDesk", infoDeskAddr);
   await infoDesk.setValue(0, DEBUG_MACHINE_FEE_BPS);
@@ -121,12 +133,7 @@ export async function runDebugBootstrap(
   );
   await (await vaultFactory.deployTrexVault(DEMO_VAULT_NAME, DEMO_VAULT_SYMBOL, claimIssuers, claimTopics, complianceModules)).wait();
 
-  const attachTx = await vaultFactory.attachVaultPeers(
-    tokenAddr,
-    await alice.getAddress(),
-    feeTokenAddr,
-    complianceModules,
-  );
+  const attachTx = await vaultFactory.attachVaultPeers(tokenAddr, alice.address, feeTokenAddr, complianceModules);
   const receipt = await attachTx.wait();
   let vaultAddr = "";
   let distributorAddr = "";
@@ -153,12 +160,12 @@ export async function runDebugBootstrap(
   const identityRegistryAddr = await token.identityRegistry();
   const ir = await ethers.getContractAt("IdentityRegistry", identityRegistryAddr);
 
-  for (const [user, identity] of [
-    [alice, identities.aliceIdentity],
-    [bob, identities.bobIdentity],
-    [charlie, identities.charlieIdentity],
+  for (const [wallet, identity] of [
+    [alice.address, identities.aliceIdentity],
+    [bob.address, identities.bobIdentity],
+    [charlie.address, identities.charlieIdentity],
   ] as const) {
-    await (await ir.registerIdentity(await user.getAddress(), identity, 276)).wait();
+    await (await ir.registerIdentity(wallet, identity, 276)).wait();
   }
 
   console.log("ArbVault:", vaultAddr);
@@ -174,45 +181,29 @@ export async function runDebugBootstrap(
   let machineTokenId = DEMO_MACHINE_TOKEN_ID;
   let contractId = 0n;
 
-  if (seedDemoAssets) {
+  if (canSeedDemoAssets) {
     console.log("\n--- Debug bootstrap: demo Machine NFT + Contract NFT for Alice ---");
-    const feeToken = await ethers.getContractAt("MockFeeToken", feeTokenAddr);
-    const machineNft = await ethers.getContractAt("MachineNft", machineNftAddr);
-    const contractNft = await ethers.getContractAt("ContractNft", contractNftAddr);
-
-    const machineValue = DEMO_MACHINE_VALUE;
-    const [fee] = await machineNft.registrationFeeAndAccount(machineValue);
-    await (await feeToken.connect(alice).approve(machineNftAddr, fee)).wait();
-    const did = demoMachineDidBytes();
-    await (
-      await machineNft.connect(admin).registerMachine(await alice.getAddress(), machineValue, machineTokenId, did)
-    ).wait();
-
-    const setupFee = await infoDesk.getValue(3);
-    await (await feeToken.connect(alice).approve(contractNftAddr, setupFee)).wait();
-    const hashDigest = demoAgreementHashDigest();
-    contractId = await contractNft
-      .connect(alice)
-      .initContractAndSign.staticCall(
-        [await bob.getAddress(), await charlie.getAddress()],
-        hashDigest,
-        DEMO_AGREEMENT_IPFS_URL,
-      );
-    await (
-      await contractNft
-        .connect(alice)
-        .initContractAndSign(
-          [await bob.getAddress(), await charlie.getAddress()],
-          hashDigest,
-          DEMO_AGREEMENT_IPFS_URL,
-        )
-    ).wait();
-    await (await contractNft.connect(bob).signContract(contractId)).wait();
-    await (await contractNft.connect(charlie).signContract(contractId)).wait();
-
+    const seeded = await seedDemoAssetsOnly({
+      admin,
+      alice,
+      bob,
+      charlie,
+      feeTokenAddr,
+      infoDeskAddr,
+      machineNftAddr,
+      contractNftAddr,
+    });
+    machineTokenId = seeded.machineTokenId;
+    contractId = seeded.contractId;
     console.log("Demo assetSerial → machineTokenId:", machineTokenId.toString());
     console.log("Demo dealRef / agreementUrl:", DEMO_AGREEMENT_IPFS_URL);
+    console.log("Demo agreementMetadataHash (keccak256 JSON, not Arbiscan tx):", demoAgreementHashDigest());
     console.log("Demo contractId:", contractId.toString());
+  } else if (seedDemoAssetsParam) {
+    console.log(
+      "\nSkipped demo Machine/Contract NFT seeding — Alice/Bob/Charlie private keys not available on this network.",
+    );
+    console.log("Run yarn seed:demo-assets after setting participant keys in .env");
   }
 
   console.log("\n--- Debug bootstrap complete (all contracts on /debug) ---");
@@ -228,4 +219,105 @@ export async function runDebugBootstrap(
     machineTokenId,
     contractId,
   };
+}
+
+export type SeedDemoAssetsResult = {
+  machineTokenId: bigint;
+  contractId: bigint;
+  machineMinted: boolean;
+  contractMinted: boolean;
+};
+
+/** Mint demo Machine NFT + completed Contract NFT (Alice/Bob/Charlie signers required). */
+export async function seedDemoAssetsOnly(params: {
+  admin: Signer;
+  alice: BootstrapParticipant;
+  bob: BootstrapParticipant;
+  charlie: BootstrapParticipant;
+  feeTokenAddr: string;
+  infoDeskAddr: string;
+  machineNftAddr: string;
+  contractNftAddr: string;
+}): Promise<SeedDemoAssetsResult> {
+  const { ethers } = await network.connect();
+  const { admin, alice, bob, charlie, feeTokenAddr, infoDeskAddr, machineNftAddr, contractNftAddr } = params;
+
+  if (!alice.signer || !bob.signer || !charlie.signer) {
+    throw new Error(
+      "Alice/Bob/Charlie signers required — set ALICE_PRIVATE_KEY, BOB_PRIVATE_KEY, CHARLIE_PRIVATE_KEY in .env",
+    );
+  }
+
+  const machineTokenId = DEMO_MACHINE_TOKEN_ID;
+  let contractId = 0n;
+  let machineMinted = false;
+  let contractMinted = false;
+
+  const feeToken = await ethers.getContractAt("MockFeeToken", feeTokenAddr);
+  const machineNft = await ethers.getContractAt("MachineNft", machineNftAddr);
+  const contractNft = await ethers.getContractAt("ContractNft", contractNftAddr);
+  const infoDesk = await ethers.getContractAt("InfoDesk", infoDeskAddr);
+  const aliceSigner = alice.signer;
+  const bobSigner = bob.signer;
+  const charlieSigner = charlie.signer;
+
+  try {
+    const owner = await machineNft.ownerOf(machineTokenId);
+    if (owner.toLowerCase() === alice.address.toLowerCase()) {
+      console.log("Machine NFT already minted to Alice — skipping registerMachine");
+      machineMinted = true;
+    }
+  } catch {
+    // not minted
+  }
+
+  if (!machineMinted) {
+    const machineValue = DEMO_MACHINE_VALUE;
+    const [fee] = await machineNft.registrationFeeAndAccount(machineValue);
+    await (await feeToken.connect(aliceSigner).approve(machineNftAddr, fee)).wait();
+    await (
+      await machineNft.connect(admin).registerMachine(alice.address, machineValue, machineTokenId, demoMachineDidBytes())
+    ).wait();
+    machineMinted = true;
+    console.log("Minted Machine NFT", machineTokenId.toString(), "→ Alice");
+  }
+
+  const hashDigest = demoAgreementHashDigest();
+  contractId = await contractNft
+    .connect(aliceSigner)
+    .computeContractId.staticCall(
+      alice.address,
+      [bob.address, charlie.address],
+      hashDigest,
+      DEMO_AGREEMENT_IPFS_URL,
+    );
+
+  try {
+    const cnftOwner = await contractNft.ownerOf(contractId);
+    if (cnftOwner.toLowerCase() === alice.address.toLowerCase()) {
+      console.log("Contract NFT already complete — skipping initContractAndSign", contractId.toString());
+      contractMinted = true;
+    }
+  } catch {
+    // not minted
+  }
+
+  if (!contractMinted) {
+    const setupFee = await infoDesk.getValue(3);
+    await (await feeToken.connect(aliceSigner).approve(contractNftAddr, setupFee)).wait();
+    contractId = await contractNft
+      .connect(aliceSigner)
+      .initContractAndSign.staticCall([bob.address, charlie.address], hashDigest, DEMO_AGREEMENT_IPFS_URL);
+    await (
+      await contractNft
+        .connect(aliceSigner)
+        .initContractAndSign([bob.address, charlie.address], hashDigest, DEMO_AGREEMENT_IPFS_URL)
+    ).wait();
+    await (await contractNft.connect(bobSigner).signContract(contractId)).wait();
+    await (await contractNft.connect(charlieSigner).signContract(contractId)).wait();
+    contractMinted = true;
+    console.log("Completed Contract NFT contractId:", contractId.toString());
+  }
+
+  return { machineTokenId, contractId, machineMinted, contractMinted };
 }

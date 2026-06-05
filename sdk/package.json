@@ -1,0 +1,78 @@
+{
+  "name": "@arbitrum-machine/rwa-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for the Arbitrum Machine RWA framework — ABIs, addresses, manifest, claims, and viem helpers",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./abis": {
+      "import": "./dist/abis.js",
+      "require": "./dist/abis.cjs"
+    },
+    "./addresses": {
+      "import": "./dist/addresses/index.js",
+      "require": "./dist/addresses/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "check-types": "tsc --noEmit",
+    "prepublishOnly": "yarn build",
+    "sync-addresses": "node scripts/sync-addresses.mjs"
+  },
+  "peerDependencies": {
+    "ethers": "^6.13.0",
+    "viem": "^2.21.0"
+  },
+  "peerDependenciesMeta": {
+    "ethers": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@onchain-id/solidity": "^2.2.1"
+  },
+  "devDependencies": {
+    "ethers": "^6.13.4",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "viem": "^2.28.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/Arbitrum-Machine-RWA-framework",
+    "directory": "sdk"
+  },
+  "keywords": [
+    "arbitrum",
+    "rwa",
+    "erc-3643",
+    "trex",
+    "onchainid",
+    "viem",
+    "ethereum"
+  ]
+}

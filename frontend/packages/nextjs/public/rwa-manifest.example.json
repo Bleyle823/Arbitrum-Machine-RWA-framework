@@ -16,10 +16,10 @@
   "dealReference": "CYBER-AUTO-DELIVERY-2026-0042",
   "machineDidUri": "did:arbitrum:machine:VEH-2026-CYBER-DLV-0042",
   "machineValueWei": "119990000000000000000000",
-  "agreementMetadataHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-  "agreementUrl": "ipfs://bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzwszojzjbzhcng4xz3fa",
-  "alice": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-  "bob": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-  "charlie": "0x90F79bf6EB2c4f870365E7859821662C42b0b0e6",
+  "agreementMetadataHash": "0x46167b4380707cdec45209e7424a6c4b9c34b09bd4f432e60250337313e0e86e",
+  "agreementUrl": "ipfs://bafybeihkyr6b2jkti2vzu3p5ahg7mmqd6pqvmu7e5ecmz3rvrim2une2su",
+  "alice": "0xdEBC58A3CE140Ef84E5757013c1998FdAfDB44D6",
+  "bob": "0xc67c0d1d4e12D838f3ed2fC6241D8e65Dfb3100B",
+  "charlie": "0xe62803A1A219Be5f0D437ed9F84F2e4CDc8A3Ca1",
   "admin": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
 }

@@ -6,8 +6,9 @@ import {IArbRwaNft} from "../interfaces/IArbRwaNft.sol";
 import {IClaimIssuer} from "@onchain-id/solidity/contracts/interface/IClaimIssuer.sol";
 import {IIdentity} from "@onchain-id/solidity/contracts/interface/IIdentity.sol";
 import {IIdFactory} from "@onchain-id/solidity/contracts/factory/IIdFactory.sol";
-import {MachineNft} from "./MachineNft.sol";
-import {ContractNft} from "./ContractNft.sol";
+import {IMachineNftFactory} from "../interfaces/IMachineNftFactory.sol";
+import {IContractNftFactory} from "../interfaces/IContractNftFactory.sol";
+import {IBlockableNft} from "../interfaces/IBlockableNft.sol";
 import {RwaConstants} from "../core/RwaConstants.sol";
 import {IInfoDesk} from "../interfaces/IInfoDesk.sol";
 
@@ -17,6 +18,8 @@ contract ArbRwaNft is IArbRwaNft, Ownable {
     address public feeToken;
     address public identityFactory;
     address public claimIssuer;
+    address public machineNftFactory;
+    address public contractNftFactory;
 
     address[] private _machineIssuers;
     address[] private _machineRegulators;
@@ -33,12 +36,22 @@ contract ArbRwaNft is IArbRwaNft, Ownable {
 
     event MachineNftDeployed(address indexed issuer, address indexed machineNft);
 
-    constructor(address owner_, address infoDesk_, address feeToken_, address identityFactory_, address claimIssuer_) {
+    constructor(
+        address owner_,
+        address infoDesk_,
+        address feeToken_,
+        address identityFactory_,
+        address claimIssuer_,
+        address machineNftFactory_,
+        address contractNftFactory_
+    ) {
         _transferOwnership(owner_);
         infoDesk = infoDesk_;
         feeToken = feeToken_;
         identityFactory = identityFactory_;
         claimIssuer = claimIssuer_;
+        machineNftFactory = machineNftFactory_;
+        contractNftFactory = contractNftFactory_;
     }
 
     function addMachineRegulator(address regulator) external override onlyOwner {
@@ -63,15 +76,17 @@ contract ArbRwaNft is IArbRwaNft, Ownable {
         string memory issuerDid = string(abi.encodePacked(_didPrefix(), "issuer:", _addressToString(issuer)));
         string memory regulatorDid = string(abi.encodePacked(_didPrefix(), "regulator:", _addressToString(msg.sender)));
 
-        MachineNft mnft = new MachineNft(issuerDid, regulatorDid, issuer, infoDesk, feeToken);
+        address mnftAddr = IMachineNftFactory(machineNftFactory).deployMachineNft(
+            issuerDid, regulatorDid, issuer, infoDesk, feeToken
+        );
 
         _isIssuer[issuer] = true;
         _machineIssuers.push(issuer);
-        _issuerToMachineNft[issuer] = address(mnft);
-        _isMachineNftAddr[address(mnft)] = true;
+        _issuerToMachineNft[issuer] = mnftAddr;
+        _isMachineNftAddr[mnftAddr] = true;
 
-        emit MachineIssuerAdded(issuer, address(mnft));
-        emit MachineNftDeployed(issuer, address(mnft));
+        emit MachineIssuerAdded(issuer, mnftAddr);
+        emit MachineNftDeployed(issuer, mnftAddr);
     }
 
     function removeMachineIssuer(address issuer) external override {
@@ -82,10 +97,10 @@ contract ArbRwaNft is IArbRwaNft, Ownable {
     }
 
     function addContractNft() external override {
-        ContractNft cnft = new ContractNft(infoDesk, feeToken, address(this));
+        address cnftAddr = IContractNftFactory(contractNftFactory).deployContractNft(infoDesk, feeToken, address(this));
         _isContractNft[msg.sender] = true;
-        _isContractNft[address(cnft)] = true;
-        emit ContractNftAdded(address(cnft));
+        _isContractNft[cnftAddr] = true;
+        emit ContractNftAdded(cnftAddr);
     }
 
     function registerContractId(uint256 contractId, address contractNft) external {
@@ -94,20 +109,20 @@ contract ArbRwaNft is IArbRwaNft, Ownable {
     }
 
     function deployContractNft() external returns (address) {
-        ContractNft cnft = new ContractNft(infoDesk, feeToken, address(this));
-        _isContractNft[address(cnft)] = true;
-        emit ContractNftAdded(address(cnft));
-        return address(cnft);
+        address cnftAddr = IContractNftFactory(contractNftFactory).deployContractNft(infoDesk, feeToken, address(this));
+        _isContractNft[cnftAddr] = true;
+        emit ContractNftAdded(cnftAddr);
+        return cnftAddr;
     }
 
     function setMachineNftBlockState(address issuerOrContractNft, bool blocked) external override {
         require(_isRegulator[msg.sender] || msg.sender == owner(), "Not regulator");
         _blocked[issuerOrContractNft] = blocked;
         if (_isMachineNftAddr[issuerOrContractNft]) {
-            MachineNft(issuerOrContractNft).setBlocked(blocked);
+            IBlockableNft(issuerOrContractNft).setBlocked(blocked);
         }
         if (_isContractNft[issuerOrContractNft]) {
-            ContractNft(issuerOrContractNft).setBlocked(blocked);
+            IBlockableNft(issuerOrContractNft).setBlocked(blocked);
         }
     }
 

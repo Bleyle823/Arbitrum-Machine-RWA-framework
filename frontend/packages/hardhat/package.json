@@ -21,7 +21,12 @@
     "lint-staged": "eslint",
     "test": "hardhat test --network hardhat --gas-stats",
     "verify": "tsx scripts/runVerify.ts",
-    "issue-claims": "hardhat run scripts/issueClaims.ts --network default"
+    "issue-claims": "tsx scripts/runHardhatScriptWithPK.ts scripts/issueClaims.ts --network default",
+    "issue-claims:arbitrum-sepolia": "tsx scripts/runHardhatScriptWithPK.ts scripts/issueClaims.ts --network arbitrumSepolia",
+    "bootstrap": "tsx scripts/runHardhatScriptWithPK.ts scripts/bootstrapRwa.ts",
+    "seed:demo-assets": "tsx scripts/runHardhatScriptWithPK.ts scripts/seedDemoAssets.ts --network arbitrumSepolia",
+    "pin:demo-agreement": "tsx scripts/pinDemoAgreement.ts",
+    "verify:demo-state": "hardhat run scripts/verifyDemoState.ts --network arbitrumSepolia"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4",
@@ -67,6 +72,7 @@
     "@openzeppelin/contracts-upgradeable": "4.9.6",
     "dotenv": "^16.4.5",
     "envfile": "^7.1.0",
+    "pinata": "^2.5.6",
     "qrcode": "^1.5.4"
   }
 }

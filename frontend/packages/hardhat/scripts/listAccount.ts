@@ -1,12 +1,13 @@
-import * as dotenv from "dotenv";
-dotenv.config();
 import { ethers, Wallet } from "ethers";
 import QRCode from "qrcode";
 import { config } from "hardhat";
 import password from "@inquirer/password";
+import { loadHardhatEnvFile } from "./deployerKeystore.js";
+import { readDeployerKeystoreJson } from "./deployerKeystore.js";
 
 async function main() {
-  const encryptedKey = process.env.DEPLOYER_PRIVATE_KEY_ENCRYPTED;
+  loadHardhatEnvFile();
+  const encryptedKey = readDeployerKeystoreJson();
 
   if (!encryptedKey) {
     console.log("🚫️ You don't have a deployer account. Run `yarn generate` or `yarn account:import` first");

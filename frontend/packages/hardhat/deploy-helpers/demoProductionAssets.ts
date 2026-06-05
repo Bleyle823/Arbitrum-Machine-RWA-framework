@@ -20,9 +20,17 @@ export const DEMO_NEXT_DEAL_REFERENCE = "CYBER-AUTO-DELIVERY-2026-0043";
 export const DEMO_VAULT_NAME = "Cyber Delivery Vault";
 export const DEMO_VAULT_SYMBOL = "CYBDLV";
 
-/** Pinata-style CID (v1) — stored on-chain as url; not fetched by contracts. */
-export const DEMO_AGREEMENT_IPFS_URL =
-  "ipfs://bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzwszojzjbzhcng4xz3fa";
+/**
+ * IPFS CID for canonical `demo-agreement-metadata.json` (keccak256 of JSON = agreementMetadataHash).
+ * Pin with `yarn pin:demo-agreement` (PINATA_JWT) so public gateways resolve the CID.
+ */
+export const DEMO_AGREEMENT_IPFS_CID = "bafybeihkyr6b2jkti2vzu3p5ahg7mmqd6pqvmu7e5ecmz3rvrim2une2su";
+
+/** Stored on-chain as `url` in ContractNft — not fetched by contracts. */
+export const DEMO_AGREEMENT_IPFS_URL = `ipfs://${DEMO_AGREEMENT_IPFS_CID}`;
+
+/** App-hosted byte-identical copy (always works at http://localhost:3000/... when yarn start). */
+export const DEMO_AGREEMENT_LOCAL_PATH = "/demo-agreement-metadata.json";
 
 /** Vehicle DID stored as UTF-8 bytes in registerMachine (matches InfoDesk default did:arbitrum: method). */
 export const DEMO_MACHINE_DID_URI = `did:arbitrum:machine:${DEMO_ASSET_SERIAL}`;

@@ -21,12 +21,18 @@ describe("ContractNft views and indexing", function () {
     await infoDesk.setValue(3, ethers.parseEther("0.01"));
 
     const ArbRwaNft = await ethers.getContractFactory("ArbRwaNft");
+    const MachineNftFactory = await ethers.getContractFactory("MachineNftFactory");
+    const machineNftFactory = await MachineNftFactory.deploy();
+    const ContractNftFactory = await ethers.getContractFactory("ContractNftFactory");
+    const contractNftFactory = await ContractNftFactory.deploy();
     rwaNft = await ArbRwaNft.deploy(
       admin.address,
       await infoDesk.getAddress(),
       await feeToken.getAddress(),
       ethers.ZeroAddress,
-      ethers.ZeroAddress
+      ethers.ZeroAddress,
+      await machineNftFactory.getAddress(),
+      await contractNftFactory.getAddress()
     );
     const contractNftAddr = await rwaNft.deployContractNft.staticCall();
     await rwaNft.deployContractNft();

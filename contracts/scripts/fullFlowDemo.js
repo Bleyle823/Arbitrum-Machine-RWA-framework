@@ -58,12 +58,20 @@ async function main() {
   const kycIssuerAddr = await kycIssuer.getAddress();
 
   const ArbRwaNft = await hre.ethers.getContractFactory("ArbRwaNft");
+  const MachineNftFactory = await hre.ethers.getContractFactory("MachineNftFactory");
+  const machineNftFactory = await MachineNftFactory.deploy();
+  await machineNftFactory.waitForDeployment();
+  const ContractNftFactory = await hre.ethers.getContractFactory("ContractNftFactory");
+  const contractNftFactory = await ContractNftFactory.deploy();
+  await contractNftFactory.waitForDeployment();
   const rwaNft = await ArbRwaNft.deploy(
     admin.address,
     await infoDesk.getAddress(),
     await feeToken.getAddress(),
     oid.onchainIdFactoryAddr,
-    kycIssuerAddr
+    kycIssuerAddr,
+    await machineNftFactory.getAddress(),
+    await contractNftFactory.getAddress()
   );
   await rwaNft.waitForDeployment();
   await infoDesk.setContract(1, await rwaNft.getAddress());

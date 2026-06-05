@@ -64,13 +64,23 @@ async function main() {
 
   await infoDesk.setImplementation(4, await feeModuleImpl.getAddress());
 
+  const MachineNftFactory = await hre.ethers.getContractFactory("MachineNftFactory");
+  const machineNftFactory = await MachineNftFactory.deploy();
+  await machineNftFactory.waitForDeployment();
+
+  const ContractNftFactory = await hre.ethers.getContractFactory("ContractNftFactory");
+  const contractNftFactory = await ContractNftFactory.deploy();
+  await contractNftFactory.waitForDeployment();
+
   const ArbRwaNft = await hre.ethers.getContractFactory("ArbRwaNft");
   const rwaNft = await ArbRwaNft.deploy(
     deployer.address,
     infoDeskAddr,
     feeTokenAddress,
     oid.onchainIdFactoryAddr,
-    kycIssuerAddr
+    kycIssuerAddr,
+    await machineNftFactory.getAddress(),
+    await contractNftFactory.getAddress()
   );
   await rwaNft.waitForDeployment();
   const rwaNftAddr = await rwaNft.getAddress();

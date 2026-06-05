@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { parseEther } from "viem";
+import { GasRetryHint } from "~~/components/rwa/GasRetryHint";
 import { WalletRoleHint } from "~~/components/rwa/WalletRoleHint";
 import { useRwaAddresses } from "~~/hooks/rwa/useRwaAddresses";
 import { useRwaWriteContract } from "~~/hooks/rwa/useRwaContract";
@@ -32,11 +33,11 @@ export default function YieldPage() {
             value={yieldAmount}
             onChange={e => setYieldAmount(e.target.value)}
           />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               className="btn btn-sm"
-              disabled={!dist}
+              disabled={!dist || feeWrite.isPending}
               onClick={() =>
                 feeWrite.writeAsync({
                   functionName: "approve",
@@ -60,6 +61,7 @@ export default function YieldPage() {
               depositYield
             </button>
           </div>
+          <GasRetryHint />
         </div>
       </div>
 
@@ -76,7 +78,7 @@ export default function YieldPage() {
           </button>
           <input
             className="input input-bordered"
-            placeholder="claimTo address (optional)"
+            placeholder="claimTo address (optional — Charlie)"
             value={claimTo}
             onChange={e => setClaimTo(e.target.value)}
           />
@@ -93,6 +95,7 @@ export default function YieldPage() {
           >
             claimTo
           </button>
+          <GasRetryHint />
         </div>
       </div>
     </div>

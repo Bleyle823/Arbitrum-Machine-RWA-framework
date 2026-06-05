@@ -18,7 +18,7 @@ describe("RWA full flow (ERC-3643 T-REX)", function () {
 
     const MockFeeToken = await ethers.getContractFactory("MockFeeToken");
     const feeToken = await MockFeeToken.deploy();
-    await feeToken.mint(alice.address, ethers.parseEther("1000"));
+    await feeToken.mint(alice.address, DEMO_MACHINE_VALUE + ethers.parseEther("1000"));
     await feeToken.mint(bob.address, ethers.parseEther("1000"));
 
     const InfoDesk = await ethers.getContractFactory("InfoDesk");
@@ -39,12 +39,18 @@ describe("RWA full flow (ERC-3643 T-REX)", function () {
     const trexFactory = trex.trexFactory;
 
     const ArbRwaNft = await ethers.getContractFactory("ArbRwaNft");
+    const MachineNftFactory = await ethers.getContractFactory("MachineNftFactory");
+    const machineNftFactory = await MachineNftFactory.deploy();
+    const ContractNftFactory = await ethers.getContractFactory("ContractNftFactory");
+    const contractNftFactory = await ContractNftFactory.deploy();
     const rwaNft = await ArbRwaNft.deploy(
       admin.address,
       await infoDesk.getAddress(),
       await feeToken.getAddress(),
       oid.onchainIdFactoryAddr,
-      kycIssuerAddr
+      kycIssuerAddr,
+      await machineNftFactory.getAddress(),
+      await contractNftFactory.getAddress()
     );
     await infoDesk.setContract(1, await rwaNft.getAddress());
 

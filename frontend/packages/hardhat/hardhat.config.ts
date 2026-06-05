@@ -102,7 +102,8 @@ export default defineConfig({
     },
     arbitrumSepolia: {
       type: "http",
-      url: `https://arb-sepolia.g.alchemy.com/v2/${providerApiKey}`,
+      url: process.env.ARB_SEPOLIA_RPC_URL || `https://arb-sepolia.g.alchemy.com/v2/${providerApiKey}`,
+      chainId: 421614,
       accounts: [deployerPrivateKey],
     },
     scrollSepolia: {

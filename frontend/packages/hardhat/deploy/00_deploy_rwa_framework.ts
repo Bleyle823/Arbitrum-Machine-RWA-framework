@@ -3,7 +3,8 @@ import { deployScript, artifacts } from "../rocketh/deploy.js";
 import { deployFeeModuleProxy, deployTrexSuite } from "../deploy-helpers/trexDeploy.js";
 import { deployOidClaimIssuer } from "../deploy-helpers/onchainidHelpers.js";
 import { runDebugBootstrap } from "../deploy-helpers/debugBootstrap.js";
-import { writeRwaManifest } from "../deploy-helpers/writeRwaManifest.js";
+import { writeRwaManifest, writeFrameworkRwaManifest } from "../deploy-helpers/writeRwaManifest.js";
+import { resolveParticipantAddresses } from "../deploy-helpers/participantAccounts.js";
 import {
   DEMO_AGREEMENT_IPFS_URL,
   DEMO_AGREEMENT_METADATA,
@@ -18,10 +19,12 @@ import OnchainID from "@onchain-id/solidity";
 /**
  * Deploy RWA framework + ERC-3643 T-REX suite (Arbitrum-ready).
  *
- *   yarn deploy --tags RwaFramework
+ *   yarn deploy --tags RwaFramework --reset              # local Hardhat node
+ *   yarn deploy:arbitrum-sepolia                         # Arbitrum Sepolia
  *
  * Env:
  *   FEE_TOKEN_ADDRESS — USDC on Arbitrum; deploys MockFeeToken if unset
+ *   ARB_SEPOLIA_RPC_URL — optional RPC override
  */
 export default deployScript(
   async env => {
@@ -152,10 +155,32 @@ export default deployScript(
 
     await infoDeskContract.setImplementation(4, feeModuleImplAddr);
 
+    const machineNftFactory = await env.deploy("MachineNftFactory", {
+      account: deployer,
+      artifact: artifacts.MachineNftFactory,
+      args: [],
+    });
+    console.log("MachineNftFactory:", machineNftFactory.address);
+
+    const contractNftFactory = await env.deploy("ContractNftFactory", {
+      account: deployer,
+      artifact: artifacts.ContractNftFactory,
+      args: [],
+    });
+    console.log("ContractNftFactory:", contractNftFactory.address);
+
     const rwaNft = await env.deploy("ArbRwaNft", {
       account: deployer,
       artifact: artifacts.ArbRwaNft,
-      args: [deployerAddr, infoDesk.address, feeTokenAddr, onchainIdFactoryAddr, kycIssuerAddr as `0x${string}`],
+      args: [
+        deployerAddr,
+        infoDesk.address,
+        feeTokenAddr,
+        onchainIdFactoryAddr,
+        kycIssuerAddr as `0x${string}`,
+        machineNftFactory.address,
+        contractNftFactory.address,
+      ],
     });
     console.log("ArbRwaNft:", rwaNft.address);
     await infoDeskContract.setContract(1, rwaNft.address);
@@ -186,13 +211,18 @@ export default deployScript(
       }
     }
 
-    if (process.env.SKIP_DEBUG_BOOTSTRAP !== "true") {
+    const chainId = Number((await ethers.provider.getNetwork()).chainId);
+    const isLocalChain = chainId === 31337 || chainId === 1337;
+    const shouldRunBootstrap =
+      process.env.SKIP_DEBUG_BOOTSTRAP !== "true" && isLocalChain && signers.length >= 4;
+
+    if (shouldRunBootstrap) {
       const [adminSigner, aliceSigner, bobSigner, charlieSigner] = signers;
       const demo = await runDebugBootstrap(async (name, data) => env.save(name, data), {
           admin: adminSigner,
-          alice: aliceSigner,
-          bob: bobSigner,
-          charlie: charlieSigner,
+          alice: { address: await aliceSigner.getAddress(), signer: aliceSigner },
+          bob: { address: await bobSigner.getAddress(), signer: bobSigner },
+          charlie: { address: await charlieSigner.getAddress(), signer: charlieSigner },
           feeTokenAddr: feeTokenAddr,
           infoDeskAddr: infoDesk.address,
           idFactoryAddr: onchainIdFactoryAddr,
@@ -209,7 +239,6 @@ export default deployScript(
       console.log("  agreementUrl:", DEMO_AGREEMENT_IPFS_URL);
       console.log("  rwaNftAddresses:", [demo.machineNftAddr, demo.contractNftAddr]);
 
-      const chainId = Number((await ethers.provider.getNetwork()).chainId);
       writeRwaManifest(demo, {
         chainId,
         feeToken: feeTokenAddr,
@@ -227,7 +256,30 @@ export default deployScript(
         admin: await adminSigner.getAddress(),
       });
     } else {
-      console.log("\nSkipped debug bootstrap (SKIP_DEBUG_BOOTSTRAP=true). Run yarn issue-claims and wire NFTs manually.");
+      const reason = !isLocalChain
+        ? "live network (Arbitrum Sepolia / mainnet)"
+        : signers.length < 4
+          ? "fewer than 4 signers available"
+          : "SKIP_DEBUG_BOOTSTRAP=true";
+      console.log(`\nSkipped debug bootstrap (${reason}). Run yarn issue-claims and wire NFTs manually.`);
+
+      const participants = await resolveParticipantAddresses(deployerSigner);
+      writeFrameworkRwaManifest({
+        chainId,
+        feeToken: feeTokenAddr,
+        feeModule: feeModuleProxyAddr,
+        arbRwaNft: rwaNft.address,
+        assetSerial: DEMO_ASSET_SERIAL,
+        dealReference: DEMO_DEAL_REFERENCE,
+        machineDidUri: DEMO_MACHINE_DID_URI,
+        machineValueWei: DEMO_MACHINE_VALUE.toString(),
+        agreementMetadataHash: demoAgreementHashDigest(),
+        agreementUrl: DEMO_AGREEMENT_IPFS_URL,
+        alice: participants.alice,
+        bob: participants.bob,
+        charlie: participants.charlie,
+        admin: participants.admin,
+      });
     }
 
     console.log("\nRWA framework deployed");

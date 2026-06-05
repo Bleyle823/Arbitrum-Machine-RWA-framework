@@ -11,13 +11,17 @@ export type ScaffoldConfig = {
 
 export const DEFAULT_ALCHEMY_API_KEY = "IZYEU2cWBgnFmgiTAgpWD";
 
+const arbitrumSepoliaRpc =
+  process.env.NEXT_PUBLIC_ARB_SEPOLIA_RPC_URL || process.env.ARB_SEPOLIA_RPC_URL;
+
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.hardhat],
+  // Local Hardhat for dev; Arbitrum Sepolia for testnet deploy
+  targetNetworks: [chains.hardhat, chains.arbitrumSepolia],
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)
-  pollingInterval: 3000,
+  pollingInterval: 2000,
 
   // This is ours Alchemy's default API key.
   // You can get your own at https://dashboard.alchemyapi.io
@@ -28,8 +32,7 @@ const scaffoldConfig = {
   // If you want to use a different RPC for a specific network, you can add it here.
   // The key is the chain ID, and the value is the HTTP RPC URL
   rpcOverrides: {
-    // Example:
-    // [chains.mainnet.id]: "https://mainnet.rpc.buidlguidl.com",
+    ...(arbitrumSepoliaRpc ? { [chains.arbitrumSepolia.id]: arbitrumSepoliaRpc } : {}),
   },
 
   // This is ours WalletConnect's default project ID.

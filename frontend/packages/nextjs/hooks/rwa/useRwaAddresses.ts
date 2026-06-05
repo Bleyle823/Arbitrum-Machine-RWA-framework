@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import { type Address } from "viem";
+import { type Address, zeroAddress } from "viem";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { useRwaManifest } from "~~/hooks/rwa/useRwaManifest";
 
 function addrOrDeploy(manifestVal: string | undefined, deployed?: Address): Address | undefined {
-  if (manifestVal && manifestVal.startsWith("0x")) return manifestVal as Address;
+  if (manifestVal && manifestVal.startsWith("0x") && manifestVal.toLowerCase() !== zeroAddress) {
+    return manifestVal as Address;
+  }
   return deployed;
 }
 
@@ -20,6 +22,7 @@ export function useRwaAddresses() {
   const feeToken = useDeployedContractInfo({ contractName: "MockFeeToken" });
   const feeModule = useDeployedContractInfo({ contractName: "NativeTransferFeeModule" });
   const rewardDistributor = useDeployedContractInfo({ contractName: "RewardDistributor" });
+  const identityRegistry = useDeployedContractInfo({ contractName: "IdentityRegistry" });
   const arbRwaNft = useDeployedContractInfo({ contractName: "ArbRwaNft" });
 
   const addresses = useMemo(
@@ -31,6 +34,7 @@ export function useRwaAddresses() {
       feeToken: addrOrDeploy(manifest?.feeToken, feeToken.data?.address),
       feeModule: addrOrDeploy(manifest?.feeModule, feeModule.data?.address),
       rewardDistributor: addrOrDeploy(manifest?.rewardDistributor, rewardDistributor.data?.address),
+      identityRegistry: addrOrDeploy(manifest?.identityRegistry, identityRegistry.data?.address),
       arbRwaNft: addrOrDeploy(manifest?.arbRwaNft, arbRwaNft.data?.address),
       machineTokenId: manifest?.machineTokenId ? BigInt(manifest.machineTokenId) : 202604042n,
       contractId: manifest?.contractId ? BigInt(manifest.contractId) : undefined,
@@ -44,7 +48,7 @@ export function useRwaAddresses() {
       charlie: manifest?.charlie as Address | undefined,
       admin: manifest?.admin as Address | undefined,
     }),
-    [manifest, machineNft.data, contractNft.data, arbVault.data, token.data, feeToken.data, feeModule.data, rewardDistributor.data, arbRwaNft.data],
+    [manifest, machineNft.data, contractNft.data, arbVault.data, token.data, feeToken.data, feeModule.data, rewardDistributor.data, identityRegistry.data, arbRwaNft.data],
   );
 
   const loading =

@@ -1,19 +1,21 @@
 "use client";
 
-import { burnerLabelForAddress } from "~~/lib/rwa/burners";
+import { burnerLabelForAddress, roleLabelForAddress } from "~~/lib/rwa/burners";
+import { useRwaManifest } from "~~/hooks/rwa/useRwaManifest";
 
 export function WalletRoleHint({ expected }: { expected: string }) {
   return (
     <div className="alert alert-info text-sm">
       <span>
-        Use burner wallet: <strong>{expected}</strong>. Connect via the wallet button (Burner Wallet on localhost).
+        Connect the wallet for <strong>{expected}</strong> (Burner Wallet on local Hardhat; MetaMask on Arbitrum Sepolia).
       </span>
     </div>
   );
 }
 
 export function ConnectedWalletBadge({ address }: { address?: string }) {
-  const label = burnerLabelForAddress(address);
+  const { manifest } = useRwaManifest();
+  const label = roleLabelForAddress(address, manifest) ?? burnerLabelForAddress(address);
   if (!address) return <span className="text-warning">Not connected</span>;
   return (
     <span>

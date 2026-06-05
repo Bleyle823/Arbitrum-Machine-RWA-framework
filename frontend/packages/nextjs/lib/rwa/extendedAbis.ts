@@ -138,7 +138,34 @@ export const machineNftExtendedAbi = [
   },
 ] as const satisfies Abi;
 
+export const identityRegistryExtendedAbi = [
+  {
+    type: "function",
+    name: "isVerified",
+    inputs: [{ name: "_userAddress", type: "address" }],
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "view",
+  },
+] as const satisfies Abi;
+
+export const tokenRegistryExtendedAbi = [
+  {
+    type: "function",
+    name: "identityRegistry",
+    inputs: [],
+    outputs: [{ name: "", type: "address" }],
+    stateMutability: "view",
+  },
+] as const satisfies Abi;
+
 export const arbVaultExtendedAbi = [
+  {
+    type: "function",
+    name: "minted",
+    inputs: [],
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "view",
+  },
   {
     type: "function",
     name: "depositAndMint",
@@ -163,6 +190,13 @@ export const arbVaultExtendedAbi = [
 ] as const satisfies Abi;
 
 export const tokenExtendedAbi = [
+  {
+    type: "function",
+    name: "balanceOf",
+    inputs: [{ name: "account", type: "address" }],
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+  },
   {
     type: "function",
     name: "transfer",
