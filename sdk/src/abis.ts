@@ -136,6 +136,13 @@ export const machineNftExtendedAbi = [
     outputs: [{ name: "", type: "address" }],
     stateMutability: "view",
   },
+  {
+    type: "function",
+    name: "getMachineDid",
+    inputs: [{ name: "tokenId", type: "uint160" }],
+    outputs: [{ name: "", type: "bytes" }],
+    stateMutability: "view",
+  },
 ] as const satisfies Abi;
 
 export const identityRegistryExtendedAbi = [

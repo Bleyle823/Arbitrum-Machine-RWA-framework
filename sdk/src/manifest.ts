@@ -9,6 +9,10 @@ export type RwaManifest = {
   feeToken: string;
   feeModule: string;
   arbRwaNft: string;
+  /** Framework contracts (synced from Hardhat deployments). */
+  idFactory?: string;
+  claimIssuer?: string;
+  arbVaultFactory?: string;
   machineTokenId: string;
   contractId: string;
   assetSerial?: string;

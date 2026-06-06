@@ -1,22 +1,18 @@
 {
   "name": "@arbitrum-machine/rwa-sdk",
-  "version": "0.1.0",
-  "description": "TypeScript SDK for the Arbitrum Machine RWA framework — ABIs, addresses, manifest, claims, and viem helpers",
+  "version": "0.2.0",
+  "description": "TypeScript/JavaScript SDK for the Arbitrum Machine RWA framework — ONCHAINID, ERC-3643 vaults, Machine/Contract NFTs",
   "license": "Apache-2.0",
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./abis": {
       "import": "./dist/abis.js",
@@ -28,21 +24,25 @@
     }
   },
   "files": [
-    "dist",
-    "README.md"
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "clean": "rimraf dist .tsbuildinfo",
+    "build": "tsup --config tsup.config.ts",
+    "dev": "tsup --config tsup.config.ts --watch",
     "check-types": "tsc --noEmit",
-    "prepublishOnly": "yarn build",
-    "sync-addresses": "node scripts/sync-addresses.mjs"
+    "test": "vitest run",
+    "sync-addresses": "node scripts/sync-addresses.mjs",
+    "prepublishOnly": "npm run clean && npm run build && npm run test"
   },
   "peerDependencies": {
     "ethers": "^6.13.0",
     "viem": "^2.21.0"
   },
   "peerDependenciesMeta": {
-    "ethers": {
+    "viem": {
       "optional": true
     }
   },
@@ -50,20 +50,23 @@
     "@onchain-id/solidity": "^2.2.1"
   },
   "devDependencies": {
+    "@types/node": "^24.9.1",
     "ethers": "^6.13.4",
+    "rimraf": "^6.0.1",
     "tsup": "^8.4.0",
     "typescript": "^5.8.2",
-    "viem": "^2.28.0"
+    "viem": "^2.28.0",
+    "vitest": "^4.0.8"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.17.0"
   },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/Arbitrum-Machine-RWA-framework",
+    "url": "https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework",
     "directory": "sdk"
   },
   "keywords": [
@@ -72,7 +75,8 @@
     "erc-3643",
     "trex",
     "onchainid",
-    "viem",
-    "ethereum"
+    "sdk",
+    "typescript",
+    "javascript"
   ]
 }

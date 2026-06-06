@@ -11,5 +11,8 @@ export default defineConfig({
   clean: true,
   splitting: false,
   sourcemap: true,
+  treeshake: true,
+  target: "es2022",
+  platform: "node",
   external: ["ethers", "viem", "@onchain-id/solidity"],
 });

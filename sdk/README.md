@@ -1,84 +1,108 @@
-# @arbitrum-machine/rwa-sdk
+# Arbitrum Machine RWA SDK
 
-TypeScript SDK for the **Arbitrum Machine RWA framework** — ONCHAINID + ERC-3643 vaults, Machine/Contract NFTs, and demo helpers.
+The **Arbitrum Machine Real World Asset (RWA) SDK** enables the tokenization of physical assets on **Arbitrum**. It provides a TypeScript/JavaScript interface for creating compliant security tokens that represent fractionalized ownership of machines and equipment.
+
+## What This SDK Does
+
+- **Tokenize machines** as NFTs with embedded DID documents
+- **Fractionalize ownership** into T-REX (ERC-3643) compliant security tokens
+- **Manage compliance** through on-chain KYC via ONCHAINID
+- **Distribute yield** automatically to token holders
+
+## Documentation
+
+| Section | Description | Audience |
+|---------|-------------|----------|
+| **[Learn the Framework](./docs/users/introduction.md)** | Understand the RWA ecosystem, roles, and concepts | Everyone |
+| **[SDK Reference](./sdk_reference/)** | API documentation with code examples | Developers |
+| **[Maintainer Guide](./docs/sdk_maintainers/)** | Deploy, update, and test the framework / SDK | SDK Maintainers |
+
+### Educational Documentation
+
+| Guide | What You'll Learn |
+|-------|-------------------|
+| [Introduction](./docs/users/introduction.md) | Framework overview and SDK architecture |
+| [Roles & Responsibilities](./docs/users/roles/index.md) | Framework Owner, Claim Issuers, Machine Issuers, Users |
+| [Core Concepts](./docs/users/concepts/index.md) | Identity, Claims, MachineNFTs, Vaults, Security Tokens |
+
+### SDK Reference
+
+| Module | Purpose |
+|--------|---------|
+| [Initialization](./sdk_reference/initialize.md) | SDK setup and configuration |
+| [Identity](./sdk_reference/identity/) | Create identities, issue and manage claims |
+| [RWA NFT](./sdk_reference/rwanft/) | Machine regulators, issuers, block state |
+| [Contract NFT](./sdk_reference/cnft/) | Create, sign, cancel contracts |
+| [Machine NFT](./sdk_reference/mnft/) | Register machines, read DID documents |
+| [Vault](./sdk_reference/vault/) | Create vaults, mint tokens, manage yield |
+| [Common Workflows](./sdk_reference/workflows/) | End-to-end integrator flows |
+
+## Quick Start
+
+```typescript
+import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { JsonRpcProvider } from "ethers";
+
+const provider = new JsonRpcProvider("https://sepolia-rollup.arbitrum.io/rpc");
+const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
+
+const { verified } = await sdk.onchainid.isVerified({ wallet: sdk.getManifest().alice });
+console.log("Alice verified:", verified);
+```
 
 ## Install
 
 ```bash
-npm install @arbitrum-machine/rwa-sdk viem
-# optional — ONCHAINID claim signing (Hardhat scripts, backend)
-npm install ethers
+npm install @arbitrum-machine/rwa-sdk ethers
+# optional — viem read helpers and calldata encoding
+npm install viem
 ```
 
-## Quick start
-
-```ts
-import { createPublicClient, http } from "viem";
-import { arbitrumSepolia } from "viem/chains";
-import {
-  getDeployment,
-  readIsVerified,
-  encodeDepositAndMint,
-  computeContractId,
-  demoAgreementHashDigest,
-  DEMO_AGREEMENT_IPFS_URL,
-} from "@arbitrum-machine/rwa-sdk";
-
-const manifest = getDeployment(421614)!;
-const client = createPublicClient({ chain: arbitrumSepolia, transport: http() });
-
-const aliceVerified = await readIsVerified(
-  client,
-  manifest.identityRegistry as `0x${string}`,
-  manifest.alice as `0x${string}`,
-);
-
-const calldata = encodeDepositAndMint(manifest);
-```
-
-## Exports
-
-| Module | Contents |
-|--------|----------|
-| **manifest** | `RwaManifest`, `parseRwaManifest`, `fetchRwaManifest` |
-| **addresses** | `getDeployment(chainId)`, bundled Arbitrum Sepolia manifest |
-| **abis** | Extended viem ABIs for vault, NFTs, token, fee module |
-| **contractId** | `computeContractId`, IPFS URL helpers |
-| **demoAssets** | Cybertruck demo constants, `demoAgreementHashDigest()` |
-| **claims** | ONCHAINID KYC claim helpers (requires `ethers`) |
-| **viem** | `readIsVerified`, `encodeDepositAndMint`, fee/balance reads |
-
-Subpath imports:
-
-```ts
-import { arbVaultExtendedAbi } from "@arbitrum-machine/rwa-sdk/abis";
-import { getDeployment } from "@arbitrum-machine/rwa-sdk/addresses";
-```
-
-## Sync addresses after deploy
-
-From repo root (after `yarn bootstrap:arbitrum-sepolia`):
+**Monorepo (before publish):**
 
 ```bash
 cd sdk
-yarn sync-addresses
-yarn build
+npm install
+npm run build
+npm test
 ```
 
-## Build & publish
+## Module Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Arbitrum RWA SDK                        │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐            │
+│  │  onchainid  │ │    mnft     │ │    cnft     │            │
+│  │  (Identity) │ │ (Machines)  │ │ (Contracts) │            │
+│  └─────────────┘ └─────────────┘ └─────────────┘            │
+│  ┌─────────────┐ ┌─────────────┐                            │
+│  │    vault    │ │   rwanft    │                            │
+│  │  (Tokens)   │ │  (Factory)  │                            │
+│  └─────────────┘ └─────────────┘                            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Read operations:** use the `provider` passed at initialization  
+**Write operations:** pass a `Signer` to each module method
+
+## Supported Networks
+
+| Network | Chain ID | Enum |
+|---------|----------|------|
+| Arbitrum One | 42161 | `Chain.ARBITRUM_ONE` |
+| Arbitrum Sepolia | 421614 | `Chain.ARBITRUM_SEPOLIA` |
+
+## Sync Addresses After Deploy
 
 ```bash
-cd sdk
-yarn install
-yarn build
-npm login
-npm publish --access public
+cd frontend && yarn bootstrap:arbitrum-sepolia
+cd ../sdk && yarn sync-addresses && yarn build
 ```
 
-## Peer dependencies
+## Legacy Helpers
 
-- **viem** `^2.21` — read helpers and calldata encoding
-- **ethers** `^6.13` (optional) — `addClaim` / KYC flows
+The package also exports low-level **viem** helpers (`readIsVerified`, `encodeDepositAndMint`), manifest parsers, demo constants, and extended ABIs for apps that prefer direct contract access.
 
 ## License
 
