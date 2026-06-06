@@ -1,4 +1,4 @@
-## `onchainid.issueKycClaim(IssueKycClaim)`
+﻿## `onchainid.issueKycClaim(IssueKycClaim)`
 
 Generate and sign a KYC claim for an ONCHAINID identity. This does not broadcast a transaction; it returns the encoded claim payload and the issuer's signature that can be submitted or verified off-chain/on-chain by downstream contracts.
 
@@ -30,7 +30,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
     // 0. Create rwa_sdk instance and get provider
-    const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+    const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
     const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
     const rwa_sdk = new RWA(init);
 
@@ -77,7 +77,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
     // 0. Create rwa_sdk instance and get provider
-    const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+    const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
     const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider: provider });
 
     // 1. Get Alice EOA

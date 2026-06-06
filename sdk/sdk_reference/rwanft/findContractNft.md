@@ -1,4 +1,4 @@
-## `rwanft.findContractNft(FindContractNft)`
+﻿## `rwanft.findContractNft(FindContractNft)`
 
 Find a ContractNft address with available storage for a given contract ID. This is a read-only call.
 
@@ -22,7 +22,7 @@ import { JsonRpcProvider } from 'ethers';
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -46,7 +46,7 @@ import { JsonRpcProvider } from 'ethers';
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Find contract NFT by contract ID

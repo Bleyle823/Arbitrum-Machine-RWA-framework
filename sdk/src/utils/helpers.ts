@@ -45,6 +45,7 @@ export function parseOptions<T extends Record<string, unknown>>(
 export const validators = {
   nonEmptyString: (v: unknown) => typeof v === "string" && v.length > 0,
   string: (v: unknown) => typeof v === "string",
+  tokenId: (v: unknown) => typeof v === "string" || typeof v === "bigint",
   number: (v: unknown) => typeof v === "number" || typeof v === "bigint",
   address: (v: unknown) => {
     if (typeof v !== "string") return false;

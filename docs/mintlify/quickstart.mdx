@@ -1,0 +1,85 @@
+---
+title: Quickstart
+description: Install the SDK and verify Arbitrum Sepolia state in minutes.
+---
+
+## Install
+
+```bash
+npm init -y
+npm pkg set type=module
+npm install @arbitrum-machine/rwa-sdk ethers dotenv
+npm i -D typescript tsx @types/node
+```
+
+## TypeScript config
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}
+```
+
+## Environment
+
+Create `.env` (never commit):
+
+```bash
+ARB_SEPOLIA_RPC_URL=https://sepolia-rollup.arbitrum.io/rpc
+
+# Demo participants (from frontend/packages/hardhat/.env.example)
+ALICE_PRIVATE_KEY=
+BOB_PRIVATE_KEY=
+CHARLIE_PRIVATE_KEY=
+```
+
+## Verify bootstrap state (read-only)
+
+```typescript
+import "dotenv/config";
+import { JsonRpcProvider } from "ethers";
+import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+
+const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL!);
+const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
+
+const m = sdk.getManifest();
+const { verified } = await sdk.onchainid.isVerified({ wallet: m.alice });
+console.log("Alice verified:", verified);
+
+const minted = await sdk.vault.isMinted();
+console.log("Vault minted:", minted);
+```
+
+From the monorepo you can also run:
+
+```bash
+cd sdk
+npm run build
+node scripts/verify-workflow.mjs
+```
+
+## Test at the contract layer first
+
+```bash
+cd contracts
+npm install
+npm test
+```
+
+See [Smart Contract Testing](/smart-contracts/guide) for local demos, Arbitrum Sepolia deploy/bootstrap, and on-chain verification.
+
+## Next steps
+
+- Full setup: [Installation & Initialization](/sdk-reference/initialize)
+- End-to-end flow: [Common Flow](/workflows/common-flow)

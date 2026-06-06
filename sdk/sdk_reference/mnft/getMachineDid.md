@@ -1,4 +1,4 @@
-## `mnft.getMachineDid(GetMachineDid)`
+﻿## `mnft.getMachineDid(GetMachineDid)`
 
 Read and deserialize a DID document from a Machine NFT. This is a read-only call.
 
@@ -23,7 +23,7 @@ import { JsonRpcProvider } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -53,7 +53,7 @@ import { JsonRpcProvider } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Get a known Machine NFT and tokenId
@@ -78,7 +78,7 @@ main().catch((err) => {
 ```
 Result {
   didDocument: {
-    id: 'did:peaq:...',
+    id: 'did:arbitrum:...',
     controller: '0x...',
     verification_methods: [ ... ],
     services: [ ... ],

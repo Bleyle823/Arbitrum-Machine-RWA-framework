@@ -22,8 +22,10 @@ After deploying contracts:
 
 ```bash
 cd ../frontend && yarn bootstrap:arbitrum-sepolia
-cd ../sdk && yarn sync-addresses && yarn build
+cd ../sdk && npm run sync-addresses && npm run build
 ```
+
+For SDK-only testing without the frontend, see [SDK Standalone Testing](../mintlify/workflows/sdk-standalone.mdx).
 
 ## `new RWA(opts)`
 

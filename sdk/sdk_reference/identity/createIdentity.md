@@ -1,4 +1,4 @@
-## `onchainid.createIdentity(CreateIdentity)`
+﻿## `onchainid.createIdentity(CreateIdentity)`
 
 Create (or fetch if already exists) an ONCHAINID identity for a given EOA (Externally Owned Account where the user controls the keys). If an identity is already associated with a `subject`, it returns that identity address with `status: 'exists'`.
 
@@ -26,7 +26,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
     // 0. Create rwa_sdk instance and get provider
-    const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+    const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
     const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
     const rwa_sdk = new RWA(init);
   
@@ -60,7 +60,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
     // 0. Create rwa_sdk instance and get provider
-    const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+    const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
     const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider: provider });
   
     // 1. Get Admin wallet

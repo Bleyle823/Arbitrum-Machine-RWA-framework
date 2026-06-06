@@ -1,4 +1,4 @@
-## `vault.pauseToken(PauseToken)`
+﻿## `vault.pauseToken(PauseToken)`
 
 Pause the security token for a vault via the Vault Factory. This sends a transaction from the vault deployer.
 
@@ -28,7 +28,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -58,7 +58,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Vault deployer signer

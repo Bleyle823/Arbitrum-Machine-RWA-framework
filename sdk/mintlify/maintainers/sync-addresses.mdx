@@ -1,0 +1,39 @@
+---
+title: Sync Addresses
+description: Merge a rwa-manifest.json into the bundled SDK manifest.
+---
+
+## `npm run sync-addresses`
+
+**Use npm in `sdk/`** — not Yarn (Yarn may pick up a parent folder's package manager and fail).
+
+Reads a manifest JSON and optionally merges IdFactory / ClaimIssuer / ArbVaultFactory from Hardhat deployment artifacts into `src/addresses/arbitrumSepolia.json`.
+
+```bash
+cd sdk
+npm run sync-addresses
+npm run build
+npm run verify:workflow
+```
+
+## Custom paths (no frontend required)
+
+```bash
+node scripts/sync-addresses.mjs \
+  --manifest /path/to/rwa-manifest.json \
+  --deployments /path/to/deployments/arbitrumSepolia \
+  --out src/addresses/arbitrumSepolia.json
+npm run build
+```
+
+## Default lookup order
+
+Without `--manifest`:
+
+1. `../frontend/packages/nextjs/public/rwa-manifest.json`
+2. `../contracts/deployments/deployment-421614.json`
+3. Existing `src/addresses/arbitrumSepolia.json` (deployment merge only)
+
+After sync, `new RWA({ chainId, provider })` uses the updated bundled manifest.
+
+See [SDK Standalone Testing](/workflows/sdk-standalone) for the full npm command list.

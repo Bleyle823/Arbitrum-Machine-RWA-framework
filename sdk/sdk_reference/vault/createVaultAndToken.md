@@ -1,4 +1,4 @@
-## `vault.createVault(CreateVault)`
+﻿## `vault.createVault(CreateVault)`
 
 Create a new Vault and its associated security token using a Vault Factory. This sends a transaction from the vault deployer.
 
@@ -33,7 +33,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -52,7 +52,7 @@ async function main() {
     trustedClaimIssuers: [process.env.CLAIM_ISSUER_CONTRACT_ADDRESS!],
     tokenName: "Test Token ABC",
     tokenSymbol: "ABC",
-    payoutToken: rwa_sdk.getAddresses().erc20.peaq
+    payoutToken: sdk.getAddresses().vault.feeToken
   });
   console.log("Result", result);
 }
@@ -71,7 +71,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Vault deployer signer
@@ -89,7 +89,7 @@ async function main() {
     trustedClaimIssuers: [process.env.CLAIM_ISSUER_CONTRACT_ADDRESS],
     tokenName: "Test Token ABC",
     tokenSymbol: "ABC",
-    payoutToken: rwa_sdk.getAddresses().erc20.peaq
+    payoutToken: sdk.getAddresses().vault.feeToken
   });
   console.log("Result", result);
 }

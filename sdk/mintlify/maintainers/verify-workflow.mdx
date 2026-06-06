@@ -1,0 +1,35 @@
+---
+title: Verify Workflow
+description: Read-only Sepolia checks for bootstrap and on-chain state.
+---
+
+## `scripts/verify-workflow.mjs`
+
+Runs 14 read-only checks against Arbitrum Sepolia:
+
+- Manifest addresses resolve
+- Alice/Bob/Charlie verified in Identity Registry
+- Machine DID readable
+- Contract NFT owner
+- Vault minted flag
+- Token balances
+- Machine issuers / regulators
+
+```bash
+cd sdk
+npm run build
+node scripts/verify-workflow.mjs
+```
+
+Requires `ARB_SEPOLIA_RPC_URL` in environment (or repo-root `.env`).
+
+### Expected output
+
+```
+✓ manifest loaded
+✓ alice verified
+...
+14/14 checks passed
+```
+
+Use this after deploy/bootstrap or SDK changes to confirm live state.

@@ -1,0 +1,27 @@
+---
+title: Get Identity
+description: onchainid.getIdentity — read ONCHAINID address for an EOA.
+---
+
+## `onchainid.getIdentity(GetIdentity)`
+
+Read-only lookup against IdFactory.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **subject** | `string` | Yes | EOA to look up |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `'found' \| 'not_found'` | Whether an identity exists |
+| **identity** | `string` | Identity address when found |
+
+### TypeScript
+
+```typescript
+const result = await sdk.onchainid.getIdentity({
+  subject: sdk.getManifest().alice,
+});
+```

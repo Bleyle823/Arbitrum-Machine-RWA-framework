@@ -1,0 +1,137 @@
+---
+title: Installation & Initialization
+description: Install @arbitrum-machine/rwa-sdk and initialize for Arbitrum Sepolia or Arbitrum One.
+---
+
+## TypeScript setup
+
+### 1. New project
+
+```bash
+npm init -y
+npm pkg set type=module
+```
+
+### 2. Install packages
+
+```bash
+npm install @arbitrum-machine/rwa-sdk ethers dotenv
+npm i -D typescript tsx @types/node
+```
+
+### 3. TypeScript config
+
+Create `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
+    "sourceMap": true,
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+### 4. Scripts
+
+```json
+{
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}
+```
+
+### 5. Source entry
+
+```bash
+mkdir src && touch src/index.ts
+```
+
+## JavaScript setup
+
+```bash
+npm init -y
+npm pkg set type=module
+npm install @arbitrum-machine/rwa-sdk ethers dotenv
+mkdir src && touch src/index.js
+```
+
+Run with `node src/index.js`.
+
+## Environment variables
+
+Create `.env` and add `.env` to `.gitignore`:
+
+```bash
+ARB_SEPOLIA_RPC_URL=https://sepolia-rollup.arbitrum.io/rpc
+
+# Framework admin (IdFactory owner)
+ADMIN_PRIVATE_KEY=
+
+# Claim issuer (signs KYC claims)
+CLAIM_ISSUER_PRIVATE_KEY=
+
+# Machine issuer / regulator
+MACHINE_ISSUER_PRIVATE_KEY=
+MACHINE_REGULATOR_PRIVATE_KEY=
+
+# Demo participants
+ALICE_PRIVATE_KEY=
+BOB_PRIVATE_KEY=
+CHARLIE_PRIVATE_KEY=
+```
+
+The SDK bundles a Sepolia manifest with contract addresses and demo wallet addresses. Override with `manifest` in `SDKInit` after redeploy.
+
+## `new RWA(opts)`
+
+Initialize the SDK for a specific Arbitrum network.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **chainId** | `Chain` | Yes | `Chain.ARBITRUM_SEPOLIA` (421614) or `Chain.ARBITRUM_ONE` (42161) |
+| **provider** | `Provider` | Yes | ethers `JsonRpcProvider` for read calls |
+| **manifest** | `RwaManifest` | No | Override bundled deployment manifest |
+
+### TypeScript
+
+```typescript
+import "dotenv/config";
+import { JsonRpcProvider } from "ethers";
+import { RWA, Chain, type SDKInit } from "@arbitrum-machine/rwa-sdk";
+
+const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL!);
+const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider };
+const sdk = new RWA(init);
+
+console.log(sdk.getAddresses());
+console.log(sdk.getManifest());
+```
+
+### JavaScript (ESM)
+
+```javascript
+import "dotenv/config";
+import { JsonRpcProvider } from "ethers";
+import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+
+const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
+const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
+console.log(sdk.getAddresses());
+```
+
+<Note>
+Write operations require an ethers `Signer` passed into each method. The `provider` at init is used only for reads.
+</Note>

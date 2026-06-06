@@ -1,0 +1,28 @@
+---
+title: Sync Addresses
+description: Merge Hardhat deployments into the bundled SDK manifest.
+---
+
+## `scripts/sync-addresses.mjs`
+
+Reads Hardhat `deployments/arbitrumSepolia/` and merges:
+
+- IdFactory, ClaimIssuer, ArbVaultFactory
+- ArbRwaNft, MachineNft, ContractNft
+- ArbVault, Token, IdentityRegistry, RewardDistributor
+
+into `sdk/src/addresses/arbitrumSepolia.json`.
+
+```bash
+cd sdk
+node scripts/sync-addresses.mjs
+npm run build
+```
+
+Pass a custom manifest path:
+
+```bash
+node scripts/sync-addresses.mjs --out src/addresses/arbitrumSepolia.json
+```
+
+After sync, consumers can use `new RWA({ chainId, provider })` without passing `manifest`.

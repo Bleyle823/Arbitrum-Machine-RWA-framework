@@ -67,7 +67,7 @@ export class Vault {
         owner: { required: true, validator: validators.signerWithProvider },
         nft: { required: true, validator: validators.address },
         vault: { required: true, validator: validators.address },
-        tokenIds: { required: true, validator: validators.arrayOf(validators.string) },
+        tokenIds: { required: true, validator: validators.arrayOf(validators.tokenId) },
       },
       "nftApproval",
     );
@@ -100,7 +100,7 @@ export class Vault {
         vaultController: { required: true, validator: validators.signerWithProvider },
         vault: { required: true, validator: validators.address },
         rwaNfts: { required: true, validator: validators.arrayOf(validators.address) },
-        tokenIds: { required: true, validator: validators.arrayOf(validators.string) },
+        tokenIds: { required: true, validator: validators.arrayOf(validators.tokenId) },
         amount: { required: true },
       },
       "depositAndMint",

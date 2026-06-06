@@ -1,4 +1,4 @@
-# Common flow (start to finish)
+﻿# Common flow (start to finish)
 
 ## What this workflow shows
 
@@ -10,7 +10,7 @@ This page describes an **end-to-end RWA flow** that matches the integration test
 4. **Collateralize and mint** – Alice approves the vault to move her Machine NFTs and Contract NFT, deposits them into the vault, and mints security tokens.
 5. **Transfers and yield** – Alice transfers tokens to Bob and Charlie; Alice deposits yield into the vault; Bob claims yield (for himself and to Charlie).
 
-Throughout the examples you will see `process.env.*` (e.g. `process.env.HTTPS_BASE_URL`). These come from a **`.env` file** you set during [initialization](../initialize.md). Keep this file secret and never commit it.
+Throughout the examples you will see `process.env.*` (e.g. `process.env.ARB_SEPOLIA_RPC_URL`). These come from a **`.env` file** you set during [initialization](../initialize.md). Keep this file secret and never commit it.
 
 ---
 
@@ -20,9 +20,9 @@ Use the same variable names as in the SDK reference so you can copy-paste and co
 
 ```bash
 # Network RPC URL
-HTTPS_BASE_URL="https://peaq-agung.api.onfinality.io/public"
+ARB_SEPOLIA_RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
 
-# PEAQ OWNER Admin
+# Framework owner (admin)
 ADMIN_PUBLIC_ADDRESS=""
 ADMIN_PRIVATE_KEY=""
 
@@ -59,13 +59,13 @@ CHARLIE_PRIVATE_KEY=""
 
 ### Admin (Framework owner / Implementation Authority)
 
-**Who:** In production this is peaq (or the Implementation Authority). In tests it is the wallet you put in `ADMIN_*`.
+**Who:** In production this is the framework owner (Implementation Authority). In tests it is the wallet you put in `ADMIN_*`.
 
 **What they do:** Own the ID Factory and Vault Factory; create ONCHAINID identities for users; create vaults and set the vault controller; unpause vault tokens; register identities in a vault’s Identity Registry so those EOAs can hold and transfer the security token.
 
 ### Claim Issuer
 
-**Who:** A trusted entity that issues and attests to claims (e.g. KYC). Onboarding is required; peaq approves and adds them to the Trusted Issuers Registry.
+**Who:** A trusted entity that issues and attests to claims (e.g. KYC). Onboarding is required; the framework owner approves and adds them to the Trusted Issuers Registry.
 
 **What they do:** Issue KYC (and optionally role) claims for identities. The Claim Issuer **contract** address is used by the vault’s compliance; the Claim Issuer **signer** (`CLAIM_ISSUER_PRIVATE_KEY`) signs claims. You need both `CLAIM_ISSUER_CONTRACT_ADDRESS` and the signer in `.env`.
 
@@ -73,7 +73,7 @@ CHARLIE_PRIVATE_KEY=""
 
 **Who:** Authority that decides which addresses may act as Machine Issuers.
 
-**What they do:** Add or remove Machine Issuers via the PeaqRwaNft contract; set block state for issuers or Contract NFT contracts. Uses `MACHINE_REGULATOR_*` in the full flow setup (e.g. adding the Machine Issuer before the test runs).
+**What they do:** Add or remove Machine Issuers via the ArbRwaNft contract; set block state for issuers or Contract NFT contracts. Uses `MACHINE_REGULATOR_*` in the full flow setup (e.g. adding the Machine Issuer before the test runs).
 
 ### Machine Issuer
 

@@ -1,0 +1,27 @@
+---
+title: Get Contract Owner
+description: cnft.getContractOwner — read owner of a completed Contract NFT.
+---
+
+## `cnft.getContractOwner(GetContractOwner)`
+
+Read-only.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **contractId** | `bigint` | Yes | Contract ID |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **contractId** | `bigint` | Queried ID |
+| **owner** | `string` | NFT owner address |
+
+### TypeScript
+
+```typescript
+const result = await sdk.cnft.getContractOwner({
+  contractId: BigInt(sdk.getManifest().contractId),
+});
+```

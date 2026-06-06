@@ -1,4 +1,4 @@
-## `vault.transfer(Transfer)`
+﻿## `vault.transfer(Transfer)`
 
 Transfer tokens between addresses, scaling the human-readable amount using the token's decimals.
 
@@ -30,7 +30,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -64,7 +64,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Sender

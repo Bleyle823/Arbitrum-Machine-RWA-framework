@@ -1,0 +1,38 @@
+---
+title: Transfer
+description: vault.transfer — transfer ERC-3643 security tokens with compliance checks.
+---
+
+## `vault.transfer(Transfer)`
+
+Transfers security tokens. Compliance and transfer fees apply.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **from** | `Signer` | Yes | Sender with balance |
+| **to** | `string` | Yes | Recipient EOA |
+| **token** | `string` | No | Defaults to manifest token |
+| **amount** | `bigint` | Yes | Amount in token wei |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `'transferred'` | Operation status |
+| **to** | `string` | Recipient |
+| **amount** | `bigint` | Transferred amount |
+| **receipt** | `TransactionReceipt` | Transfer tx |
+
+Call `ensureTransferFeeAllowance` before transferring when fees are enabled.
+
+### TypeScript
+
+```typescript
+const alice = new Wallet(process.env.ALICE_PRIVATE_KEY!, provider);
+
+await sdk.vault.transfer({
+  from: alice,
+  to: sdk.getManifest().bob,
+  amount: 10n * 10n ** 18n,
+});
+```

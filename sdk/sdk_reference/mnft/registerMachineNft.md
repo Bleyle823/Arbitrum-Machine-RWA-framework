@@ -1,4 +1,4 @@
-## `mnft.registerMachine(RegisterMachine)`
+﻿## `mnft.registerMachine(RegisterMachine)`
 
 Register one or more Machine NFTs to a designated controller. This sends transactions from the Machine Issuer and charges the ERC20 fee from the controller.
 
@@ -39,7 +39,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -55,7 +55,7 @@ async function main() {
     machineNft: "0xaBB3961281123C336596153C4dfE83E11498fc54",
     machineValueHuman: "10",
     machineControllerAddr: alice.address,
-    erc20: rwa_sdk.getAddresses().erc20.peaq,
+    erc20: sdk.getAddresses().vault.feeToken,
     tokenDecimals: 18,
     salt: Math.floor(Math.random() * 10000),
     count: 2
@@ -78,7 +78,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Machine Issuer wallet
@@ -93,7 +93,7 @@ async function main() {
     machineNft: "0xaBB3961281123C336596153C4dfE83E11498fc54",
     machineValueHuman: "10",
     machineControllerAddr: alice.address,
-    erc20: rwa_sdk.getAddresses().erc20.peaq,
+    erc20: sdk.getAddresses().vault.feeToken,
     tokenDecimals: 18,
     salt: Math.floor(Math.random() * 10000),
     count: 2
@@ -123,8 +123,8 @@ Result {
   },
   count: 2,
   machines: [
-    { machineId: '1', did: 'did:peaq:...', receipt: ContractTransactionReceipt { ... } },
-    { machineId: '2', did: 'did:peaq:...', receipt: ContractTransactionReceipt { ... } }
+    { machineId: '1', did: 'did:arbitrum:...', receipt: ContractTransactionReceipt { ... } },
+    { machineId: '2', did: 'did:arbitrum:...', receipt: ContractTransactionReceipt { ... } }
   ],
   feesPaid: 20000000000000000000n,
   startingBalance: 100000000000000000000n,

@@ -1,4 +1,4 @@
-## `onchainid.getClaim(GetClaim)`
+﻿## `onchainid.getClaim(GetClaim)`
 
 Fetch a claim from an ONCHAINID identity by `claimId`. This is a read-only call to the identity contract.
 
@@ -24,7 +24,7 @@ import { JsonRpcProvider, AbiCoder, keccak256 } from "ethers";
 
 async function main() {
     // 0. Create rwa_sdk instance and get provider
-    const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+    const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
     const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
     const rwa_sdk = new RWA(init);
 
@@ -62,7 +62,7 @@ import { JsonRpcProvider, AbiCoder, keccak256 } from "ethers";
 
 async function main() {
     // 0. Create rwa_sdk instance and get provider
-    const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+    const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
     const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider: provider });
 
     // 1. Resolve the identity for an EOA (or use a known identity address)

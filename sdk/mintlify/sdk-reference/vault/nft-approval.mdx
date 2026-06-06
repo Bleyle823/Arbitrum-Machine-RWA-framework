@@ -1,0 +1,39 @@
+---
+title: NFT Approval
+description: vault.nftApproval — approve vault as operator per Machine/Contract NFT token ID.
+---
+
+## `vault.nftApproval(NftApproval)`
+
+Approves the vault for specific token IDs (per-token `approve`, not `setApprovalForAll`).
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **owner** | `Signer` | Yes | NFT owner/controller |
+| **nft** | `string` | Yes | MachineNft or ContractNft address |
+| **vault** | `string` | Yes | ArbVault address |
+| **tokenIds** | `(string \| bigint)[]` | Yes | Token IDs to approve |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `'approved'` | Operation status |
+| **nft** | `string` | NFT contract |
+| **vault** | `string` | Vault address |
+| **tokenIds** | `bigint[]` | Approved IDs |
+| **receipts** | `TransactionReceipt[]` | One per token |
+
+### TypeScript
+
+```typescript
+const alice = new Wallet(process.env.ALICE_PRIVATE_KEY!, provider);
+const vault = sdk.getAddresses().vault.arbVault;
+
+await sdk.vault.nftApproval({
+  owner: alice,
+  nft: sdk.getAddresses().nft.machineNft,
+  vault,
+  tokenIds: [sdk.getManifest().machineTokenId],
+});
+```

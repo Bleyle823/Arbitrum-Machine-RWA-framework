@@ -1,0 +1,133 @@
+---
+title: Core Modules
+description: ONCHAINID, Machine NFT, Contract NFT, RWA factory, and Vault modules in the Arbitrum Machine RWA SDK.
+---
+
+The `@arbitrum-machine/rwa-sdk` exposes five modules on the `RWA` class. Each maps to a layer of the on-chain framework.
+
+---
+
+## OnChainID Module (`sdk.onchainid`)
+
+The identity module manages ONCHAINID identities and claims — the foundation of compliance in the framework.
+
+**Purpose:** Create and manage on-chain identities, attach KYC claims, and verify investors against a vault Identity Registry.
+
+**Key capabilities:**
+
+- **Create identities** — Deploy an `Identity` contract linked to a user's wallet via `IdFactory`
+- **Retrieve identities** — Look up existing identity contracts by wallet address
+- **Add claims to identities** — Attach signed KYC claims (topic **666**) to identity contracts
+- **Verify investors** — Read `isVerified` on the vault's Identity Registry
+
+Every participant — investor, machine issuer, or regulator — needs a verified identity with appropriate claims before interacting with vaults and security tokens.
+
+→ [Identity SDK Reference](/sdk-reference/identity/create-identity)
+
+---
+
+## Machine NFT Module (`sdk.mnft`)
+
+The Machine NFT module handles registration and reads for tokenized physical assets.
+
+<img src="/images/rwa-nft.png" alt="Machine NFT registration flow" />
+
+**Purpose:** Register real-world machines as NFTs with embedded DID documents, and read machine metadata on-chain.
+
+**Key capabilities:**
+
+- **Register machines** — Mint Machine NFTs with DID documents describing the physical asset (`registerMachine`)
+- **Read DID documents** — Retrieve machine metadata stored on-chain (`getMachineDid`)
+- **Read ownership** — Resolve the current owner of a machine token ID (`ownerOf`)
+
+Each Machine NFT contains a Decentralized Identifier (DID) document that uniquely identifies the physical machine — manufacturer, model, serial number, and other metadata. This creates an immutable link between the on-chain token and the real-world asset.
+
+Registration fees are paid in the demo **MockFeeToken** on Sepolia; the machine owner must approve the fee before the issuer registers.
+
+→ [Machine NFT SDK Reference](/sdk-reference/mnft/register-machine)
+
+---
+
+## Contract NFT Module (`sdk.cnft`)
+
+The Contract NFT module manages digital agreements between multiple parties.
+
+**Purpose:** Create, sign, and manage multi-party contracts represented as NFTs on-chain.
+
+**Key capabilities:**
+
+- **Compute contract IDs** — Derive the deterministic `contractId` from initiator, counterparties, hash, and URL
+- **Create contracts** — Initialize a contract with counterparties and document hash (`createContract` / `initContractAndSign`)
+- **Sign contracts** — Allow counterparties to sign and finalize agreements (`signContract`)
+- **Read contract state** — Resolve owner and lifecycle status (`getContractOwner`)
+
+Contract NFTs store a hash of the agreement document (often on IPFS) and a URL to retrieve it. This preserves document integrity while keeping large files off-chain. Completed Contract NFTs can be deposited into vaults alongside Machine NFTs.
+
+→ [Contract NFT SDK Reference](/sdk-reference/cnft/create-contract)
+
+---
+
+## RWA NFT Factory Module (`sdk.rwanft`)
+
+The RWA NFT factory module exposes read helpers for the top-level **ArbRwaNft** factory contract.
+
+**Purpose:** Inspect which addresses are authorized as machine regulators and issuers.
+
+**Key capabilities:**
+
+- **List machine regulators** — `getMachineRegulators()`
+- **List machine issuers** — `getMachineIssuers()`
+
+Administrative writes (`addMachineRegulator`, `addMachineIssuer`, block/unblock issuers) are performed by the Framework Owner via Hardhat bootstrap or `/debug` today. See [Roles & Responsibilities](/concepts/roles).
+
+→ [RWA NFT SDK Reference](/sdk-reference/rwanft/get-machine-issuers)
+
+---
+
+## Vault Module (`sdk.vault`)
+
+The Vault module fractionalizes collateral into security tokens and manages yield distribution.
+
+<img src="/images/vault.png" alt="Vault deposit, mint, transfer, and yield flow" />
+
+**Purpose:** Hold Machine NFTs and Contract NFTs, mint ERC-3643 security tokens, and distribute yield to holders.
+
+**Key capabilities:**
+
+| Capability | SDK method | Notes |
+|------------|------------|-------|
+| Approve vault for NFTs | `nftApproval` | Per token ID on Machine/Contract NFT |
+| Deposit and mint | `depositAndMint` | Lock NFTs; mint security tokens (once per vault) |
+| Transfer fee allowance | `ensureTransferFeeAllowance` | MockFeeToken approval for compliance fees |
+| Transfer tokens | `transfer` | ERC-3643 transfer to verified holders |
+| Deposit yield | `depositYield` | Fund the reward distributor |
+| Claim yield | `claimYield`, `claimYieldTo` | Pro-rata payout to holders |
+
+**Admin operations** (create vault, unpause token, register identities in IR) are handled by deploy/bootstrap scripts or `/debug` — not yet as SDK write methods. See [Maintainers: Deploy](/maintainers/deploy).
+
+Security tokens comply with **T-REX (ERC-3643)**: only addresses verified on the vault Identity Registry can hold and transfer them.
+
+→ [Vault SDK Reference](/sdk-reference/vault/deposit-and-mint)
+
+---
+
+## Roles in the ecosystem
+
+| Role | Description | Required claim |
+|------|-------------|----------------|
+| **Framework Owner** | Administers the framework, trusted issuers, vault creation | Admin access |
+| **Claim Issuer** | Issues KYC and role claims after verification | Trusted by Framework Owner |
+| **Machine Regulator** | Approves machine issuers | `CT_MNFT_REGULATOR` (topic **8**) |
+| **Machine Issuer** | Registers machines as Machine NFTs | `CT_MNFT_ISSUER` (topic **7**) |
+| **Vault Owner / Controller** | Manages vault deposits, minting, yield | KYC + IR registration |
+| **User / Investor** | Holds NFTs and security tokens, receives yield | `CT_KYC_APPROVED` (topic **666**) |
+
+Full role descriptions: [Roles & Responsibilities](/concepts/roles).
+
+---
+
+## Related
+
+- [Overview](/concepts/overview) — End-to-end asset lifecycle
+- [Common Flow](/workflows/common-flow) — Integrator workflow on Sepolia
+- [API Reference tab](/sdk-reference/initialize) — All implemented methods

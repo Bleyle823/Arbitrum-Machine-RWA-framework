@@ -1,40 +1,36 @@
-# RWA Framework — Comprehensive Test Guide
+﻿# RWA Framework — Comprehensive Test Guide
 
 **Primary deployment target: Arbitrum** ([ARBITRUM.md](./ARBITRUM.md)). This guide describes the full RWA workflow on any EVM chain using this Hardhat project (`rwa-hardhat/`, ERC-3643 T-REX + RWA vault/NFT layer).
 
-An optional **Track C** covers peaq Agung / `@peaq-network/rwa` SDK compatibility. The on-chain flow is the same; only RPC, fee token, and DID prefix differ.
-
-Reference design (peaq docs): [docs.peaq.xyz RWA](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/introduction).
+An optional **Track C** covers Arbitrum Sepolia / `@arbitrum-machine/rwa-sdk` SDK compatibility. The on-chain flow is the same; only RPC, fee token, and DID prefix differ.
 
 ---
 
-## 1. Documentation alignment (peaq MCP review)
+## 1. Documentation alignment (design review)
 
-Compared against official peaq docs:
-
-| Doc requirement | Official source | Our contracts | Status |
-|-----------------|-----------------|---------------|--------|
-| ONCHAINID + KYC claims (`CT_KYC_APPROVED = 666`) | [Roles](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/roles) | `Identity`, `ClaimIssuer`, `IdFactory` | ✅ |
-| Role claims `CT_MNFT_ISSUER = 7`, `CT_MNFT_REGULATOR = 8` | [Roles](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/roles) | `RwaConstants`, SDK `signClaim` format | ✅ |
-| Machine Regulator appoints issuers via `PeaqRwaNft.addMachineIssuer` | [Machine Issuer flow](https://docs.peaq.xyz/peaqchain/sdk-reference/rwa/workflows/machine-issuer-flow) | `PeaqRwaNft` deploys `MachineNft` per issuer | ✅ |
-| Machine NFT + embedded DID, ERC-20 registration fee | [Modules / mnft](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/modules) | `MachineNft.registerMachine` | ✅ |
-| Contract NFT draft → sign → complete | [Modules / cnft](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/modules) | `ContractNft` | ✅ |
-| Vault factory deploys Vault + Token + RewardDistributor | [Roles / Vault Factory](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/roles) | `PeaqVaultFactory.createVault` | ✅ |
-| Per-vault Identity Registry + KYC verification | [Roles / Users](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/roles) | `IdentityRegistry.isVerified` | ✅ |
-| T-REX transfer compliance + fee module | [Modules / vault](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/modules) | T-REX `Token` + `ModularCompliance`, `NativeTransferFeeModule` | ✅ |
-| Single `depositAndMint` per vault | [Roles / Vault Owner](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/roles) | `PeaqVault.minted` guard | ✅ |
-| Yield deposit + claim + claimTo | [Common flow](https://docs.peaq.xyz/peaqchain/sdk-reference/rwa/workflows/common-flow) | `RewardDistributor` | ✅ |
-| InfoDesk as config hub (fees, implementations) | [Roles / InfoDesk](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/roles) | `InfoDesk` | ✅ |
-| 10-step common flow (identities → yield) | [Common flow](https://docs.peaq.xyz/peaqchain/sdk-reference/rwa/workflows/common-flow) | Covered below | ✅ |
+| Requirement | Our contracts | Status |
+|-------------|---------------|--------|
+| ONCHAINID + KYC claims (`CT_KYC_APPROVED = 666`) | `Identity`, `ClaimIssuer`, `IdFactory` | ✅ |
+| Role claims `CT_MNFT_ISSUER = 7`, `CT_MNFT_REGULATOR = 8` | `RwaConstants`, SDK claim helpers | ✅ |
+| Machine Regulator appoints issuers via `ArbRwaNft.addMachineIssuer` | `ArbRwaNft` deploys `MachineNft` per issuer | ✅ |
+| Machine NFT + embedded DID, ERC-20 registration fee | `MachineNft.registerMachine` | ✅ |
+| Contract NFT draft → sign → complete | `ContractNft` | ✅ |
+| Vault factory deploys Vault + Token + RewardDistributor | `ArbVaultFactory.createVault` | ✅ |
+| Per-vault Identity Registry + KYC verification | `IdentityRegistry.isVerified` | ✅ |
+| T-REX transfer compliance + fee module | T-REX `Token` + `ModularCompliance`, `NativeTransferFeeModule` | ✅ |
+| Single `depositAndMint` per vault | `ArbVault.minted` guard | ✅ |
+| Yield deposit + claim + claimTo | `RewardDistributor` | ✅ |
+| InfoDesk as config hub (fees, implementations) | `InfoDesk` | ✅ |
+| 10-step common flow (identities → yield) | Covered below | ✅ |
 
 ### Intentional differences (chain-agnostic deployment)
 
-| Reference (peaq) | Arbitrum / EVM deployment | Notes |
+| Reference design | Arbitrum / EVM deployment | Notes |
 |-----------------|-------------------|-------|
-| `did:peaq:` machine DIDs | Default `did:arbitrum:`; set `InfoDesk.setValue(4, 1)` for `did:peaq:` | Protobuf DID blob in `registerMachine` unchanged; only URI prefix differs |
+| `did:arbitrum:` machine DIDs | Default `did:arbitrum:`; set `InfoDesk.setValue(4, 1)` for `did:arbitrum:` | Protobuf DID blob in `registerMachine` unchanged; only URI prefix differs |
 | InfoDesk precompile addresses | Not used | Point `setContract(0, feeToken)` at any ERC-20 on your chain |
 | On-chain regulator claim check | `addMachineRegulator` by Framework Owner | Regulator must hold valid ONCHAINID claim topic **8** from configured ClaimIssuer |
-| `PeaqVaultFactory` bytecode size | ~34 KB | Enable `allowUnlimitedContractSize` on testnets (Agung does this) or split factory in a future release |
+| `ArbVaultFactory` bytecode size | ~34 KB | Enable `allowUnlimitedContractSize` on testnets (Arbitrum Sepolia does this) or split factory in a future release |
 
 ---
 
@@ -45,8 +41,8 @@ Choose one track based on what you are validating:
 | Track | What it tests | Command |
 |-------|---------------|---------|
 | **A — Contract unit (Hardhat)** | Solidity logic only, no SDK | `npm test` (from this directory) |
-| **B — SDK integration (local fork)** | Full `@peaq-network/rwa` against your deployment | See §5 |
-| **C — SDK integration (Agung / peaq)** | Live testnet against official or your deployment | See §6 |
+| **B — SDK integration (local fork)** | Full `@arbitrum-machine/rwa-sdk` against your deployment | See §5 |
+| **C — SDK integration (Arbitrum Sepolia)** | Live testnet against your deployment | See §6 |
 
 ---
 
@@ -68,7 +64,7 @@ You need **seven distinct EOAs** (or fewer if one wallet plays multiple roles in
 
 Each participant wallet needs:
 - **Native gas token** for transaction fees
-- **Fee ERC-20** (peaq wrapped token on Agung, or USDC/MFT on other chains) for machine registration, contract setup, and transfer fees
+- **Fee ERC-20** (MockFeeToken on Arbitrum Sepolia demo, or USDC/MFT on other chains) for machine registration, contract setup, and transfer fees
 
 ### Software
 
@@ -94,7 +90,7 @@ npm test
 
 **What it covers:**
 
-1. Deploy `MockFeeToken`, `InfoDesk`, `IdFactory`, `ClaimIssuer`, `PeaqRwaNft`
+1. Deploy `MockFeeToken`, `InfoDesk`, `IdFactory`, `ClaimIssuer`, `ArbRwaNft`
 2. Create identities + KYC claims (Alice, Bob)
 3. Machine issuer role claim + `addMachineIssuer` + `registerMachine`
 4. Deploy compliance module proxy + `createVault` + `unpauseVaultToken`
@@ -133,12 +129,12 @@ Copy `deployments/deployment-31337.json` into your client config (e.g. `addresse
     "trexFactory": "",
     "trexGateway": ""
   },
-  "nft": { "peaqRwaNft": "<PeaqRwaNft>" },
+  "nft": { "arbRwaNft": "<ArbRwaNft>" },
   "vault": {
-    "factory": "<PeaqVaultFactory>",
+    "factory": "<ArbVaultFactory>",
     "proxyAdmin": "<admin>"
   },
-  "erc20": { "peaq": "<fee token>" }
+  "erc20": { "feeToken": "<fee token>" }
 }
 ```
 
@@ -148,13 +144,13 @@ Wire `Chain.LOCAL` in SDK enums/config if not present, or test with raw addresse
 
 | # | Action | SDK / contract call | Verify |
 |---|--------|---------------------|--------|
-| 1 | Add machine regulator | `PeaqRwaNft.addMachineRegulator(regulatorAddr)` | `getMachineRegulators()` includes address |
-| 2 | Deploy Contract NFT instance | `PeaqRwaNft.deployContractNft()` or `addContractNft()` | Event `ContractNftAdded`; save address |
+| 1 | Add machine regulator | `ArbRwaNft.addMachineRegulator(regulatorAddr)` | `getMachineRegulators()` includes address |
+| 2 | Deploy Contract NFT instance | `ArbRwaNft.deployContractNft()` or `addContractNft()` | Event `ContractNftAdded`; save address |
 | 3 | Issue machine issuer claim (topic 7) on ONCHAINID identity | `issueClaims.js` or manual `addClaim` | Required before `addMachineIssuer` |
 
 ### Step B.2 — Machine issuer onboarding
 
-Follow [Machine Issuer flow](https://docs.peaq.xyz/peaqchain/sdk-reference/rwa/workflows/machine-issuer-flow):
+Follow the machine issuer workflow (`sdk/sdk_reference/workflows/machine_issuer_flow.md`):
 
 | # | Who | SDK call | Verify |
 |---|-----|----------|--------|
@@ -166,7 +162,7 @@ Follow [Machine Issuer flow](https://docs.peaq.xyz/peaqchain/sdk-reference/rwa/w
 
 ### Step B.3 — Common flow (10 steps)
 
-Matches [Common flow](https://docs.peaq.xyz/peaqchain/sdk-reference/rwa/workflows/common-flow):
+Matches the common flow (`sdk/sdk_reference/workflows/common_flow.md`):
 
 #### Phase 1 — Onboard participants
 
@@ -213,23 +209,23 @@ Wire the same addresses into your application’s integration tests.
 
 ---
 
-## 6. Track C — Agung / peaq testnet (optional)
+## 6. Track C — Arbitrum Sepolia testnet (optional)
 
-Deploy this project on Agung if you need peaq chain parity. Use `deployments/deployment-<chainId>.json` with any client.
+Deploy this project on Arbitrum Sepolia. Use `deployments/deployment-<chainId>.json` with any client.
 
 ### Network config
 
 ```bash
-HTTPS_BASE_URL="https://peaq-agung.api.onfinality.io/public"
+ARB_SEPOLIA_RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
 ```
 
-### Agung-specific notes (from peaq docs + maintainer guides)
+### Arbitrum Sepolia-specific notes
 
-- Set `allowUnlimitedContractSize: true` when deploying `PeaqVaultFactory` (same as official peaq-rwa-evm deploy scripts).
-- Fee token on Agung is typically `0x0000000000000000000000000000000000000809` (native peaq ERC-20 precompile).
-- Fund every test wallet with Agung PEAQ **and** enough fee-token balance for machine registration (fee ≈ machine value when `VAL_MACHINE_FEE_BPS = 10000`).
+- Set `allowUnlimitedContractSize: true` when deploying `ArbVaultFactory` on testnets.
+- Fee token on the demo deployment is **MockFeeToken** (see `deployments/deployment-421614.json`).
+- Fund every test wallet with ETH for gas **and** enough fee-token balance for machine registration (fee ≈ machine value when `VAL_MACHINE_FEE_BPS = 10000`).
 
-Run your client integration tests against the Agung deployment JSON.
+Run your client integration tests against the Arbitrum Sepolia deployment JSON.
 
 ---
 
@@ -295,11 +291,11 @@ Run these to confirm regulation works:
 |----------|-------|------|
 | `IdFactory` | `WalletLinked` | Identity created |
 | `Identity` | `ClaimAdded` | KYC / role claim attached |
-| `PeaqRwaNft` | `MachineIssuerAdded` | New issuer + MNFT deployed |
+| `ArbRwaNft` | `MachineIssuerAdded` | New issuer + MNFT deployed |
 | `MachineNft` | `MachineAdded` | Machine registered |
 | `ContractNft` | `ContractCompleted` | All signatures collected |
-| `PeaqVaultFactory` | `VaultCreated` | Vault + token + distributor |
-| `PeaqVault` | `Deposited`, `Minted` | Collateral locked, tokens minted |
+| `ArbVaultFactory` | `VaultCreated` | Vault + token + distributor |
+| `ArbVault` | `Deposited`, `Minted` | Collateral locked, tokens minted |
 | `SecurityToken` | `Transfer` | Compliant token movement |
 | `RewardDistributor` | `YieldDeposited`, `Claimed` | Yield lifecycle |
 
@@ -314,7 +310,7 @@ Run these to confirm regulation works:
 | `Recipient not verified` on transfer | Missing vault IR registration | Admin calls `registerIdentity` for recipient |
 | `Compliance rejected` on transfer | Fee module allowance | Run `ensureTransferFeeAllowance` first |
 | `Already minted` | Second deposit attempt | Expected — one deposit per vault by design |
-| Factory deploy fails (code too large) | 24 KB mainnet limit | Use Agung / `allowUnlimitedContractSize` or split factory |
+| Factory deploy fails (code too large) | 24 KB mainnet limit | Use Arbitrum Sepolia / `allowUnlimitedContractSize` or split factory |
 | Client `Unsupported chainId` | Address JSON missing | Add `deployments/deployment-<chainId>.json` to your app config |
 
 ---
@@ -330,13 +326,10 @@ Run these to confirm regulation works:
 
 ---
 
-## 12. Official documentation links
+## 12. Project documentation links
 
-- [RWA Introduction](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/introduction)
-- [Roles & Responsibilities](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/roles)
-- [Modules overview](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/modules)
-- [Common flow](https://docs.peaq.xyz/peaqchain/sdk-reference/rwa/workflows/common-flow)
-- [Machine issuer flow](https://docs.peaq.xyz/peaqchain/sdk-reference/rwa/workflows/machine-issuer-flow)
-- [SDK initialization](https://docs.peaq.xyz/peaqchain/sdk-reference/rwa/initialize)
-
-Reference workflows: [peaq RWA docs](https://docs.peaq.xyz/peaqchain/build/advanced-operations/rwa/introduction).
+- SDK Mintlify docs: `sdk/mintlify/` (run `mintlify dev` from that folder)
+- SDK reference: `sdk/sdk_reference/`
+- User guides: `sdk/docs/users/`
+- Maintainer guides: `sdk/docs/sdk_maintainers/`
+- Arbitrum deploy notes: [ARBITRUM.md](./ARBITRUM.md)

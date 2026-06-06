@@ -1,0 +1,34 @@
+---
+title: Manual Workflow Testing
+description: Choose a hands-on testing path — SDK TypeScript or Scaffold-ETH UI.
+---
+
+Test the full RWA workflow **manually** (no batch automation). Pick the path that matches how you work:
+
+<CardGroup cols={2}>
+  <Card title="SDK (TypeScript)" icon="code" href="/workflows/manual-testing-sdk">
+    Write `manual-step.ts` scripts with `@arbitrum-machine/rwa-sdk` and `npx tsx`. Best for integrators and backend developers.
+  </Card>
+  <Card title="Scaffold-ETH (UI)" icon="browser" href="/workflows/manual-testing-scaffold">
+    Click through `/rwa` pages and `/debug` with MetaMask. Best for QA and demo walkthroughs.
+  </Card>
+</CardGroup>
+
+Both guides cover the same **10 phases** in order:
+
+1. ONCHAINID identities  
+2. KYC claims  
+3. Machine issuer authorization  
+4. Machine NFT  
+5. Contract NFT  
+6. Vault + Identity Registry  
+7. NFT approvals  
+8. Deposit and mint  
+9. Token transfers  
+10. Yield deposit and claims  
+
+<Info>
+Deploy framework contracts once with `yarn deploy:arbitrum-sepolia`. Participant steps remain manual in both guides.
+</Info>
+
+For automated regression instead, see [SDK Standalone Testing](/workflows/sdk-standalone).

@@ -13,6 +13,11 @@ The **Arbitrum Machine Real World Asset (RWA) SDK** enables the tokenization of 
 
 | Section | Description | Audience |
 |---------|-------------|----------|
+| **[Introduction](./mintlify/introduction.mdx)** | Framework overview, standards, Sepolia addresses | Everyone |
+| **[Core modules](./mintlify/concepts/modules.mdx)** | `onchainid`, `mnft`, `cnft`, `vault`, `rwanft` | Everyone |
+| **[Roles & responsibilities](./mintlify/concepts/roles.mdx)** | Framework Owner through Investor | Everyone |
+| **[Manual testing — SDK](./mintlify/workflows/manual-testing-sdk.mdx)** | Hands-on workflow via TypeScript + SDK | Integrators |
+| **[Manual testing — Scaffold-ETH](./mintlify/workflows/manual-testing-scaffold.mdx)** | Hands-on workflow via `/rwa` UI + MetaMask | QA / demos |
 | **[Learn the Framework](./docs/users/introduction.md)** | Understand the RWA ecosystem, roles, and concepts | Everyone |
 | **[SDK Reference](./sdk_reference/)** | API documentation with code examples | Developers |
 | **[Maintainer Guide](./docs/sdk_maintainers/)** | Deploy, update, and test the framework / SDK | SDK Maintainers |
@@ -95,9 +100,22 @@ npm test
 
 ## Sync Addresses After Deploy
 
+**SDK-only (npm — no Yarn):**
+
+```bash
+cd sdk
+npm run sync-addresses
+npm run build
+npm run verify:workflow
+```
+
+See **[SDK standalone testing](./mintlify/workflows/sdk-standalone.mdx)** for every command to test the full workflow from `sdk/` alone.
+
+**After a fresh monorepo deploy** (optional — only if you redeployed contracts):
+
 ```bash
 cd frontend && yarn bootstrap:arbitrum-sepolia
-cd ../sdk && yarn sync-addresses && yarn build
+cd ../sdk && npm run sync-addresses && npm run build
 ```
 
 ## Legacy Helpers

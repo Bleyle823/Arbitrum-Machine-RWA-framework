@@ -1,0 +1,27 @@
+---
+title: Get Machine DID
+description: mnft.getMachineDid — read and decode DID document from a Machine NFT.
+---
+
+## `mnft.getMachineDid(GetMachineDid)`
+
+Read-only. Decodes UTF-8 DID string from on-chain bytes.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **tokenId** | `string \| bigint` | Yes | Machine NFT token ID |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **tokenId** | `bigint` | Token ID queried |
+| **did** | `string` | Decoded DID document string |
+
+### TypeScript
+
+```typescript
+const m = sdk.getManifest();
+const result = await sdk.mnft.getMachineDid({ tokenId: m.machineTokenId });
+console.log(result.did);
+```

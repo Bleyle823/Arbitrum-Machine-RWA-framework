@@ -1,0 +1,22 @@
+---
+title: Get Machine Regulators
+description: rwanft.getMachineRegulators — list Machine Regulator addresses.
+---
+
+## `rwanft.getMachineRegulators()`
+
+Read-only call to `ArbRwaNft`.
+
+### Returns
+
+`string[]` — Machine Regulator EOAs.
+
+### TypeScript
+
+```typescript
+const regulators = await sdk.rwanft.getMachineRegulators();
+```
+
+<Note>
+Adding/removing issuers is performed via Hardhat bootstrap today, not yet exposed as SDK write methods.
+</Note>

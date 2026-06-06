@@ -1,6 +1,6 @@
-## `rwanft.getMachineRegulators()`
+﻿## `rwanft.getMachineRegulators()`
 
-Fetch the list of Machine Regulator addresses registered in the PeaqRwaNft contract. This is a read-only call.
+Fetch the list of Machine Regulator addresses registered in the ArbRwaNft contract. This is a read-only call.
 
 ### Parameters
 None.
@@ -20,7 +20,7 @@ import { JsonRpcProvider } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -43,7 +43,7 @@ import { JsonRpcProvider } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider: provider });
 
   // 1. Get Machine Regulators

@@ -1,0 +1,34 @@
+---
+title: Compute Contract ID
+description: cnft.computeContractId — deterministic contract ID (no transaction).
+---
+
+## `cnft.computeContractId(ComputeContractId)`
+
+Synchronous helper. Same algorithm as on-chain `ContractNft`.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **initiator** | `string` | Yes | Controller EOA |
+| **counterparties** | `string[]` | Yes | Counterparty EOAs |
+| **hashDigest** | `bigint` | Yes | Content hash |
+| **url** | `string` | Yes | Metadata URL |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **contractId** | `bigint` | Deterministic ID |
+
+### TypeScript
+
+```typescript
+import { keccak256, toUtf8Bytes } from "ethers";
+
+const { contractId } = sdk.cnft.computeContractId({
+  initiator: sdk.getManifest().alice,
+  counterparties: [sdk.getManifest().bob, sdk.getManifest().charlie],
+  hashDigest: BigInt(keccak256(toUtf8Bytes("content"))),
+  url: "https://example.com",
+});
+```

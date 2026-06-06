@@ -1,4 +1,4 @@
-## `cnft.createContract(CreateContract)`
+﻿## `cnft.createContract(CreateContract)`
 
 Create a Contract NFT draft by initializing the contract with counterparties and content, and paying the setup fee (ERC20). This sends a transaction from the contract controller.
 
@@ -35,7 +35,7 @@ import { JsonRpcProvider, Wallet, keccak256, toUtf8Bytes } from 'ethers';
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -55,7 +55,7 @@ async function main() {
   // 4. Create contract draft
   const result = await rwa_sdk.cnft.createContract({
     contractController: alice,
-    erc20: rwa_sdk.getAddresses().erc20.peaq,
+    erc20: sdk.getAddresses().vault.feeToken,
     tokenDecimals: 18,
     counterparties: [bob, charlie],
     contractNft: contractNft,
@@ -79,7 +79,7 @@ import { JsonRpcProvider, Wallet, keccak256, toUtf8Bytes } from 'ethers';
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Contract controller (submits tx and pays ERC20 fee)
@@ -98,7 +98,7 @@ async function main() {
   // 4. Create contract draft
   const result = await rwa_sdk.cnft.createContract({
     contractController: alice,
-    erc20: rwa_sdk.getAddresses().erc20.peaq,
+    erc20: sdk.getAddresses().vault.feeToken,
     tokenDecimals: 18,
     counterparties: [bob, charlie],
     contractNft: contractNft,

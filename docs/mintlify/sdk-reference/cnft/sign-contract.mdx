@@ -1,0 +1,32 @@
+---
+title: Sign Contract
+description: cnft.signContract — counterparty signature on a Contract NFT.
+---
+
+## `cnft.signContract(SignContract)`
+
+Counterparty signs the contract. When all signatures are collected, the contract is completed on-chain.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **signer** | `Signer` | Yes | Counterparty signer |
+| **contractId** | `bigint` | Yes | Contract ID to sign |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `'signed'` | Operation status |
+| **contractId** | `bigint` | Contract ID |
+| **receipt** | `TransactionReceipt` | Sign tx |
+
+### TypeScript
+
+```typescript
+const bob = new Wallet(process.env.BOB_PRIVATE_KEY!, provider);
+
+await sdk.cnft.signContract({
+  signer: bob,
+  contractId: 1234567890n,
+});
+```

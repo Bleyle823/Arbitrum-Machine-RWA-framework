@@ -1,0 +1,295 @@
+---
+title: Roles & Responsibilities
+description: Framework Owner, Claim Issuer, Machine Regulator, Machine Issuer, Vault Owner, and Investors in the Arbitrum Machine RWA ecosystem.
+---
+
+The Arbitrum Machine RWA Framework defines a structured hierarchy of roles, each with specific responsibilities, requirements, and capabilities.
+
+## Quick reference
+
+| Role | Required claim | Appointed by | Primary responsibility |
+|------|----------------|--------------|------------------------|
+| Framework Owner | Admin access | Deployment | Ecosystem administration |
+| Claim Issuer | Trusted by Framework Owner | Framework Owner | Issue KYC and role claims |
+| Machine Regulator | `CT_MNFT_REGULATOR` (topic **8**) | Framework Owner | Approve machine issuers |
+| Machine Issuer | `CT_MNFT_ISSUER` (topic **7**) | Machine Regulator | Mint Machine NFTs |
+| Vault Owner / Controller | Created via factory | Framework Owner | Manage vault operations |
+| User / Investor | `CT_KYC_APPROVED` (topic **666**) | Claim Issuer | Hold assets and tokens |
+
+Claim topic constants are exported from the SDK as `CT_KYC_APPROVED`, `CT_MNFT_ISSUER`, and `CT_MNFT_REGULATOR` (see `ClaimTopics` enum).
+
+---
+
+## Framework Owner
+
+The **Framework Owner** is the top-level administrator of the RWA ecosystem. This role is typically held by the organization that deployed the framework contracts on Arbitrum.
+
+### Responsibilities
+
+1. **Manage trusted Claim Issuers** — Decide which entities may issue claims (KYC, roles) that verifiers and the Identity Registry recognize
+2. **Appoint Machine Regulators** — Add or remove addresses authorized to approve machine issuers on `ArbRwaNft`
+3. **Create vaults** — Deploy vault instances with associated security tokens and reward distributors via `ArbVaultFactory`
+4. **Configure compliance** — Wire Claim Issuers and claim topics into T-REX suites at vault creation
+5. **Emergency controls** — Block or unblock machine issuers; pause or unpause security tokens when necessary
+
+### Trust and Claim Issuers
+
+Anyone can deploy a `ClaimIssuer` contract, but only claims from issuers **trusted by the Framework Owner** are recognized by the framework's verifiers and vault Identity Registry.
+
+The Framework Owner determines which claim topics each issuer may cover:
+
+| Topic | Constant | Purpose |
+|-------|----------|---------|
+| KYC | `CT_KYC_APPROVED` (**666**) | User identity verification |
+| Machine issuer | `CT_MNFT_ISSUER` (**7**) | Authorize machine issuers |
+| Machine regulator | `CT_MNFT_REGULATOR` (**8**) | Authorize machine regulators |
+
+### Vault factory management
+
+The Framework Owner controls **ArbVaultFactory**, which deploys complete vault setups:
+
+- **ArbVault** — Holds Machine NFTs and Contract NFTs
+- **Security token** — T-REX (ERC-3643) fractional ownership token
+- **RewardDistributor** — Pro-rata yield to token holders
+
+When creating a vault, the Framework Owner specifies:
+
+- Vault controller (vault taker — e.g. Alice in the demo)
+- Token name and symbol
+- Payout asset for yield (MockFeeToken on Sepolia demo)
+- KYC requirements and compliance modules
+
+<Info>
+Vault creation and Identity Registry registration are performed via **Hardhat deploy/bootstrap** or **`/debug`** today. SDK write methods for `createVault` and `registerIdentity` are documented in `sdk_reference/` and planned for a future SDK release.
+</Info>
+
+---
+
+## Claim Issuers
+
+A **Claim Issuer** is an entity that issues verifiable claims about users. Claims enable compliance without centralized identity storage.
+
+### What are claims?
+
+Claims contain structured information that verifiers use to grant access:
+
+- **Topic** — Claim type (KYC approved, machine issuer role, etc.)
+- **Scheme** — Data format (ECDSA in this framework)
+- **Signature** — Cryptographic proof from the issuer
+- **Data** — Encoded claim payload (e.g. name, DOB for KYC)
+- **URI** — Optional reference to additional information
+
+### Types of claims
+
+| Claim type | Topic | Purpose |
+|------------|-------|---------|
+| KYC claims | `CT_KYC_APPROVED` (**666**) | Verify identity for compliance |
+| Role claims | `CT_MNFT_ISSUER`, `CT_MNFT_REGULATOR` | Authorize framework roles |
+
+### Becoming a Claim Issuer
+
+1. **Deploy a ClaimIssuer contract** (done at framework deploy in this repo)
+2. **Be trusted by the Framework Owner** — Added to the Trusted Issuers Registry for specific topics
+3. **Configure signing keys** — Wallet addresses that sign claims on behalf of the ClaimIssuer contract
+
+### Issuing claims
+
+1. Receive identity information from the user (wallet + ONCHAINID address)
+2. Verify information through your KYC process (off-chain)
+3. Build claim data — use SDK helper `encodeKycData(first, last, dob, city)`
+4. Sign the claim with the Claim Issuer key
+5. User (identity owner) submits `addClaim` via `sdk.onchainid.addClaimToIdentity`
+
+For role claims, the process verifies organizational authorization rather than personal identity.
+
+→ [addClaimToIdentity](/sdk-reference/identity/add-claim-to-identity)
+
+---
+
+## Machine Regulators
+
+A **Machine Regulator** oversees and authorizes machine issuers. They act as a quality-control layer ensuring only legitimate entities mint Machine NFTs.
+
+### Prerequisites
+
+1. **ONCHAINID Identity** linked to your wallet
+2. **KYC approved** — `CT_KYC_APPROVED` claim on your Identity
+3. **Regulator claim** — `CT_MNFT_REGULATOR` from a trusted Claim Issuer
+
+### Becoming a Machine Regulator
+
+**Step 1 — Obtain the role claim**
+
+Provide your Identity contract address and organization details to a trusted Claim Issuer. They sign topic **8**; you add the claim to your Identity.
+
+**Step 2 — Appointment by Framework Owner**
+
+The Framework Owner calls `addMachineRegulator` on **ArbRwaNft** with your wallet address.
+
+### Responsibilities
+
+1. **Vet Machine Issuers** — Verify issuers are authorized to tokenize machines
+2. **Add Machine Issuers** — Call `addMachineIssuer` on ArbRwaNft (deploys or assigns MachineNft capability)
+3. **Monitor issuers** — Oversee authorized issuers in your jurisdiction
+4. **Report issues** — Alert the Framework Owner if an issuer must be blocked
+
+### Adding a Machine Issuer
+
+1. Verify the issuer has Identity + `CT_MNFT_ISSUER` claim
+2. Call `addMachineIssuer(issuerAddress)` on ArbRwaNft
+3. Issuer can now call `registerMachine` on the shared MachineNft contract (demo deployment)
+
+→ Query regulators: [getMachineRegulators](/sdk-reference/rwanft/get-machine-regulators)
+
+---
+
+## Machine Issuers
+
+A **Machine Issuer** mints Machine NFTs representing real-world physical assets.
+
+### Prerequisites
+
+1. **ONCHAINID Identity**
+2. **KYC approved** — `CT_KYC_APPROVED`
+3. **Issuer claim** — `CT_MNFT_ISSUER` from a trusted Claim Issuer
+
+### Becoming a Machine Issuer
+
+**Step 1 — Obtain the role claim** (topic **7**)
+
+**Step 2 — Authorization by a Machine Regulator** via `addMachineIssuer`
+
+In the Sepolia demo, the **Admin / Framework Owner** often acts as both regulator and issuer for simplicity.
+
+### Registering machines
+
+1. Collect machine information from the owner
+2. Create a **DID document** (type, manufacturer, serial number, etc.)
+3. Ensure **fee approval** — Machine owner approves MockFeeToken registration fee
+4. Call **`registerMachine`** with owner address, value, token ID, and DID bytes
+5. NFT is transferred to the owner's wallet
+
+```typescript
+await sdk.mnft.registerMachine({
+  machineIssuer: adminSigner,
+  machineOwner: aliceAddress,
+  machineValue: parseEther("119990"),
+  tokenId: 202604042n,
+  did: new TextEncoder().encode("did:arbitrum:machine:VEH-2026-CYBER-DLV-0042"),
+});
+```
+
+→ [registerMachine](/sdk-reference/mnft/register-machine)
+
+---
+
+## Vault Owners / Controllers
+
+A **Vault Owner** (vault controller / vault taker) manages an **ArbVault** that holds Machine NFTs and Contract NFTs and fractionalizes them into security tokens.
+
+### How vaults are created
+
+Vaults are created by the Framework Owner through **ArbVaultFactory**:
+
+- New **ArbVault** contract
+- Associated T-REX **security token**
+- **RewardDistributor** for yield
+- Ownership / control assigned to the specified vault controller (Alice in the demo)
+
+### Vault controller responsibilities
+
+1. **Accept deposits** — Receive approved NFTs from the controller wallet
+2. **Mint security tokens** — Single `depositAndMint` per vault (collateral locked)
+3. **Manage yield** — Or authorize third parties to `depositYield`
+4. **Transfer tokens** — Compliant transfers to verified investors (with fee token allowance)
+5. **Compliance** — Only IR-registered, KYC-verified addresses can hold tokens
+
+### Depositing and minting
+
+One combined operation per vault:
+
+- Machine NFT + Contract NFT transferred into the vault
+- Security tokens minted to the depositor (typically 100 tokens in the demo)
+
+### Yield distribution
+
+- Anyone can `depositYield` into the RewardDistributor
+- Yield accrues pro-rata by token balance
+- Holders `claim()` or `claimTo(address)`
+
+### Identity Registry
+
+Before an address can hold security tokens:
+
+- Valid ONCHAINID Identity with KYC claim
+- Address **registered** in the vault's Identity Registry (`registerIdentity` — admin today)
+
+→ [depositAndMint](/sdk-reference/vault/deposit-and-mint)
+
+---
+
+## Users / Investors
+
+A **User** or **Investor** owns Machine NFTs, holds security tokens, receives yield, and participates in Contract NFT agreements.
+
+### Prerequisites
+
+1. **Identity contract** — Created via `IdFactory` / `sdk.onchainid.createIdentity`
+2. **KYC approval** — `CT_KYC_APPROVED` from a trusted Claim Issuer
+3. **IR registration** — Registered on the vault Identity Registry before holding tokens
+
+Without these, you cannot own Machine NFTs (in regulated flows), hold security tokens, receive yield, or complete vault minting as controller.
+
+### Onboarding process
+
+**Step 1 — Deploy Identity**
+
+```typescript
+await sdk.onchainid.createIdentity({
+  idFactoryAdmin: admin,
+  subject: userWallet,
+  deploymentSalt: `identity-${Date.now()}`,
+});
+```
+
+**Step 2 — KYC claim**
+
+Contact a trusted Claim Issuer, complete verification, then attach the signed claim with `addClaimToIdentity`.
+
+**Step 3 — Vault registration** (for token holders)
+
+Framework Owner or agent calls `registerIdentity` on the vault IR (bootstrap or `/debug`).
+
+### What investors can do
+
+| Action | SDK / UI |
+|--------|----------|
+| Own Machine NFTs | Receive from Machine Issuer |
+| Create Contract NFTs | `cnft.createContract` / `/rwa/contracts/new` |
+| Sign contracts | `cnft.signContract` / contract detail page |
+| Hold security tokens | After vault mint + IR registration |
+| Transfer tokens | `vault.transfer` / `/rwa/invest` |
+| Claim yield | `vault.claimYield`, `claimYieldTo` / `/rwa/yield` |
+
+---
+
+## Demo participants (Sepolia)
+
+The reference manifest ships three demo EOAs:
+
+| Label | Role in demo flow |
+|-------|-------------------|
+| **Alice** | Asset owner, vault controller, minter, transfer sender |
+| **Bob** | Contract co-signer, token recipient, yield claimant |
+| **Charlie** | Contract co-signer, token recipient, `claimTo` destination |
+
+Addresses are in `sdk.getManifest()` after [syncing addresses](/maintainers/sync-addresses).
+
+---
+
+## Next steps
+
+- [Core Modules](/concepts/modules) — SDK module reference
+- [Common Flow](/workflows/common-flow) — End-to-end integrator workflow
+- [Manual Testing (SDK)](/workflows/manual-testing-sdk) — Hands-on testing guide
+- [API Reference](/sdk-reference/initialize) — Method-level documentation

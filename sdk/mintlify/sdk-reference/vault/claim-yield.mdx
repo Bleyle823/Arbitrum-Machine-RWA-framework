@@ -1,0 +1,25 @@
+---
+title: Claim Yield
+description: vault.claimYield — claim accrued yield to the claimant address.
+---
+
+## `vault.claimYield(ClaimYield)`
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **claimant** | `Signer` | Yes | Token holder claiming yield |
+| **vault** | `string` | No | Defaults to manifest ArbVault |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `string` | `'claimed'` |
+| **receipt** | `TransactionReceipt` | Claim tx |
+
+### TypeScript
+
+```typescript
+const bob = new Wallet(process.env.BOB_PRIVATE_KEY!, provider);
+await sdk.vault.claimYield({ claimant: bob });
+```

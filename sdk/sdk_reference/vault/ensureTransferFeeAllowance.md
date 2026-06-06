@@ -1,4 +1,4 @@
-## `vault.ensureTransferFeeAllowance(EnsureTransferFeeAllowance)`
+﻿## `vault.ensureTransferFeeAllowance(EnsureTransferFeeAllowance)`
 
 Ensure an ERC20 allowance is set to pay the vault transfer fee for a given token transfer. If the allowance is insufficient, it submits an approval transaction.
 
@@ -32,7 +32,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -44,7 +44,7 @@ async function main() {
     allowanceSigner: alice,
     vault: "0x4b76a8F7cdB68a9353c83e18077E6bbC760243B3",
     token: "0x811247945f5fcBD9068F71298a69e71B2A4Ba66f",
-    erc20: rwa_sdk.getAddresses().erc20.peaq,
+    erc20: sdk.getAddresses().vault.feeToken,
     transferAmountHuman: "2"
   });
   console.log("Result", result);
@@ -64,7 +64,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Allowance signer (pays transfer fee)
@@ -75,7 +75,7 @@ async function main() {
     allowanceSigner: alice,
     vault: "0x4b76a8F7cdB68a9353c83e18077E6bbC760243B3",
     token: "0x811247945f5fcBD9068F71298a69e71B2A4Ba66f",
-    erc20: rwa_sdk.getAddresses().erc20.peaq,
+    erc20: sdk.getAddresses().vault.feeToken,
     transferAmountHuman: "2"
   });
   console.log("Result", result);

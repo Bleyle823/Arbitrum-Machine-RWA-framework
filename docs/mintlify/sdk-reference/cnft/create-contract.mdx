@@ -1,0 +1,40 @@
+---
+title: Create Contract
+description: cnft.createContract — initialize a multi-party Contract NFT draft.
+---
+
+## `cnft.createContract(CreateContract)`
+
+Contract controller creates a draft. Contract ID is deterministic from initiator, counterparties, hash, and URL.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **initiator** | `Signer` | Yes | Contract controller |
+| **counterparties** | `string[]` | Yes | EOAs that must sign |
+| **hashDigest** | `bigint` | Yes | Content hash as bigint |
+| **url** | `string` | Yes | Metadata URL |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `'created'` | Operation status |
+| **contractId** | `bigint` | Deterministic contract ID |
+| **receipt** | `TransactionReceipt` | Creation tx |
+
+### TypeScript
+
+```typescript
+import { keccak256, toUtf8Bytes, Wallet } from "ethers";
+
+const alice = new Wallet(process.env.ALICE_PRIVATE_KEY!, provider);
+const url = "https://example.com/rwa-contract";
+const hashDigest = BigInt(keccak256(toUtf8Bytes("contract body")));
+
+const result = await sdk.cnft.createContract({
+  initiator: alice,
+  counterparties: [sdk.getManifest().bob, sdk.getManifest().charlie],
+  hashDigest,
+  url,
+});
+```

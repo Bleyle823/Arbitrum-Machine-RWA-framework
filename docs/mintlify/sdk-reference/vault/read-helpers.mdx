@@ -1,0 +1,28 @@
+---
+title: Vault Read Helpers
+description: isMinted, tokenBalance, and transactionFee read methods.
+---
+
+## `vault.isMinted(vault?)`
+
+Returns whether the vault has completed its initial mint.
+
+```typescript
+const minted = await sdk.vault.isMinted();
+```
+
+## `vault.tokenBalance(account, token?)`
+
+ERC-3643 balance for an account.
+
+```typescript
+const balance = await sdk.vault.tokenBalance(sdk.getManifest().alice);
+```
+
+## `vault.transactionFee(transferAmount, vault?)`
+
+Query transfer fee and fee recipient for a given transfer size.
+
+```typescript
+const { fee, account } = await sdk.vault.transactionFee(10n ** 18n);
+```

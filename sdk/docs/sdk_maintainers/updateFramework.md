@@ -1,5 +1,5 @@
-# Update Framework
-The framework is defined and created at the [Arbitrum-Machine-RWA-framework](https://github.com/peaqnetwork/Arbitrum-Machine-RWA-framework/tree/dev) repository. Whenever new contracts, flows, or methods are added the sdk must be updated appropriately. Below is a rough estimate of what this could look like:
+﻿# Update Framework
+The framework is defined and created at the [Arbitrum-Machine-RWA-framework](https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework/tree/dev) repository. Whenever new contracts, flows, or methods are added the sdk must be updated appropriately. Below is a rough estimate of what this could look like:
 
 ## 1. Add new functionality
 For the new functionality in the RWA Framework, additional modules / functions may need to be added.

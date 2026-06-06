@@ -35,6 +35,8 @@
     "check-types": "tsc --noEmit",
     "test": "vitest run",
     "sync-addresses": "node scripts/sync-addresses.mjs",
+    "verify:workflow": "node scripts/verify-workflow.mjs",
+    "writes": "node scripts/run-sdk-writes.mjs",
     "prepublishOnly": "npm run clean && npm run build && npm run test"
   },
   "peerDependencies": {
@@ -61,6 +63,7 @@
   "engines": {
     "node": ">=18.17.0"
   },
+  "packageManager": "npm@10.9.2",
   "publishConfig": {
     "access": "public"
   },

@@ -1,0 +1,71 @@
+---
+title: Deploy & Bootstrap
+description: Hardhat deploy and bootstrap scripts for Arbitrum Sepolia.
+---
+
+Admin flows (vault creation, identity registry, unpause) run via **Hardhat scripts** in the monorepo, not yet as SDK write APIs.
+
+## Prerequisites
+
+```bash
+cd frontend
+cp packages/hardhat/.env.example packages/hardhat/.env
+# Set DEPLOYER_KEYSTORE_FILE or DEPLOYER_PRIVATE_KEY
+yarn account:import
+```
+
+## Deploy framework
+
+From `frontend/`:
+
+```bash
+yarn deploy:arbitrum-sepolia
+```
+
+Writes artifacts to `packages/hardhat/deployments/arbitrumSepolia/`.
+
+## Bootstrap vault + demo state
+
+```bash
+yarn bootstrap:arbitrum-sepolia
+```
+
+Bootstrap typically:
+
+1. Creates ONCHAINID identities for Alice, Bob, and Charlie
+2. Issues and attaches KYC claims
+3. Registers machine issuer on `ArbRwaNft`
+4. Deploys `MachineNft` and `ContractNft`
+5. Creates vault + security token via `ArbVaultFactory`
+6. Registers identities in the vault Identity Registry
+7. Unpauses token
+8. Seeds demo NFTs (when participant private keys are in `.env`)
+9. Updates `packages/nextjs/public/rwa-manifest.json`
+
+## Verify
+
+```bash
+yarn verify:demo-state
+```
+
+## Sync addresses into SDK
+
+```bash
+cd sdk
+node scripts/sync-addresses.mjs
+npm run build
+node scripts/verify-workflow.mjs
+```
+
+This updates `src/addresses/arbitrumSepolia.json` from Hardhat deployment artifacts.
+
+## Environment
+
+See `frontend/packages/hardhat/.env.example` for:
+
+- `ARB_SEPOLIA_RPC_URL`
+- Deployer keystore / private key
+- `ALICE_PRIVATE_KEY`, `BOB_PRIVATE_KEY`, `CHARLIE_PRIVATE_KEY` (optional, for full demo seeding)
+- `ETHERSCAN_API_KEY` (optional, for verify)
+
+For the full contract-level walkthrough, see [Smart Contract Testing](/smart-contracts/guide).

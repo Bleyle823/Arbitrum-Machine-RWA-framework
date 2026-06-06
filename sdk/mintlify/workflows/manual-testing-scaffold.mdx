@@ -1,0 +1,276 @@
+---
+title: Manual Testing (Scaffold-ETH)
+description: Step-by-step hands-on RWA workflow using the Scaffold-ETH frontend — MetaMask, /rwa pages, and /debug.
+---
+
+Test the full RWA pipeline **manually** through the Scaffold-ETH UI. Click buttons and switch wallets — no `yarn bootstrap`, `yarn seed:demo-assets`, or `npm run writes`.
+
+For the TypeScript SDK walkthrough, see [Manual Testing (SDK)](/workflows/manual-testing-sdk).
+
+<Info>
+**Infrastructure once:** Run `yarn deploy:arbitrum-sepolia` from `frontend/` to deploy contracts and generate `rwa-manifest.json`. Every participant step below is still manual.
+</Info>
+
+---
+
+## Roles and wallets
+
+| Role | Who connects | Used on |
+|------|--------------|---------|
+| **Admin** | Deployer / Hardhat #0 in MetaMask | `/debug` — IdFactory, RwaNft, vault factory, IR |
+| **Alice** | `ALICE_PRIVATE_KEY` → MetaMask | `/rwa/machines`, `/rwa/contracts`, `/rwa/vault`, `/rwa/invest`, `/rwa/yield` |
+| **Bob** | `BOB_PRIVATE_KEY` → MetaMask | `/rwa/contracts/{id}`, `/rwa/yield` |
+| **Charlie** | `CHARLIE_PRIVATE_KEY` → MetaMask | `/rwa/contracts/{id}`, `/rwa/yield` (claimTo target) |
+
+Import keys from `frontend/packages/hardhat/.env`. The UI shows **Alice**, **Bob**, etc. when your address matches `rwa-manifest.json`.
+
+---
+
+## Checklist
+
+| # | Phase | Where |
+|---|-------|-------|
+| 0 | Start frontend + MetaMask | `yarn start` |
+| 1 | ONCHAINID identities | `/debug` → IdFactory |
+| 2 | KYC claims | `/debug` → Identity + ClaimIssuer |
+| 3 | Machine issuer | `/debug` → ArbRwaNft |
+| 4 | Machine NFT | `/rwa/machines` |
+| 5 | Contract NFT | `/rwa/contracts/new` → `/rwa/contracts/{id}` |
+| 6 | Vault + IR + unpause | `/debug` |
+| 7 | NFT approvals | `/rwa/vault` Phase A |
+| 8 | Mint tokens | `/rwa/vault` Phase B |
+| 9 | Transfers | `/rwa/invest` |
+| 10 | Yield | `/rwa/yield` |
+
+---
+
+## Phase 0 — Setup
+
+```bash
+cd frontend
+yarn install
+yarn deploy:arbitrum-sepolia   # once — infrastructure only
+yarn start
+```
+
+1. Open **http://localhost:3000/rwa**
+2. Confirm **Deployed addresses** card shows MachineNft, ContractNft, ArbVault (after Phase 6)
+3. Add **Arbitrum Sepolia** to MetaMask; import Alice, Bob, Charlie keys
+4. Read the blue **WalletRoleHint** on each page before clicking
+
+Dashboard **Demo workflow** checklist updates as you complete steps.
+
+---
+
+## Phase 1 — Create identities
+
+**Goal:** ONCHAINID proxy per participant.
+
+1. **http://localhost:3000/debug**
+2. Network: **Arbitrum Sepolia**
+3. Contract: **IdFactory**
+4. Connect **Admin**
+5. **`createIdentity`** — repeat for each participant:
+   - `subject`: Alice address → Bob → Charlie (from manifest / `.env`)
+   - `salt`: unique string, e.g. `"alice-identity-1"`
+6. Confirm each transaction in MetaMask
+
+**Verify:** IdFactory **`getIdentity(subject)`** returns non-zero for all three.
+
+---
+
+## Phase 2 — KYC claims
+
+**Goal:** Topic **666** KYC on each ONCHAINID identity.
+
+KYC in `/debug` is multi-step:
+
+1. **Identity** (Alice's ONCHAINID address) — connect **Alice**
+   - **`addKey`** with purpose `3` (claim signer) if not present
+2. **ClaimIssuer** — sign claim payload (or use Hardhat console with repo claim helpers)
+3. **Identity** — **`addClaim`** with topic 666, issuer signature, encoded KYC data
+4. Repeat for Bob and Charlie
+
+<Tip>
+The **KYC on vault registry** card on `/rwa` only turns green **after Phase 6** registers identities on the vault Identity Registry — not immediately after Phase 2.
+</Tip>
+
+---
+
+## Phase 3 — Authorize machine issuer
+
+**Goal:** Admin can call `registerMachine`.
+
+1. **http://localhost:3000/debug**
+2. Connect **Admin**
+3. **ArbRwaNft** (or RwaNft from deployments):
+   - **`addMachineRegulator`** — Admin address
+   - **`addMachineIssuer`** — Admin address
+
+**Verify:** **`getMachineIssuers`** includes Admin.
+
+---
+
+## Phase 4 — Register Machine NFT
+
+**Goal:** Alice owns Machine NFT **`202604042`**.
+
+1. **http://localhost:3000/rwa/machines**
+2. Connect **Alice** → **Alice: approve fee token**
+3. Switch to **Admin** → **Admin: registerMachine**
+   - `machineOwner`: Alice (pre-filled)
+   - `tokenId`: `202604042`
+   - `machineValue`: `119990`
+4. Confirm both transactions
+
+**Verify:** Page shows owner for token id; dashboard step 1 → **done**.
+
+---
+
+## Phase 5 — Contract NFT
+
+**Goal:** Multi-party deal **Completed**.
+
+### Create (Alice)
+
+1. **http://localhost:3000/rwa/contracts/new**
+2. Connect **Alice**
+3. Upload agreement via Pinata **or** click **Use bootstrap-style metadata hash**
+4. **Approve fee token** → **initContractAndSign**
+5. Copy **contractId** from redirect
+
+### Sign (Bob, Charlie)
+
+1. **http://localhost:3000/rwa/contracts/{contractId}**
+2. Connect **Bob** → **signContract**
+3. Connect **Charlie** → **signContract**
+4. Status: **Completed**
+
+List all deals: **http://localhost:3000/rwa/contracts**
+
+**Verify:** Dashboard shows contractId; green alert *Demo contract is completed*.
+
+---
+
+## Phase 6 — Vault, token, Identity Registry
+
+**Goal:** Vault exists; token unpaused; KYC card shows all three **verified**.
+
+Skip if manifest already has vault addresses from a prior full run and you only re-test Phases 7–10.
+
+1. **http://localhost:3000/debug** — connect **Admin**
+
+| Order | Contract | Function |
+|-------|----------|----------|
+| 6a | **ArbVaultFactory** | `deployTrexVault` / `createVault` — Alice as vault controller |
+| 6b | **ArbVault** | `attachVaultPeers` (if required by your deployment) |
+| 6c | **Token** | **`unpause`** |
+| 6d | **IdentityRegistry** | **`registerIdentity`** × 3 — wallet, ONCHAINID address, country `276` or `0` |
+| 6e | **IdentityRegistry** | **`addTrustedIssuer`** — ClaimIssuer + topic 666 (if not set at deploy) |
+
+Refresh **http://localhost:3000/rwa** — **KYC on vault registry** should show Alice, Bob, Charlie **verified**.
+
+---
+
+## Phase 7 — Approve vault for NFTs
+
+**Goal:** Vault can pull Alice's collateral NFTs.
+
+1. **http://localhost:3000/rwa/vault**
+2. Connect **Alice**
+3. **Phase A — Approve vault**
+   - **MachineNft.approve**
+   - **ContractNft.approve**
+
+Skip if vault page shows *Vault already minted* or approvals revert with *approval to current owner*.
+
+**Verify:** `/debug` → MachineNft → **`getApproved(tokenId)`** returns vault address.
+
+---
+
+## Phase 8 — Deposit and mint
+
+**Goal:** **100** security tokens to Alice.
+
+1. **http://localhost:3000/rwa/vault**
+2. Connect **Alice**
+3. **Phase B — depositAndMint**
+   - Amount: `100`
+   - Click **depositAndMint**
+4. Dashboard workflow step 3 → **done**
+
+**Verify:** Dashboard *Vault has minted security tokens to Alice*; Alice token balance &gt; 0.
+
+---
+
+## Phase 9 — Transfers
+
+**Goal:** 10 tokens each to Bob and Charlie.
+
+1. **http://localhost:3000/rwa/invest**
+2. Connect **Alice**
+3. **Phase A** — **MockFeeToken.approve (fee module)**
+4. **Phase B** — **Transfer 10 → Bob**, then **Transfer 10 → Charlie**
+
+**Verify:** `/debug` → Token → **`balanceOf`** — Bob and Charlie each `10000000000000000000`.
+
+---
+
+## Phase 10 — Yield
+
+**Goal:** Alice deposits yield; Bob claims; second round sends yield to Charlie.
+
+<Warning>
+After Bob clicks **claim**, **claimTo** fails with *Nothing to claim* unless Alice **depositYield** again.
+</Warning>
+
+### Round 1
+
+1. **http://localhost:3000/rwa/yield**
+2. **Alice** — **Approve MockFeeToken** → **depositYield** (amount `1`)
+3. **Bob** — **claim**
+
+### Round 2
+
+4. **Alice** — approve + **depositYield** again
+5. **Bob** — enter Charlie's address → **claimTo**
+
+**Verify:** `/debug` → MockFeeToken → **`balanceOf(Bob)`** and **`balanceOf(Charlie)`** increased.
+
+---
+
+## Page reference
+
+| Page | URL |
+|------|-----|
+| Dashboard + KYC | http://localhost:3000/rwa |
+| Machines | http://localhost:3000/rwa/machines |
+| Contracts list | http://localhost:3000/rwa/contracts |
+| New contract | http://localhost:3000/rwa/contracts/new |
+| Vault | http://localhost:3000/rwa/vault |
+| Transfers | http://localhost:3000/rwa/invest |
+| Yield | http://localhost:3000/rwa/yield |
+| Raw ABI | http://localhost:3000/debug |
+
+---
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| KYC card all "not verified" | Finish Phases 2 and 6 |
+| `depositAndMint` button disabled | Alice not verified or CNFT not **Completed** |
+| `contractId: 0` alert | Complete Phase 5 |
+| Approval reverts | NFTs already in vault — skip Phase 7 |
+| `Nothing to claim` on claimTo | Alice depositYield again (Phase 10 round 2) |
+| Wrong role / revert | Check **WalletRoleHint**; switch MetaMask account |
+| Gas too low on Sepolia | Retry with slightly higher max fee (**GasRetryHint** on page) |
+| Empty manifest | Run `yarn deploy:arbitrum-sepolia` and refresh |
+
+---
+
+## Related
+
+- [Manual Testing (SDK)](/workflows/manual-testing-sdk)
+- [Deploy & Bootstrap](/maintainers/deploy) — infrastructure deploy details
+- [Smart Contract Testing](/smart-contracts/guide)

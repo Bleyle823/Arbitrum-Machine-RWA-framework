@@ -1,0 +1,166 @@
+---
+title: Common Flow
+description: End-to-end RWA workflow on Arbitrum Sepolia — identity, assets, vault, mint, transfer, yield.
+---
+
+End-to-end integrator workflow for `@arbitrum-machine/rwa-sdk` on **Arbitrum Sepolia**.
+
+## Prerequisites
+
+- Contracts deployed and bootstrapped (see [Deploy](/maintainers/deploy))
+- `.env` with RPC URL and participant private keys
+- Alice funded with MockFeeToken for fees (bootstrap mints demo balances)
+
+## Flow overview
+
+| Step | Action | Module |
+|------|--------|--------|
+| 1 | Create identities for Alice, Bob, Charlie | `onchainid` |
+| 2 | KYC claims (bootstrap or `addClaimToIdentity`) | `onchainid` |
+| 3 | Register Machine NFTs for Alice | `mnft` |
+| 4 | Create + sign Contract NFT | `cnft` |
+| 5 | Vault exists; token unpaused (bootstrap) | scripts |
+| 6 | Identities registered in vault (bootstrap) | scripts |
+| 7 | Approve vault for NFT token IDs | `vault.nftApproval` |
+| 8 | Deposit NFTs and mint security tokens | `vault.depositAndMint` |
+| 9 | Transfer tokens to Bob and Charlie | `vault.transfer` |
+| 10 | Deposit and claim yield | `vault.depositYield`, `claimYield` |
+
+## Step-by-step
+
+### 1. Initialize SDK
+
+```typescript
+import "dotenv/config";
+import { JsonRpcProvider, Wallet } from "ethers";
+import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+
+const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL!);
+const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
+const admin = new Wallet(process.env.ADMIN_PRIVATE_KEY!, provider);
+```
+
+### 2. Create identities
+
+```typescript
+for (const subject of [sdk.getManifest().alice, sdk.getManifest().bob, sdk.getManifest().charlie]) {
+  await sdk.onchainid.createIdentity({
+    idFactoryAdmin: admin,
+    subject,
+    deploymentSalt: `identity-${subject}-${Date.now()}`,
+  });
+}
+```
+
+### 3. Verify KYC
+
+```typescript
+const { verified } = await sdk.onchainid.isVerified({ wallet: sdk.getManifest().alice });
+```
+
+After bootstrap, all demo wallets should return `verified: true`.
+
+### 4. Register machines (issuer)
+
+```typescript
+const issuer = new Wallet(process.env.MACHINE_ISSUER_PRIVATE_KEY!, provider);
+const did = new TextEncoder().encode("did:arbitrum:machine:demo-1");
+
+await sdk.mnft.registerMachine({
+  machineIssuer: issuer,
+  machineOwner: sdk.getManifest().alice,
+  machineValue: 10n ** 18n,
+  tokenId: 1n,
+  did,
+});
+```
+
+### 5. Contract NFT
+
+```typescript
+import { keccak256, toUtf8Bytes } from "ethers";
+
+const alice = new Wallet(process.env.ALICE_PRIVATE_KEY!, provider);
+const url = "https://example.com/contract";
+const hashDigest = BigInt(keccak256(toUtf8Bytes("demo contract")));
+
+const { contractId } = sdk.cnft.computeContractId({
+  initiator: alice.address,
+  counterparties: [sdk.getManifest().bob, sdk.getManifest().charlie],
+  hashDigest,
+  url,
+});
+
+await sdk.cnft.createContract({
+  initiator: alice,
+  counterparties: [sdk.getManifest().bob, sdk.getManifest().charlie],
+  hashDigest,
+  url,
+});
+
+const bob = new Wallet(process.env.BOB_PRIVATE_KEY!, provider);
+const charlie = new Wallet(process.env.CHARLIE_PRIVATE_KEY!, provider);
+await sdk.cnft.signContract({ signer: bob, contractId });
+await sdk.cnft.signContract({ signer: charlie, contractId });
+```
+
+### 6. Approve vault and mint
+
+```typescript
+const m = sdk.getManifest();
+const vault = sdk.getAddresses().vault.arbVault;
+
+await sdk.vault.nftApproval({
+  owner: alice,
+  nft: sdk.getAddresses().nft.machineNft,
+  vault,
+  tokenIds: [m.machineTokenId],
+});
+
+await sdk.vault.nftApproval({
+  owner: alice,
+  nft: sdk.getAddresses().nft.contractNft,
+  vault,
+  tokenIds: [m.contractTokenId],
+});
+
+await sdk.vault.depositAndMint({
+  vaultController: alice,
+  tokenIds: [m.machineTokenId, m.contractTokenId],
+  amount: 100n * 10n ** 18n,
+});
+```
+
+### 7. Transfer with fee allowance
+
+```typescript
+const amount = 10n * 10n ** 18n;
+await sdk.vault.ensureTransferFeeAllowance({
+  allowanceSigner: alice,
+  transferAmount: amount,
+});
+
+await sdk.vault.transfer({
+  from: alice,
+  to: sdk.getManifest().bob,
+  amount,
+});
+```
+
+### 8. Yield
+
+```typescript
+await sdk.vault.depositYield({
+  depositor: alice,
+  amount: 1n * 10n ** 18n,
+});
+
+const bob = new Wallet(process.env.BOB_PRIVATE_KEY!, provider);
+await sdk.vault.claimYield({ claimant: bob });
+```
+
+## Verify read-only
+
+```bash
+cd sdk && node scripts/verify-workflow.mjs
+```

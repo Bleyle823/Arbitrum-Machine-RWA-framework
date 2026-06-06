@@ -1,6 +1,6 @@
-# RWA Arbitrum Contracts (standalone Hardhat)
+﻿# RWA Arbitrum Contracts (standalone Hardhat)
 
-Self-contained Hardhat project for deploying the RWA framework on **Arbitrum** (or any EVM). No dependency on `peaq-sdk-js-dev`, npm workspaces, or `@peaq-network/rwa`.
+Self-contained Hardhat project for deploying the RWA framework on **Arbitrum** (or any EVM). No dependency on `Arbitrum-Machine-RWA-framework`, npm workspaces, or `@arbitrum-machine/rwa-sdk`.
 
 You can copy this entire folder anywhere and run it with Node.js 18+.
 
@@ -42,7 +42,7 @@ npm run deploy:arbitrum-sepolia
 
 - Solidity **0.8.17**, ERC-3643 T-REX (`src/vendor/erc3643/`)
 - ONCHAINID (`@onchain-id/solidity`)
-- Default DID prefix: `did:arbitrum:` — optional `did:peaq:` via `InfoDesk.setValue(4, 1)`
+- Default DID prefix: `did:arbitrum:` — alternate prefixes via `InfoDesk.setValue(4, n)`
 
 ## License
 
@@ -51,4 +51,4 @@ npm run deploy:arbitrum-sepolia
 
 ## Monorepo note
 
-If you cloned `peaq-sdk-js-dev`, this folder is the **canonical** deployable copy. The copy under `packages/rwa/contracts/` is kept in sync for SDK development; use **`rwa-hardhat/`** for standalone deployment.
+If you cloned `Arbitrum-Machine-RWA-framework`, this folder is the **canonical** deployable copy. The copy under `packages/rwa/contracts/` is kept in sync for SDK development; use **`rwa-hardhat/`** for standalone deployment.

@@ -1,0 +1,19 @@
+---
+title: Get Machine Issuers
+description: rwanft.getMachineIssuers — list registered Machine Issuer addresses.
+---
+
+## `rwanft.getMachineIssuers()`
+
+Read-only call to `ArbRwaNft`.
+
+### Returns
+
+`string[]` — Machine Issuer EOAs.
+
+### TypeScript
+
+```typescript
+const issuers = await sdk.rwanft.getMachineIssuers();
+console.log(issuers);
+```

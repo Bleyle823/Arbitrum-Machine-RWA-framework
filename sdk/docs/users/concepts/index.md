@@ -1,4 +1,4 @@
-# Core Concepts
+﻿# Core Concepts
 
 This document provides deep dives into the foundational concepts of the Arbitrum Machine RWA Framework. Understanding these concepts is essential for effectively working with the SDK and participating in the ecosystem.
 
@@ -158,7 +158,7 @@ The MachineNFT system has three layers:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      PeaqRwaNft                             │
+│                      ArbRwaNft                             │
 │              (Factory & Registry Contract)                  │
 │  - Manages Machine Issuers and Regulators                   │
 │  - Deploys MachineNft contracts                             │
@@ -208,8 +208,8 @@ When a machine is registered:
 
 | Fee Type | Amount | Paid By |
 |----------|--------|---------|
-| Registration | 0.1% of machine value (min 10 PEAQ) | Machine owner |
-| Transfer | 1 PEAQ per transfer | Sender |
+| Registration | 0.1% of machine value (min 10 fee tokens) | Machine owner |
+| Transfer | 1 fee token per transfer | Sender |
 
 Fees must be approved (ERC-20 `approve`) before the transaction.
 
@@ -308,15 +308,15 @@ Creating a ContractNFT requires a fee paid by the initiator. The fee amount and 
 
 ### What Are Vaults?
 
-A `PeaqVault` is a smart contract that holds MachineNFTs and ContractNFTs, enabling their fractionalization into security tokens. This transforms illiquid physical assets into tradeable digital securities.
+A `ArbVault` is a smart contract that holds MachineNFTs and ContractNFTs, enabling their fractionalization into security tokens. This transforms illiquid physical assets into tradeable digital securities.
 
-![Vault Architecture](../images/peaq-vault.png)
+![Vault Architecture](../images/vault.png)
 
 ### The Tokenization Model
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        PeaqVault                            │
+│                        ArbVault                            │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │                   Locked NFTs                       │    │
@@ -344,7 +344,7 @@ When a vault is created, three contracts are deployed:
 
 | Component | Purpose |
 |-----------|---------|
-| **PeaqVault** | Holds NFTs, manages deposits |
+| **ArbVault** | Holds NFTs, manages deposits |
 | **Security Token** | T-REX (ERC-3643) compliant fractional shares |
 | **Reward Distributor** | Handles yield distribution to token holders |
 
@@ -380,7 +380,7 @@ The number of tokens minted represents the fractional ownership of the vault con
 Transferring security tokens incurs a fee:
 - Fee amount and recipient are queried from the vault
 - Fee must be approved before transfer
-- Paid in PEAQ tokens
+- Paid in fee tokens
 
 → See [Vault SDK Reference](../../../sdk_reference/vault/) for implementation details.
 
@@ -417,7 +417,7 @@ Vaults generate yield when the underlying machines produce revenue. This yield i
 
 ### Payout Asset
 
-Each vault has a designated **payout asset** - the ERC-20 token used for yield distribution (e.g., USDC, USDT, or PEAQ).
+Each vault has a designated **payout asset** - the ERC-20 token used for yield distribution (e.g., USDC, USDT, or the configured fee token).
 
 ### Depositing Yield
 
@@ -464,7 +464,7 @@ A DID document contains:
 
 ```json
 {
-  "id": "did:peaq:0xMachineNftContract:tokenId",
+  "id": "did:arbitrum:0xMachineNftContract:tokenId",
   "services": [
     {
       "id": "#p2p",

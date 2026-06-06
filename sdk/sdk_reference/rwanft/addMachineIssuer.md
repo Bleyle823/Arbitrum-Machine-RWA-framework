@@ -1,6 +1,6 @@
-## `rwanft.addMachineIssuer(AddMachineIssuer)`
+﻿## `rwanft.addMachineIssuer(AddMachineIssuer)`
 
-Add a Machine Issuer to the PeaqRwaNft contract. This sends a transaction signed by a Machine Regulator.
+Add a Machine Issuer to the ArbRwaNft contract. This sends a transaction signed by a Machine Regulator.
 
 ### AddMachineIssuer Type Parameters
 | Parameter | Type | Required | Description |
@@ -12,7 +12,7 @@ Add a Machine Issuer to the PeaqRwaNft contract. This sends a transaction signed
 | Field | Type | Description |
 |-------|------|-------------|
 | **status** | `added` | Status of the operation. |
-| **peaqRwaNft** | `string` | PeaqRwaNft contract address. |
+| **arbRwaNft** | `string` | ArbRwaNft contract address. |
 | **machineIssuer** | `string` | Machine Issuer address that was added. |
 | **machineNft** | `string` | Machine NFT contract address associated with the Machine Issuer. |
 | **addedBy** | `string` | Machine Regulator address that submitted the transaction. |
@@ -28,7 +28,7 @@ import { JsonRpcProvider, Wallet } from 'ethers';
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -60,7 +60,7 @@ import { JsonRpcProvider, Wallet } from 'ethers';
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Machine Regulator signer
@@ -87,7 +87,7 @@ main().catch((err) => {
 ```
 Result {
   status: 'added',
-  peaqRwaNft: '0x9a7e2c5B4F9bE3C1dA7b5a6F8e2D3c4B5A6F7E8D',
+  arbRwaNft: '0x9a7e2c5B4F9bE3C1dA7b5a6F8e2D3c4B5A6F7E8D',
   machineIssuer: '0x3c1D2e3F4a5B6c7D8e9F0a1B2c3D4e5F6a7B8c9D',
   machineNft: '0x1A2b3C4d5E6f7A8b9C0d1E2f3A4b5C6D7e8F9A0b',
   addedBy: '0x8F7e6D5c4B3a2D1c0B9a8E7f6D5c4B3A2D1C0b9A',

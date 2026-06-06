@@ -18,10 +18,12 @@ yarn deploy:arbitrum-sepolia
 yarn bootstrap:arbitrum-sepolia
 
 cd ../sdk
-yarn sync-addresses   # merges manifest + IdFactory/ClaimIssuer/ArbVaultFactory
-yarn build
-yarn test
+npm run sync-addresses   # merges manifest + IdFactory/ClaimIssuer/ArbVaultFactory
+npm run build
+npm test
 ```
+
+See also [SDK Standalone Testing](../../mintlify/workflows/sdk-standalone.mdx) for testing from `sdk/` without Yarn.
 
 ## Package scripts
 
@@ -29,7 +31,7 @@ yarn test
 |--------|---------|
 | `npm run build` | Bundle ESM + CJS + declarations |
 | `npm test` | Vitest unit + consumer tests |
-| `yarn sync-addresses` | Copy `rwa-manifest.json` + framework deployments |
+| `npm run sync-addresses` | Copy `rwa-manifest.json` + framework deployments |
 
 ## Repository layout
 

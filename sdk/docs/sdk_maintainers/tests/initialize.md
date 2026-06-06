@@ -1,8 +1,8 @@
-# Setup Test Environment
+﻿# Setup Test Environment
 Before you can execute the integration tests locally, you must clone this repository download the dependencies, and deploy the framework.
 ## 1. Clone this repository
 ```
-git clone https://github.com/peaqnetwork/peaq-sdk-js.git
+git clone https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework.git
 cd packages/rwa
 npm install
 ```
@@ -12,9 +12,9 @@ Next, you must make sure you are interacting with a deployed framework. To learn
 ## 3. Setup `.env` file
 Once you have a proper framework setup you can define a `.env` file that your local tests will reference. Below is out outline to help you fill out the proper fields for your `.env` file.
 ```
-HTTPS_BASE_URL="https://peaq-agung.api.onfinality.io/public"
+ARB_SEPOLIA_RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
 
-# PEAQ OWNER Admin
+# Framework owner (admin)
 ADMIN_PUBLIC_ADDRESS=""
 ADMIN_PRIVATE_KEY=""
 
@@ -45,7 +45,7 @@ CHARLIE_PUBLIC_ADDRESS=""
 CHARLIE_PRIVATE_KEY=""
 ```
 ### Variable Definitions
-- **HTTPS_BASE_URL**: The HTTPS RPC endpoint for the target chain (e.g., peaq Agung). Used by the SDK/tests to create an ethers Provider.
+- **ARB_SEPOLIA_RPC_URL**: The HTTPS RPC endpoint for the target chain (e.g., Arbitrum Sepolia). Used by the SDK/tests to create an ethers Provider.
 - **ADMIN_PUBLIC_ADDRESS**: The EOA address of the framework/admin operator account (e.g., deployer / default admin for TREX + supporting contracts).
 - **ADMIN_PRIVATE_KEY**: The private key for ADMIN_PUBLIC_ADDRESS. Used to sign admin-only transactions in tests.
 - **CLAIM_ISSUER_PUBLIC_ADDRESS**: The EOA address that acts as a Claim Issuer operator (the signer that issues KYC/claims on-chain).

@@ -1,0 +1,41 @@
+---
+title: Create Identity
+description: onchainid.createIdentity — deploy or fetch an ONCHAINID for an EOA.
+---
+
+## `onchainid.createIdentity(CreateIdentity)`
+
+Create (or return existing) ONCHAINID identity for a subject EOA.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **idFactoryAdmin** | `Signer` | Yes | IdFactory admin signer |
+| **subject** | `string` | Yes | EOA to bind identity to |
+| **deploymentSalt** | `string` | Yes | Salt for deterministic deployment |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `'created' \| 'exists'` | Whether a new identity was deployed |
+| **identity** | `string` | ONCHAINID contract address |
+| **receipt** | `TransactionReceipt` | Present when `status` is `'created'` |
+
+### TypeScript
+
+```typescript
+import "dotenv/config";
+import { JsonRpcProvider, Wallet } from "ethers";
+import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+
+const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL!);
+const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
+const admin = new Wallet(process.env.ADMIN_PRIVATE_KEY!, provider);
+
+const result = await sdk.onchainid.createIdentity({
+  idFactoryAdmin: admin,
+  subject: sdk.getManifest().alice,
+  deploymentSalt: `identity-${Date.now()}`,
+});
+console.log(result);
+```

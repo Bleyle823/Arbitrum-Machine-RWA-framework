@@ -1,0 +1,20 @@
+---
+title: Owner Of
+description: mnft.ownerOf — ERC-721 owner of a Machine NFT token.
+---
+
+## `mnft.ownerOf(tokenId)`
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **tokenId** | `bigint` | Yes | Machine NFT token ID |
+
+### Returns
+
+`string` — checksummed owner address.
+
+### TypeScript
+
+```typescript
+const owner = await sdk.mnft.ownerOf(BigInt(sdk.getManifest().machineTokenId));
+```

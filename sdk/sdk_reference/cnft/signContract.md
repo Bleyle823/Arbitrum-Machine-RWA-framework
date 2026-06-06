@@ -1,4 +1,4 @@
-## `cnft.signContract(SignContract)`
+﻿## `cnft.signContract(SignContract)`
 
 Sign a Contract NFT as a counterparty. This sends a transaction from the counterparty signer. If the final signature is collected, the contract becomes completed.
 
@@ -28,7 +28,7 @@ import { JsonRpcProvider, Wallet, keccak256, toUtf8Bytes } from 'ethers';
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -64,7 +64,7 @@ import { JsonRpcProvider, Wallet, keccak256, toUtf8Bytes } from 'ethers';
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Contract counterparty

@@ -1,0 +1,130 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Arbitrum Machine RWA SDK",
+  "description": "Developer framework for compliant RWA tokenization on Arbitrum — ONCHAINID, Machine/Contract NFTs, and ERC-3643 vaults.",
+  "colors": {
+    "primary": "#28A0F0",
+    "light": "#EBF5FF",
+    "dark": "#0D1F2D"
+  },
+  "background": {
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#0D1F2D"
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework/tree/develop/sdk"
+      }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "sdk-reference/initialize"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "pages": [
+              "concepts/overview",
+              "concepts/modules",
+              "concepts/roles"
+            ]
+          },
+          {
+            "group": "Smart Contracts",
+            "pages": [
+              "smart-contracts/guide"
+            ]
+          },
+          {
+            "group": "Workflows",
+            "pages": [
+              "workflows/manual-testing",
+              "workflows/manual-testing-sdk",
+              "workflows/manual-testing-scaffold",
+              "workflows/sdk-standalone",
+              "workflows/common-flow"
+            ]
+          },
+          {
+            "group": "Maintainers",
+            "pages": [
+              "maintainers/deploy",
+              "maintainers/sync-addresses",
+              "maintainers/verify-workflow"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Identity",
+            "pages": [
+              "sdk-reference/identity/create-identity",
+              "sdk-reference/identity/get-identity",
+              "sdk-reference/identity/is-verified",
+              "sdk-reference/identity/add-claim-to-identity"
+            ]
+          },
+          {
+            "group": "Machine NFT",
+            "pages": [
+              "sdk-reference/mnft/register-machine",
+              "sdk-reference/mnft/get-machine-did",
+              "sdk-reference/mnft/owner-of"
+            ]
+          },
+          {
+            "group": "Contract NFT",
+            "pages": [
+              "sdk-reference/cnft/create-contract",
+              "sdk-reference/cnft/sign-contract",
+              "sdk-reference/cnft/compute-contract-id",
+              "sdk-reference/cnft/get-contract-owner"
+            ]
+          },
+          {
+            "group": "RWA NFT Factory",
+            "pages": [
+              "sdk-reference/rwanft/get-machine-issuers",
+              "sdk-reference/rwanft/get-machine-regulators"
+            ]
+          },
+          {
+            "group": "Vault",
+            "pages": [
+              "sdk-reference/vault/nft-approval",
+              "sdk-reference/vault/deposit-and-mint",
+              "sdk-reference/vault/ensure-transfer-fee-allowance",
+              "sdk-reference/vault/transfer",
+              "sdk-reference/vault/deposit-yield",
+              "sdk-reference/vault/claim-yield",
+              "sdk-reference/vault/claim-yield-to",
+              "sdk-reference/vault/read-helpers"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework"
+    }
+  }
+}

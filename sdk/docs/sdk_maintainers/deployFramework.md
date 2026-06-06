@@ -1,7 +1,7 @@
-# Deploy Framework
+﻿# Deploy Framework
 The following is only ever to be done once by the sdk maintainers. The tutorial has been written to make it as reproducible as possible for future iterations. We will provide a brief overview that demonstrates the steps taken in order to reproduce on your own machine.
-## 1. Clone peaq's RWA framework.
-Clone the most recent dev branch of [Arbitrum-Machine-RWA-framework](https://github.com/peaqnetwork/Arbitrum-Machine-RWA-framework/tree/dev). The following cmds are to be executed on a local terminal of the linked code that has been cloned.
+## 1. Clone the RWA framework.
+Clone the most recent dev branch of [Arbitrum-Machine-RWA-framework](https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework/tree/dev). The following cmds are to be executed on a local terminal of the linked code that has been cloned.
 ### Install packages:
 ```
 npm install
@@ -16,10 +16,10 @@ npx hardhat typechain
 ```
 
 ## 2. Add network & private key
-In the `hardhat.config.ts` file in the cloned repository, we can now add the network of our choice. In this example we will deploy on peaq's test network, `agung`, whose configuration file is:
+In the `hardhat.config.ts` file in the cloned repository, configure **Arbitrum Sepolia** (or your target network). Example:
 ```JavaScript
-    agung: {
-      url: 'https://peaq-agung.api.onfinality.io/public',
+    arbitrumSepolia: {
+      url: 'https://sepolia-rollup.arbitrum.io/rpc',
       accounts: [
         'framework_owner_private_key'
       ],

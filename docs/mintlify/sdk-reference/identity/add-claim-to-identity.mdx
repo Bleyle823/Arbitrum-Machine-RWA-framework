@@ -1,0 +1,46 @@
+---
+title: Add Claim to Identity
+description: onchainid.addClaimToIdentity — attach a signed claim to an ONCHAINID.
+---
+
+## `onchainid.addClaimToIdentity(AddClaimToIdentity)`
+
+Adds a claim to an identity contract. Uses internal `addClaim` helper (issuer signs, identity owner submits).
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **identityOwner** | `Signer` | Yes | Identity controller |
+| **identityAddress** | `string` | Yes | ONCHAINID contract |
+| **claimIssuer** | `Signer` | Yes | Claim issuer signer |
+| **claimIssuerAddress** | `string` | Yes | ClaimIssuer contract |
+| **topic** | `bigint` | Yes | Claim topic (e.g. KYC) |
+| **data** | `string` | Yes | Encoded claim data |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `'added' \| 'skipped'` | Result of add operation |
+
+<Note>
+For the demo Sepolia deployment, KYC claims are applied during bootstrap. Use this method when onboarding new users after deployment.
+</Note>
+
+### TypeScript
+
+```typescript
+import { Wallet } from "ethers";
+
+const alice = new Wallet(process.env.ALICE_PRIVATE_KEY!, provider);
+const claimIssuer = new Wallet(process.env.CLAIM_ISSUER_PRIVATE_KEY!, provider);
+const identity = (await sdk.onchainid.getIdentity({ subject: alice.address })).identity!;
+
+await sdk.onchainid.addClaimToIdentity({
+  identityOwner: alice,
+  identityAddress: identity,
+  claimIssuer,
+  claimIssuerAddress: sdk.getAddresses().onchainid.claimIssuer,
+  topic: 1n,
+  data: "0x...",
+});
+```

@@ -1,4 +1,4 @@
-# Roles & Responsibilities
+﻿# Roles & Responsibilities
 
 The Arbitrum Machine RWA Framework defines a structured hierarchy of roles, each with specific responsibilities, requirements, and capabilities. This document provides a comprehensive overview of every role in the ecosystem.
 
@@ -67,7 +67,7 @@ These are defined in `src/enums/claimTopics.ts`. Make sure these are wired up co
 
 ### Vault Factory Management
 
-The Framework Owner controls the `PeaqVaultFactory`, which orchestrates the deployment of complete vault setups:
+The Framework Owner controls the `ArbVaultFactory`, which orchestrates the deployment of complete vault setups:
 - **Vault** - Holds MachineNFTs and ContractNFTs
 - **Security Token** - T-REX compliant token representing fractional ownership
 - **Reward Distributor** - Handles yield distribution to token holders
@@ -84,7 +84,7 @@ The InfoDesk is the central configuration hub for the framework. The sdk does no
 - **Contract addresses** - Locations of core framework contracts
 - **Implementation addresses** - For upgradeable proxy contracts
 - **Fee configurations** - Registration fees, transfer fees, and fee accounts
-- **Precompile addresses** - For peaq-specific functionality
+- **Precompile addresses** - For chain-specific functionality
 
 ---
 
@@ -158,7 +158,7 @@ The Claim Issuer will generate and sign a claim with topic `CT_MNFT_REGULATOR`. 
 
 **Step 2: Get Appointed by the Framework Owner**
 
-The Framework Owner must add your wallet address to the list of authorized machine regulators in the `PeaqRwaNft` contract. This requires:
+The Framework Owner must add your wallet address to the list of authorized machine regulators in the `ArbRwaNft` contract. This requires:
 - Your public wallet address
 
 Once added, you can begin authorizing machine issuers.
@@ -168,7 +168,7 @@ Once added, you can begin authorizing machine issuers.
 Machine Regulators are responsible for:
 
 1. **Vetting Machine Issuers** - Verify that potential issuers are legitimate organizations with proper authority to tokenize machines
-2. **Adding Machine Issuers** - Call `addMachineIssuer` on the `PeaqRwaNft` contract, which deploys a new `MachineNft` contract for the issuer
+2. **Adding Machine Issuers** - Call `addMachineIssuer` on the `ArbRwaNft` contract, which deploys a new `MachineNft` contract for the issuer
 3. **Monitoring Issuers** - Oversee the activities of authorized issuers within their jurisdiction
 4. **Reporting Issues** - Alert the Framework Owner if an issuer needs to be blocked
 
@@ -220,7 +220,7 @@ Once authorized, you own a dedicated `MachineNft` contract. Key points:
 - **You are the only issuer** - Only you can mint NFTs from this contract
 - **Multiple owners** - NFTs you mint can be owned by any KYC'd user
 - **Unique per issuer** - Each issuer has their own contract instance
-- **Retrievable** - The contract address can be looked up from `PeaqRwaNft` using your wallet address
+- **Retrievable** - The contract address can be looked up from `ArbRwaNft` using your wallet address
 
 ### Registering Machines
 
@@ -231,13 +231,13 @@ To register a new machine as a MachineNFT:
 3. **Ensure fee approval** - The machine owner must approve the registration fee
 4. **Call registerMachine** with:
    - Machine owner's wallet address
-   - Machine value (in PEAQ tokens)
+   - Machine value (in fee tokens)
    - Machine DID document (serialized)
 5. **Return the token ID** - The minted NFT is transferred to the owner's wallet
 
 ### Registration Fees
 
-- **Fee**: 0.1% of the machine's declared value (minimum 10 PEAQ)
+- **Fee**: 0.1% of the machine's declared value (minimum fee (demo: 10 tokens))
 - **Paid by**: The machine owner (must approve before registration)
 - **Approved to**: The fee account specified in the `MachineNft` contract
 
@@ -245,12 +245,12 @@ To register a new machine as a MachineNFT:
 
 ## Vault Owners
 
-A **Vault Owner** manages a `PeaqVault` that holds MachineNFTs and ContractNFTs, fractionalizing them into security tokens.
+A **Vault Owner** manages a `ArbVault` that holds MachineNFTs and ContractNFTs, fractionalizing them into security tokens.
 
 ### How Vaults Are Created
 
-Vaults are created by the Framework Owner through the `PeaqVaultFactory`. When created:
-- A new `PeaqVault` contract is deployed
+Vaults are created by the Framework Owner through the `ArbVaultFactory`. When created:
+- A new `ArbVault` contract is deployed
 - An associated T-REX security token is deployed
 - A reward distributor is deployed for yield management
 - Ownership is transferred to the specified vault taker
@@ -350,8 +350,8 @@ As a user, you'll encounter these fees:
 
 | Action | Fee | Notes |
 |--------|-----|-------|
-| MachineNFT Registration | 0.1% of value (min 10 PEAQ) | Paid by owner, approved before registration |
-| MachineNFT Transfer | 1 PEAQ per transfer | Approved before each transfer |
+| MachineNFT Registration | 0.1% of value (min 10 fee tokens) | Paid by owner, approved before registration |
+| MachineNFT Transfer | 1 fee token per transfer | Approved before each transfer |
 | ContractNFT Setup | Configurable fee | Paid by contract initiator |
 | Security Token Transfer | Configurable fee | Based on transfer amount |
 

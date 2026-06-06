@@ -1,8 +1,8 @@
-# Introduction to the Arbitrum Machine RWA SDK
+﻿# Introduction to the Arbitrum Machine RWA SDK
 
 ## What is the Arbitrum Machine RWA Framework?
 
-The **peaq Real World Asset (RWA) Framework** is a comprehensive blockchain infrastructure that enables the tokenization of physical assets (primarily machines) on the Arbitrum. It provides a compliant, regulated pathway for transforming real-world assets into tradeable digital securities.
+The **Arbitrum Machine Real World Asset (RWA) Framework** is a comprehensive blockchain infrastructure that enables the tokenization of physical assets (primarily machines) on the Arbitrum. It provides a compliant, regulated pathway for transforming real-world assets into tradeable digital securities.
 
 ![Framework Overview](./images/overview.png)
 
@@ -12,7 +12,7 @@ At its core, the framework combines three key blockchain standards:
 - [**T-REX (ERC-3643)**](https://github.com/ERC-3643/ERC-3643) - The Token for Regulated EXchanges standard, which provides a security token framework with built-in compliance controls.
 - [**ERC-721 NFTs**](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol) - Non-fungible tokens that represent unique real-world assets (MachineNFT) and contractual agreements (ContractNFT).
 
-These standards were combined into the [Arbitrum-Machine-RWA-framework](https://github.com/peaqnetwork/Arbitrum-Machine-RWA-framework/tree/dev) repository, where custom business logic is integrated into smart contracts.
+These standards were combined into the [Arbitrum-Machine-RWA-framework](https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework/tree/dev) repository, where custom business logic is integrated into smart contracts.
 
 The framework enables asset owners to:
 1. Register physical machines as on-chain NFTs with embedded DID documents
@@ -88,7 +88,7 @@ Every participant in the framework-whether an investor, machine issuer, or regul
 
 The Machine NFT module handles the registration and management of tokenized physical assets.
 
-![Machine NFT Flow](./images/peaq-rwa-nft.png)
+![Machine NFT Flow](./images/rwa-nft.png)
 
 **Purpose:** Register real-world machines as NFTs with embedded DID documents, and manage their lifecycle.
 
@@ -107,7 +107,7 @@ Each MachineNFT contains a Decentralized Identifier (DID) document that uniquely
 
 The Vault module enables the fractionalization of assets into security tokens and manages yield distribution.
 
-![Vault Operations](./images/peaq-vault.png)
+![Vault Operations](./images/vault.png)
 
 **Purpose:** Create vaults that hold MachineNFTs and ContractNFTs, fractionalize them into security tokens, and distribute yield to token holders.
 
@@ -148,7 +148,7 @@ ContractNFTs store a hash of the actual document (which may be stored off-chain,
 
 The RWA NFT factory module manages the top-level factory contract that coordinates machine issuers and regulators.
 
-**Purpose:** Administrative operations for the PeaqRwaNft factory contract.
+**Purpose:** Administrative operations for the ArbRwaNft factory contract.
 
 **Key capabilities:**
 - **Manage machine regulators** - Add or remove addresses authorized to approve machine issuers
@@ -179,12 +179,12 @@ The RWA Framework defines several key roles, each with specific responsibilities
 
 ## Framework Fees
 
-Interacting with the framework incurs fees paid in PEAQ tokens:
+Interacting with the framework incurs fees paid in fee tokens:
 
 | Action | Fee Structure |
 |--------|---------------|
-| **Machine Registration** | 0.1% of machine value (minimum 10 PEAQ) |
-| **MachineNFT Transfer** | 1 PEAQ per transfer |
+| **Machine Registration** | 0.1% of machine value (minimum fee (demo: 10 tokens)) |
+| **MachineNFT Transfer** | 1 fee token per transfer |
 | **ContractNFT Setup** | Fixed fee (configurable) |
 | **Security Token Transfer** | Configurable fee per transaction |
 

@@ -1,0 +1,30 @@
+---
+title: Claim Yield To
+description: vault.claimYieldTo — claim yield and send to another address.
+---
+
+## `vault.claimYieldTo(ClaimYieldTo)`
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **claimant** | `Signer` | Yes | Submitter (must hold tokens) |
+| **to** | `string` | Yes | Yield recipient |
+| **vault** | `string` | No | Defaults to manifest ArbVault |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `string` | `'claimed'` |
+| **receipt** | `TransactionReceipt` | Claim tx |
+
+### TypeScript
+
+```typescript
+const bob = new Wallet(process.env.BOB_PRIVATE_KEY!, provider);
+
+await sdk.vault.claimYieldTo({
+  claimant: bob,
+  to: sdk.getManifest().charlie,
+});
+```

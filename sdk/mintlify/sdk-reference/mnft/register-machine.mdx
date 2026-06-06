@@ -1,0 +1,39 @@
+---
+title: Register Machine
+description: mnft.registerMachine — mint a Machine NFT with DID to a controller.
+---
+
+## `mnft.registerMachine(RegisterMachine)`
+
+Machine Issuer registers a Machine NFT. Caller must be an authorized issuer on `ArbRwaNft`.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **machineIssuer** | `Signer` | Yes | Authorized issuer signer |
+| **machineOwner** | `string` | Yes | Controller EOA receiving the NFT |
+| **machineValue** | `bigint` | Yes | Machine value in wei units |
+| **tokenId** | `bigint` | Yes | Token ID to mint |
+| **did** | `Uint8Array` | Yes | DID document bytes stored on-chain |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `'registered'` | Operation status |
+| **tokenId** | `bigint` | Minted token ID |
+| **receipt** | `TransactionReceipt` | Mint transaction |
+
+### TypeScript
+
+```typescript
+const issuer = new Wallet(process.env.MACHINE_ISSUER_PRIVATE_KEY!, provider);
+const did = new TextEncoder().encode("did:arbitrum:machine:001");
+
+const result = await sdk.mnft.registerMachine({
+  machineIssuer: issuer,
+  machineOwner: sdk.getManifest().alice,
+  machineValue: 10n ** 18n,
+  tokenId: 42n,
+  did,
+});
+```

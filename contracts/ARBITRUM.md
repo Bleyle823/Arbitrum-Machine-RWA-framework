@@ -1,6 +1,6 @@
-# Arbitrum deployment & test guide
+﻿# Arbitrum deployment & test guide
 
-This framework is built for **Arbitrum** (Sepolia first, then mainnet). The workflow is standard EVM + ERC-3643 T-REX; nothing requires peaq network, peaq precompiles, or Agung testnet.
+This framework is built for **Arbitrum** (Sepolia first, then mainnet). The workflow is standard EVM + ERC-3643 T-REX; nothing requires another network, chain precompiles, or Arbitrum Sepolia testnet.
 
 ## Architecture on Arbitrum
 
@@ -11,8 +11,8 @@ This framework is built for **Arbitrum** (Sepolia first, then mainnet). The work
 │  Fee token (USDC) ──► InfoDesk (fees, DID method, treasuries) │
 │  ONCHAINID IdFactory + ClaimIssuer ──► proxy identities / KYC │
 │  TREXFactory ──► per-vault: Token + IR + ModularCompliance  │
-│  PeaqRwaNft ──► MachineNft / ContractNft (collateral)       │
-│  PeaqVaultFactory ──► PeaqVault + RewardDistributor         │
+│  ArbRwaNft ──► MachineNft / ContractNft (collateral)       │
+│  ArbVaultFactory ──► ArbVault + RewardDistributor         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -51,10 +51,10 @@ Deploy script:
 
 - Boots full **T-REX** suite (`TREXImplementationAuthority`, `TREXFactory`, `TREXGateway`)
 - Sets **DID method** to Arbitrum (`did:arbitrum:…`)
-- Wires `PeaqVaultFactory` as owner of `TREXFactory`
+- Wires `ArbVaultFactory` as owner of `TREXFactory`
 - Writes `deployments/deployment-421614.json`
 
-## 3. Optional: enable peaq-style DIDs
+## 3. Optional: enable legacy DIDs
 
 Default machine/regulator URI prefixes:
 
@@ -63,27 +63,27 @@ did:arbitrum:issuer:0x…
 did:arbitrum:regulator:0x…
 ```
 
-To align with peaq SDK / `did:peaq:` naming (metadata only; chain is still Arbitrum):
+To use an alternate DID prefix (metadata only; chain is still Arbitrum):
 
 ```javascript
-// DID_METHOD_PEAQ = 1  (RwaConstants)
+// DID_METHOD_LEGACY = 1  (RwaConstants)
 await infoDesk.setValue(4, 1);
 ```
 
 | `InfoDesk.setValue(4, x)` | Prefix |
 |---------------------------|--------|
 | `0` | `did:arbitrum:` (default) |
-| `1` | `did:peaq:` |
+| `1` | `did:rwa:` (legacy alternate) |
 | `2` | `did:rwa:` (legacy) |
 
-Machine NFT **DID document bytes** are still stored on-chain in the NFT; only the string prefix changes. Full peaq protobuf DID blobs can be passed in `registerMachine` regardless of prefix.
+Machine NFT **DID document bytes** are still stored on-chain in the NFT; only the string prefix changes. Full standard protobuf DID blobs can be passed in `registerMachine` regardless of prefix.
 
 ## 4. Bootstrap (admin, one-time)
 
 | Step | Contract call |
 |------|----------------|
-| Regulator | `PeaqRwaNft.addMachineRegulator(addr)` |
-| Contract NFT | `PeaqRwaNft.deployContractNft()` |
+| Regulator | `ArbRwaNft.addMachineRegulator(addr)` |
+| Contract NFT | `ArbRwaNft.deployContractNft()` |
 | Machine roles | Issue claims topics **7** (issuer) / **8** (regulator) on ONCHAINID identity, then `addMachineRegulator` / `addMachineIssuer` |
 
 ## 5. Investor onboarding
@@ -116,33 +116,33 @@ await vaultFactory.unpauseVaultToken(vault);
 
 1. Approve fee token to `MachineNft` → `registerMachine`
 2. Sign & complete `ContractNft` if used
-3. Approve NFTs to `PeaqVault`
-4. `PeaqVault.depositAndMint(nfts, tokenIds, amount)` — mints ERC-3643 tokens
+3. Approve NFTs to `ArbVault`
+4. `ArbVault.depositAndMint(nfts, tokenIds, amount)` — mints ERC-3643 tokens
 5. Approve fee module for transfer fee → `Token.transfer`
 
 Local reference: `npm test` (Hardhat, no Arbitrum RPC required).
 
 ## 8. What is *not* required on Arbitrum
 
-| peaq-specific | Arbitrum approach |
-|---------------|-------------------|
-| peaq native token precompile `0x809` | Any ERC-20 via `FEE_TOKEN_ADDRESS` |
-| Agung / peaq RPC | Arbitrum RPC |
-| peaq `TREXGateway` governance on peaq mainnet | Your own `TREXFactory` owner (`PeaqVaultFactory`) |
-| `did:peaq:` only | Default `did:arbitrum:`; peaq optional |
+| Other-chain patterns | Arbitrum approach |
+|----------------------|-------------------|
+| Native fee token precompile | Any ERC-20 via `FEE_TOKEN_ADDRESS` |
+| Non-Arbitrum RPC endpoints | Arbitrum RPC |
+| External `TREXGateway` governance | Your own `TREXFactory` owner (`ArbVaultFactory`) |
+| Fixed DID prefix | Default `did:arbitrum:`; configurable via `InfoDesk` |
 
 ## 9. Contract size notes
 
-- `PeaqVaultFactory` and `PeaqRwaNft` are large; Arbitrum allows large contracts, but Ethereum L1 does not.
+- `ArbVaultFactory` and `ArbRwaNft` are large; Arbitrum allows large contracts, but Ethereum L1 does not.
 - `deployTREXSuite` may need **>16.7M gas** in one tx — use `deployTrexVault` + `attachVaultPeers` on strict gas caps.
 
-## 10. Integration with `@peaq-network/rwa` SDK (optional)
+## 10. Integration with `@arbitrum-machine/rwa-sdk` (optional)
 
-The monorepo SDK targets peaq Agung/peaq mainnet address JSON. For Arbitrum:
+The monorepo SDK targets Arbitrum Sepolia/Arbitrum mainnet address JSON. For Arbitrum:
 
 1. Copy `deployments/deployment-421614.json` into a new addresses file.
 2. Point your app at Arbitrum RPC + deployed addresses.
 3. Use the same claim topics (`666`, `7`, `8`) and ABIs.
-4. Set `InfoDesk` DID method to `peaq` only if you need byte-compatible `did:peaq` strings in metadata.
+4. Set `InfoDesk` DID method via `setValue(4, n)` if you need a non-default DID prefix in metadata.
 
 SDK is **not** required for testing; use [SCAFFOLD_ETH_GUIDE.md](./SCAFFOLD_ETH_GUIDE.md) or Hardhat tests only.

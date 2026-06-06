@@ -1,4 +1,4 @@
-## `cnft.cancelContract(CancelContract)`
+﻿## `cnft.cancelContract(CancelContract)`
 
 Cancel a Contract NFT draft. This sends a transaction from the contract controller and removes the draft from storage.
 
@@ -28,7 +28,7 @@ import { JsonRpcProvider, Wallet, keccak256, toUtf8Bytes } from 'ethers';
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -62,7 +62,7 @@ import { JsonRpcProvider, Wallet, keccak256, toUtf8Bytes } from 'ethers';
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Contract controller and counterparties

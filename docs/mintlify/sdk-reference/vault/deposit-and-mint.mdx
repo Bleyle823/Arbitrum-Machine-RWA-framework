@@ -1,0 +1,43 @@
+---
+title: Deposit and Mint
+description: vault.depositAndMint — deposit RWA NFTs and mint security tokens.
+---
+
+## `vault.depositAndMint(DepositAndMint)`
+
+Vault controller deposits collateral NFTs and mints ERC-3643 tokens.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **vaultController** | `Signer` | Yes | Vault controller with NFT ownership |
+| **vault** | `string` | No | Defaults to manifest ArbVault |
+| **rwaNfts** | `string[]` | No | Defaults to [MachineNft, ContractNft] |
+| **tokenIds** | `(string \| bigint)[]` | Yes | Collateral token IDs (aligned with rwaNfts) |
+| **amount** | `bigint` | Yes | Security tokens to mint (wei) |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `'deposited_and_minted'` | Operation status |
+| **vault** | `string` | Vault used |
+| **tokenIds** | `bigint[]` | Deposited IDs |
+| **amount** | `bigint` | Minted amount |
+| **receipt** | `TransactionReceipt` | Deposit/mint tx |
+
+<Warning>
+Approve the vault first via `vault.nftApproval`. Ensure `tokenIds` length matches `rwaNfts` when providing a custom array.
+</Warning>
+
+### TypeScript
+
+```typescript
+const alice = new Wallet(process.env.ALICE_PRIVATE_KEY!, provider);
+const m = sdk.getManifest();
+
+await sdk.vault.depositAndMint({
+  vaultController: alice,
+  tokenIds: [m.machineTokenId, m.contractTokenId],
+  amount: 100n * 10n ** 18n,
+});
+```

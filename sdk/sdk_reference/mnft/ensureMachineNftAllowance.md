@@ -1,4 +1,4 @@
-## `mnft.ensureMachineNftAllowance(EnsureMachineNftAllowance)`
+﻿## `mnft.ensureMachineNftAllowance(EnsureMachineNftAllowance)`
 
 Ensure the ERC20 allowance for the Machine NFT registration account is sufficient to cover the registration fee for N machines of a given value. If the allowance is insufficient, it submits an approval transaction.
 
@@ -33,7 +33,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -45,7 +45,7 @@ async function main() {
     machineController: alice,
     machineNft: "0xaBB3961281123C336596153C4dfE83E11498fc54",
     machineValueHuman: "10",
-    erc20: rwa_sdk.getAddresses().erc20.peaq,
+    erc20: sdk.getAddresses().vault.feeToken,
     tokenDecimals: 18,
     machineCount: 2
   });
@@ -66,7 +66,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Machine controller (pays ERC20 fee via allowance)
@@ -77,7 +77,7 @@ async function main() {
     machineController: alice,
     machineNft: "0xaBB3961281123C336596153C4dfE83E11498fc54",
     machineValueHuman: "10",
-    erc20: rwa_sdk.getAddresses().erc20.peaq,
+    erc20: sdk.getAddresses().vault.feeToken,
     tokenDecimals: 18,
     machineCount: 2
   });

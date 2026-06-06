@@ -1,4 +1,4 @@
-## `vault.depositYield(DepositYield)`
+﻿## `vault.depositYield(DepositYield)`
 
 Deposit yield into a vault’s reward distributor. This approves the ERC20 amount and then deposits it.
 
@@ -33,7 +33,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
   const rwa_sdk = new RWA(init);
 
@@ -44,7 +44,7 @@ async function main() {
   const result = await rwa_sdk.vault.depositYield({
     depositorSigner: alice,
     vault: "0x4b76a8F7cdB68a9353c83e18077E6bbC760243B3",
-    erc20: rwa_sdk.getAddresses().erc20.peaq,
+    erc20: sdk.getAddresses().vault.feeToken,
     decimals: 18,
     humanReadableAmount: "1"
   });
@@ -65,7 +65,7 @@ import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
   // 0. Create RWA instance and get provider
-  const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+  const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
   const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 
   // 1. Depositor signer
@@ -75,7 +75,7 @@ async function main() {
   const result = await rwa_sdk.vault.depositYield({
     depositorSigner: alice,
     vault: "0x4b76a8F7cdB68a9353c83e18077E6bbC760243B3",
-    erc20: rwa_sdk.getAddresses().erc20.peaq,
+    erc20: sdk.getAddresses().vault.feeToken,
     decimals: 18,
     humanReadableAmount: "1"
   });

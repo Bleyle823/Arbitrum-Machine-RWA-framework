@@ -1,4 +1,4 @@
-## `onchainid.getIdentity(GetIdentity)`
+﻿## `onchainid.getIdentity(GetIdentity)`
 
 Fetch the ONCHAINID identity contract address associated with a given EOA (Externally Owned Account). This is a read-only query against the ID Factory; no transaction is sent.
 
@@ -22,7 +22,7 @@ import { JsonRpcProvider } from "ethers";
 
 async function main() {
     // 0. Create rwa_sdk instance and get provider
-    const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+    const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
     const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider: provider };
     const rwa_sdk = new RWA(init);
   
@@ -49,7 +49,7 @@ import { JsonRpcProvider } from "ethers";
 
 async function main() {
     // 0. Create rwa_sdk instance and get provider
-    const provider = new JsonRpcProvider(process.env.HTTPS_BASE_URL);
+    const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
     const rwa_sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider: provider });
   
     // 1. Get Alice public address

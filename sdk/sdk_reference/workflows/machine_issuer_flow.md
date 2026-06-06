@@ -1,4 +1,4 @@
-# Machine Issuer flow
+﻿# Machine Issuer flow
 
 This workflow shows how to **add a new Machine Issuer** so that an address can call `mnft.registerMachine` for a given Machine NFT contract. It follows the integration test in `tests/rwanft/rwanft.addMachineIssuer.int.test.ts`.
 
@@ -6,7 +6,7 @@ This workflow shows how to **add a new Machine Issuer** so that an address can c
 
 - The **Machine Regulator** (e.g. Framework Owner) approves an EOA as a **Machine Issuer**.
 - That EOA must have an ONCHAINID identity with a **Machine Issuer role claim** (`CT_MNFT_ISSUER`) issued by a trusted Claim Issuer.
-- The regulator then registers that EOA in the **PeaqRwaNft** contract via `rwanft.addMachineIssuer`. After that, the address can register machines (mint Machine NFTs) for machine controllers.
+- The regulator then registers that EOA in the **ArbRwaNft** contract via `rwanft.addMachineIssuer`. After that, the address can register machines (mint Machine NFTs) for machine controllers.
 
 ## Prerequisites
 
@@ -46,9 +46,9 @@ The **identity owner** (the candidate) must add the claim to their identity:
   - `claim`: the claim from step 2.
   - `claimSignature`: the signature from step 2.
 
-### 4. Register the Machine Issuer in PeaqRwaNft
+### 4. Register the Machine Issuer in ArbRwaNft
 
-The **Machine Regulator** adds the candidate’s EOA to the PeaqRwaNft contract:
+The **Machine Regulator** adds the candidate’s EOA to the ArbRwaNft contract:
 
 - [Add Machine Issuer](../rwanft/addMachineIssuer.md) with:
   - `machineRegulatorSigner`: Machine Regulator wallet.

@@ -1,0 +1,421 @@
+---
+title: Manual Testing (SDK)
+description: Step-by-step hands-on RWA workflow using TypeScript and @arbitrum-machine/rwa-sdk — no automation scripts.
+---
+
+Test the full RWA pipeline **manually** with small TypeScript files and the SDK. This guide does **not** use `npm run writes`, `yarn bootstrap`, or other batch scripts.
+
+For the Scaffold-ETH UI walkthrough, see [Manual Testing (Scaffold-ETH)](/workflows/manual-testing-scaffold).
+
+<Info>
+**Infrastructure once:** Deploy framework contracts with `yarn deploy:arbitrum-sepolia` from `frontend/`, then `npm run sync-addresses && npm run build` in `sdk/`. Every workflow step below is still manual.
+</Info>
+
+---
+
+## Roles and keys
+
+| Role | `sdk/.env` variable | Signs |
+|------|---------------------|-------|
+| Admin / deployer | `ADMIN_PRIVATE_KEY` | IdFactory, RwaNft issuer, vault admin (Phase 6) |
+| Claim Issuer | `CLAIM_ISSUER_PRIVATE_KEY` | KYC claim signatures |
+| Alice | `ALICE_PRIVATE_KEY` | Machine owner, CNFT, vault, transfers, yield |
+| Bob | `BOB_PRIVATE_KEY` | CNFT sign, yield claim |
+| Charlie | `CHARLIE_PRIVATE_KEY` | CNFT sign, yield `claimTo` target |
+
+---
+
+## Checklist
+
+| # | Phase | SDK API |
+|---|-------|---------|
+| 0 | Setup | — |
+| 1 | ONCHAINID identities | `onchainid.createIdentity` |
+| 2 | KYC claims | `onchainid.addClaimToIdentity` |
+| 3 | Machine issuer (Admin) | Direct contract call (no SDK write yet) |
+| 4 | Machine NFT | `mnft.registerMachine` |
+| 5 | Contract NFT | `cnft.createContract`, `signContract` |
+| 6 | Vault + IR + unpause | Direct contract calls (no SDK write yet) |
+| 7 | NFT approvals | `vault.nftApproval` |
+| 8 | Mint security tokens | `vault.depositAndMint` |
+| 9 | Transfers | `ensureTransferFeeAllowance`, `vault.transfer` |
+| 10 | Yield | `depositYield`, `claimYield`, `claimYieldTo` |
+
+---
+
+## Phase 0 — Setup
+
+```bash
+cd sdk
+npm install
+cp .env.example .env
+# fill keys (see table above)
+npm run build
+```
+
+Create `sdk/manual-step.ts` and run after each edit:
+
+```bash
+npx tsx manual-step.ts
+```
+
+Bootstrap snippet — paste at the top of every script:
+
+```typescript
+import "dotenv/config";
+import { JsonRpcProvider, Wallet, Contract, parseEther, keccak256, toUtf8Bytes } from "ethers";
+import {
+  RWA,
+  Chain,
+  CT_KYC_APPROVED,
+  encodeKycData,
+  DEFAULT_VAULT_MINT_AMOUNT,
+  mockFeeTokenExtendedAbi,
+  machineNftExtendedAbi,
+  contractNftExtendedAbi,
+} from "@arbitrum-machine/rwa-sdk";
+
+const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL!);
+const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
+const m = sdk.getManifest();
+const addrs = sdk.getAddresses();
+
+const admin = new Wallet(process.env.ADMIN_PRIVATE_KEY!, provider);
+const claimIssuer = new Wallet(process.env.CLAIM_ISSUER_PRIVATE_KEY!, provider);
+const alice = new Wallet(process.env.ALICE_PRIVATE_KEY!, provider);
+const bob = new Wallet(process.env.BOB_PRIVATE_KEY!, provider);
+const charlie = new Wallet(process.env.CHARLIE_PRIVATE_KEY!, provider);
+```
+
+**Verify after every phase** before continuing.
+
+---
+
+## Phase 1 — Create identities
+
+**Goal:** ONCHAINID proxy for Alice, Bob, Charlie via `IdFactory`.
+
+```typescript
+for (const subject of [m.alice, m.bob, m.charlie]) {
+  const result = await sdk.onchainid.createIdentity({
+    idFactoryAdmin: admin,
+    subject,
+    deploymentSalt: `manual-${subject}-${Date.now()}`,
+  });
+  console.log(subject, result.status, result.identity);
+}
+```
+
+**Verify:**
+
+```typescript
+for (const subject of [m.alice, m.bob, m.charlie]) {
+  const id = await sdk.onchainid.getIdentity({ subject });
+  console.log(subject, id.status, id.status === "found" ? id.identity : "—");
+}
+```
+
+Expected: three `found` identities.
+
+---
+
+## Phase 2 — KYC claims
+
+**Goal:** Topic **666** claim on each identity from the trusted Claim Issuer.
+
+```typescript
+async function kycParticipant(owner: Wallet, subjectEoa: string) {
+  const idResult = await sdk.onchainid.getIdentity({ subject: subjectEoa });
+  if (idResult.status !== "found") throw new Error(`No identity for ${subjectEoa}`);
+
+  await sdk.onchainid.addClaimToIdentity({
+    identityOwner: owner,
+    identityAddress: idResult.identity,
+    claimIssuer,
+    claimIssuerAddress: addrs.onchainid.claimIssuer,
+    topic: CT_KYC_APPROVED,
+    data: encodeKycData("Demo", "User", "1990-01-01", "Berlin"),
+  });
+  console.log("KYC added for", subjectEoa);
+}
+
+await kycParticipant(alice, m.alice);
+await kycParticipant(bob, m.bob);
+await kycParticipant(charlie, m.charlie);
+```
+
+Each participant signs as their own `identityOwner`.
+
+**Verify (after Phase 6):**
+
+```typescript
+for (const wallet of [m.alice, m.bob, m.charlie]) {
+  const { verified } = await sdk.onchainid.isVerified({ wallet });
+  console.log(wallet, "verified:", verified);
+}
+```
+
+---
+
+## Phase 3 — Authorize machine issuer
+
+**Goal:** Admin is machine regulator and issuer on `ArbRwaNft`.
+
+<Warning>
+No high-level SDK write for this step yet. Use ethers with the deployed contract ABI from `deployments/arbitrumSepolia/`.
+</Warning>
+
+```typescript
+const rwaNftAbi = [
+  "function addMachineRegulator(address regulator)",
+  "function addMachineIssuer(address issuer)",
+  "function getMachineIssuers() view returns (address[])",
+];
+const rwaNft = new Contract(addrs.nft.arbRwaNft, rwaNftAbi, admin);
+const adminAddr = await admin.getAddress();
+
+await (await rwaNft.addMachineRegulator(adminAddr)).wait();
+await (await rwaNft.addMachineIssuer(adminAddr)).wait();
+console.log("issuers:", await rwaNft.getMachineIssuers());
+```
+
+---
+
+## Phase 4 — Register Machine NFT
+
+**Goal:** Alice owns Machine NFT **`202604042`** with a DID document.
+
+```typescript
+const machineNft = addrs.nft.machineNft;
+const feeToken = addrs.vault.feeToken;
+const tokenId = 202604042n;
+const did = new TextEncoder().encode("did:arbitrum:machine:VEH-2026-CYBER-DLV-0042");
+
+const feeContract = new Contract(feeToken, mockFeeTokenExtendedAbi, alice);
+const nftRead = new Contract(machineNft, machineNftExtendedAbi, provider);
+const [fee] = await nftRead.registrationFeeAndAccount(parseEther("119990"));
+await (await feeContract.approve(machineNft, fee)).wait();
+
+await sdk.mnft.registerMachine({
+  machineIssuer: admin,
+  machineOwner: m.alice,
+  machineValue: parseEther("119990"),
+  tokenId,
+  did,
+});
+```
+
+**Verify:**
+
+```typescript
+console.log("owner:", await sdk.mnft.ownerOf(tokenId));
+console.log("DID:", (await sdk.mnft.getMachineDid({ tokenId })).did);
+```
+
+---
+
+## Phase 5 — Contract NFT
+
+**Goal:** Alice initiates deal; Bob and Charlie sign.
+
+```typescript
+const url = "ipfs://bafybeihkyr6b2jkti2vzu3p5ahg7mmqd6pqvmu7e5ecmz3rvrim2une2su";
+const metadata = JSON.stringify({
+  dealRef: "CYBER-AUTO-DELIVERY-2026-0042",
+  version: "1.0.0",
+  assetSerial: "VEH-2026-CYBER-DLV-0042",
+});
+const hashDigest = BigInt(keccak256(toUtf8Bytes(metadata)));
+
+// Alice: approve CNFT setup fee (same pattern as Phase 4 — approve ContractNft)
+const cnftRead = new Contract(addrs.nft.contractNft, contractNftExtendedAbi, provider);
+const [setupFee] = await cnftRead.setupFeeAndAccount();
+await (await new Contract(feeToken, mockFeeTokenExtendedAbi, alice).approve(addrs.nft.contractNft, setupFee)).wait();
+
+const created = await sdk.cnft.createContract({
+  initiator: alice,
+  counterparties: [m.bob, m.charlie],
+  hashDigest,
+  url,
+});
+console.log("contractId:", created.contractId.toString());
+
+await sdk.cnft.signContract({ signer: bob, contractId: created.contractId });
+await sdk.cnft.signContract({ signer: charlie, contractId: created.contractId });
+```
+
+**Verify:**
+
+```typescript
+const { owner } = await sdk.cnft.getContractOwner({ contractId: created.contractId });
+console.log("CNFT owner:", owner);
+```
+
+---
+
+## Phase 6 — Vault, token, Identity Registry
+
+**Goal:** Vault live, token unpaused, all three investors registered and verified on IR.
+
+<Warning>
+Vault admin methods are **not** SDK writes yet. Use ethers against deployment ABIs, or skip if your manifest already has a bootstrapped vault and you are re-testing Phases 7–10.
+</Warning>
+
+Typical admin sequence (contract names from your deployment):
+
+| Step | Contract | Function |
+|------|----------|----------|
+| 6a | ArbVaultFactory | `deployTrexVault` / `createVault` — Alice as controller |
+| 6b | Token | `unpause` |
+| 6c | IdentityRegistry | `registerIdentity(wallet, onchainId, country)` × 3 |
+| 6d | IdentityRegistry | `addTrustedIssuer` (if needed) |
+
+After fresh deploy, update manifest addresses (`npm run sync-addresses && npm run build`).
+
+**Verify:**
+
+```typescript
+const tokenAbi = ["function paused() view returns (bool)"];
+const paused = await new Contract(addrs.vault.token, tokenAbi, provider).paused();
+console.log("token paused:", paused);
+
+for (const wallet of [m.alice, m.bob, m.charlie]) {
+  console.log(wallet, (await sdk.onchainid.isVerified({ wallet })).verified);
+}
+```
+
+All `isVerified` → `true`; `paused` → `false`.
+
+---
+
+## Phase 7 — Approve vault for NFTs
+
+**Goal:** Vault can pull Alice's Machine and Contract NFTs.
+
+```typescript
+const vault = m.arbVault;
+const machineId = BigInt(m.machineTokenId);
+const contractId = BigInt(m.contractId);
+
+await sdk.vault.nftApproval({
+  owner: alice,
+  nft: addrs.nft.machineNft,
+  vault,
+  tokenIds: [machineId],
+});
+
+await sdk.vault.nftApproval({
+  owner: alice,
+  nft: addrs.nft.contractNft,
+  vault,
+  tokenIds: [contractId],
+});
+```
+
+Skip if `ownerOf` is already the vault.
+
+---
+
+## Phase 8 — Deposit and mint
+
+**Goal:** **100** ERC-3643 tokens to Alice.
+
+```typescript
+if (await sdk.vault.isMinted()) {
+  console.log("Already minted");
+} else {
+  const result = await sdk.vault.depositAndMint({
+    vaultController: alice,
+    tokenIds: [machineId, contractId],
+    amount: DEFAULT_VAULT_MINT_AMOUNT,
+  });
+  console.log(result.status, result.amount.toString());
+}
+```
+
+**Verify:**
+
+```typescript
+console.log("minted:", await sdk.vault.isMinted());
+console.log("Alice:", await sdk.vault.tokenBalance(m.alice));
+console.log("machine owner:", await sdk.mnft.ownerOf(machineId));
+```
+
+---
+
+## Phase 9 — Transfers
+
+**Goal:** 10 tokens each to Bob and Charlie (with fee allowance).
+
+```typescript
+const amount = parseEther("10");
+
+await sdk.vault.ensureTransferFeeAllowance({
+  allowanceSigner: alice,
+  transferAmount: amount,
+});
+
+await sdk.vault.transfer({ from: alice, to: m.bob, amount });
+await sdk.vault.transfer({ from: alice, to: m.charlie, amount });
+```
+
+**Verify:**
+
+```typescript
+console.log("Alice:", await sdk.vault.tokenBalance(m.alice));
+console.log("Bob:", await sdk.vault.tokenBalance(m.bob));
+console.log("Charlie:", await sdk.vault.tokenBalance(m.charlie));
+```
+
+---
+
+## Phase 10 — Yield
+
+**Goal:** Alice deposits yield; Bob claims; second deposit + `claimTo` Charlie.
+
+<Warning>
+`claimYield` drains accrued balance. Run a **second** `depositYield` before `claimYieldTo`.
+</Warning>
+
+```typescript
+const yieldAmt = parseEther("1");
+
+await sdk.vault.depositYield({ depositor: alice, amount: yieldAmt });
+await sdk.vault.claimYield({ claimant: bob });
+
+await sdk.vault.depositYield({ depositor: alice, amount: yieldAmt });
+await sdk.vault.claimYieldTo({ claimant: bob, to: m.charlie });
+```
+
+---
+
+## Final verification
+
+| Check | Call |
+|-------|------|
+| Identities | `onchainid.getIdentity` × 3 |
+| KYC on IR | `onchainid.isVerified` × 3 |
+| Machine in vault | `mnft.ownerOf` → vault |
+| Minted | `vault.isMinted()` |
+| Balances | Alice ~80e18, Bob/Charlie 10e18 each |
+| Yield | MockFeeToken `balanceOf` for Bob/Charlie |
+
+---
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| `isVerified` false | Complete Phases 2 and 6 |
+| `depositAndMint` reverts | Alice not verified or CNFT incomplete |
+| `SIMULATE/NFT_APPROVAL` | NFT already owned by vault — skip Phase 7 |
+| `Nothing to claim` on `claimYieldTo` | Deposit yield again before second claim |
+| Stale addresses | `npm run sync-addresses && npm run build` |
+
+---
+
+## Related
+
+- [Manual Testing (Scaffold-ETH)](/workflows/manual-testing-scaffold)
+- [Common Flow](/workflows/common-flow)
+- [SDK Standalone Testing](/workflows/sdk-standalone) — automated npm scripts

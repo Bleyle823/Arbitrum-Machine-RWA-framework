@@ -1,0 +1,32 @@
+---
+title: Deposit Yield
+description: vault.depositYield — fund the reward distributor with payout tokens.
+---
+
+## `vault.depositYield(DepositYield)`
+
+Approves and deposits yield into the vault reward distributor.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **depositor** | `Signer` | Yes | Yield depositor |
+| **amount** | `bigint` | Yes | Payout token amount (wei) |
+| **vault** | `string` | No | Defaults to manifest ArbVault |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `string` | `'deposited'` |
+| **receipt** | `TransactionReceipt` | Deposit tx |
+
+### TypeScript
+
+```typescript
+const alice = new Wallet(process.env.ALICE_PRIVATE_KEY!, provider);
+
+await sdk.vault.depositYield({
+  depositor: alice,
+  amount: 1n * 10n ** 18n,
+});
+```

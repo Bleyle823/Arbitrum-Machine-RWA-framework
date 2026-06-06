@@ -1,0 +1,32 @@
+---
+title: Ensure Transfer Fee Allowance
+description: vault.ensureTransferFeeAllowance — approve MockFeeToken for vault transfer fees.
+---
+
+## `vault.ensureTransferFeeAllowance(EnsureTransferFeeAllowance)`
+
+Approves fee token spending for vault transfer fees if allowance is insufficient.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| **allowanceSigner** | `Signer` | Yes | Payer of transfer fee |
+| **transferAmount** | `bigint` | Yes | Token amount being transferred (wei) |
+| **allowance** | `bigint` | No | Override allowance target (default ~2× 1% fee) |
+
+### Returns
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | `string` | `'approved'` or `'already_sufficient'` |
+| **allowance** | `bigint` | Resulting allowance |
+
+### TypeScript
+
+```typescript
+const alice = new Wallet(process.env.ALICE_PRIVATE_KEY!, provider);
+
+await sdk.vault.ensureTransferFeeAllowance({
+  allowanceSigner: alice,
+  transferAmount: 10n * 10n ** 18n,
+});
+```
