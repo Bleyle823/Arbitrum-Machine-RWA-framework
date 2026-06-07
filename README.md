@@ -14,6 +14,7 @@ Identity + KYC  →  Machine / Contract NFTs  →  Arb Vault  →  Security toke
 
 | Resource | URL |
 |----------|-----|
+| **Landing site** | https://arbitrum-machine-rwa-landing.vercel.app |
 | **Scaffold demo** (`/rwa` UI) | https://arbitrum-machine-rwa-scaffold.vercel.app/rwa |
 | **Debug contracts UI** | https://arbitrum-machine-rwa-scaffold.vercel.app/debug |
 | **Mintlify documentation** | https://arbitrum-machine-rwa-docs.vercel.app |
