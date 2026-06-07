@@ -43,8 +43,11 @@ const Hero = () => {
             by <span className="text-n-1">{siteConfig.sdkPackage}</span>.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button href="#docs" white>
+            <Button href={siteConfig.docsUrl} white>
               Read the docs
+            </Button>
+            <Button href={siteConfig.rwaAppUrl} className="border border-n-6">
+              Try live demo
             </Button>
             <Button href={siteConfig.repoUrl} className="border border-n-6">
               View on GitHub

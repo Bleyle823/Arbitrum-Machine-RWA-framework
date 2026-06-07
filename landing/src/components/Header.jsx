@@ -75,7 +75,11 @@ const Header = () => {
           <HamburgerMenu />
         </nav>
 
-        <Button className="hidden lg:flex ml-auto" href="#docs" white>
+        <Button className="hidden lg:flex ml-auto mr-4" href={siteConfig.rwaAppUrl}>
+          Live demo
+        </Button>
+
+        <Button className="hidden lg:flex" href={siteConfig.docsUrl} white>
           Documentation
         </Button>
 

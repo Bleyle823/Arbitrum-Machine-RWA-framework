@@ -22,13 +22,17 @@ import {
 
 const REPO =
   "https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework/tree/develop";
-const DOCS = `${REPO}/sdk/mintlify`;
+const DOCS = "https://arbitrum-machine-rwa-docs.vercel.app";
+const SCAFFOLD = "https://arbitrum-machine-rwa-scaffold.vercel.app";
 
 export const siteConfig = {
   name: "Arbitrum Machine RWA",
   tagline: "Compliant machine tokenization on Arbitrum",
   repoUrl: REPO,
   docsUrl: DOCS,
+  scaffoldUrl: SCAFFOLD,
+  rwaAppUrl: `${SCAFFOLD}/rwa`,
+  debugAppUrl: `${SCAFFOLD}/debug`,
   sdkPackage: "arbitrum-machine-rwa-sdk",
 };
 
@@ -80,7 +84,7 @@ export const roadmap = [
   {
     id: "1",
     title: "Arbitrum Sepolia reference deploy",
-    text: "Hardhat deploy, bootstrap demo state, Scaffold-ETH /rwa UI, and read-only verify-workflow checks.",
+    text: "Hardhat deploy, bootstrap demo state, live Scaffold-ETH /rwa UI, hosted Mintlify docs, and verify-workflow checks.",
     date: "2026",
     status: "done",
     imageUrl: roadmap2,
@@ -96,7 +100,7 @@ export const roadmap = [
   {
     id: "3",
     title: "Arbitrum One mainnet",
-    text: "Production addresses, audited deployments, and hosted Mintlify documentation for integrators.",
+    text: "Production contract addresses and audited deployments for integrators. Docs and demo UI already live on testnet.",
     date: "Next",
     status: "progress",
     imageUrl: roadmap4,
@@ -165,7 +169,7 @@ export const pricing = [
     features: [
       "ONCHAINID → Machine NFT → Contract NFT → Arb Vault",
       "ERC-3643 mint, compliant transfer, yield claim",
-      "Links to manual testing via SDK or Scaffold-ETH UI",
+      "Manual testing via SDK or the live Scaffold-ETH demo",
     ],
   },
 ];

@@ -12,7 +12,7 @@ const Roadmap = () => (
       <Heading
         tag="Framework evolution"
         title="What ships today and what's next"
-        text="Reference deployments on testnet today; mainnet manifests and hosted docs on the horizon."
+        text="Live demo UI and hosted docs are deployed today; mainnet manifests and audited production contracts are next."
       />
 
       <div className="relative grid gap-6 md:grid-cols-2 md:gap-4 md:pb-[7rem]">
@@ -72,7 +72,11 @@ const Roadmap = () => (
         <Gradient />
       </div>
 
-      <div className="flex justify-center mt-12 md:mt-15 xl:mt-20">
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-12 md:mt-15 xl:mt-20">
+        <Button href={siteConfig.rwaAppUrl} white>
+          Try live demo
+        </Button>
+        <Button href={siteConfig.docsUrl}>Read the docs</Button>
         <Button href={siteConfig.repoUrl}>View repository</Button>
       </div>
     </div>

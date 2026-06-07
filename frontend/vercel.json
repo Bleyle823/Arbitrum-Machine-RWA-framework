@@ -1,0 +1,5 @@
+{
+  "installCommand": "yarn install",
+  "buildCommand": "yarn workspace @se-2/nextjs build",
+  "framework": "nextjs"
+}

@@ -31,7 +31,7 @@ const Pricing = () => {
         <Heading
           tag="Mintlify documentation"
           title="Guides for every integration path"
-          text="Full reference lives in sdk/mintlify. Run mintlify dev locally or browse on GitHub."
+          text="Hosted docs with quickstart, API reference, and workflow guides — live at arbitrum-machine-rwa-docs.vercel.app."
         />
 
         <div className="relative">
@@ -51,11 +51,11 @@ const Pricing = () => {
           </a>
           <a
             className="text-xs font-code font-bold tracking-wider uppercase border-b border-n-1/50 text-n-3 hover:text-n-1 transition-colors"
-            href={`${siteConfig.docsUrl}/introduction`}
+            href={siteConfig.rwaAppUrl}
             target="_blank"
             rel="noopener noreferrer"
           >
-            Framework introduction
+            Open live demo
           </a>
         </div>
       </div>

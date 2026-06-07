@@ -91,8 +91,8 @@ const Services = () => {
               <div className="py-12 px-4 xl:px-8">
                 <h4 className="h4 mb-4">Scaffold-ETH UI</h4>
                 <p className="body-2 mb-[2rem] text-n-3">
-                  Run the monorepo frontend, connect MetaMask, and exercise the
-                  full RWA flow from the /rwa and /debug pages.
+                  Try the deployed demo app — connect MetaMask on Arbitrum Sepolia
+                  and exercise the full RWA flow from /rwa and /debug.
                 </p>
 
                 <ul className="flex items-center justify-between">
@@ -120,8 +120,14 @@ const Services = () => {
 
                 <Button
                   className="mt-8"
-                  href={`${siteConfig.docsUrl}/workflows/manual-testing-scaffold`}
+                  href={siteConfig.rwaAppUrl}
                   white
+                >
+                  Open live demo
+                </Button>
+                <Button
+                  className="mt-4"
+                  href={`${siteConfig.docsUrl}/workflows/manual-testing-scaffold`}
                 >
                   UI testing guide
                 </Button>

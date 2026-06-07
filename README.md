@@ -2,13 +2,23 @@
 
 On-chain infrastructure for tokenizing physical machines on **Arbitrum**: from verified identity and NFT collateral through ERC-3643 security tokens and yield distribution.
 
-**[Why Machine RWA →](./sdk/mintlify/concepts/vision.mdx)**: vision, compliance-by-design, and modular integration.
+**[Why Machine RWA →](https://arbitrum-machine-rwa-docs.vercel.app/concepts/vision)**: vision, compliance-by-design, and modular integration.
 
 The framework combines [**ONCHAINID**](https://github.com/onchain-id/solidity), [**T-REX (ERC-3643)**](https://github.com/ERC-3643/ERC-3643), and **ERC-721** (Machine NFT + Contract NFT) into a single compliant RWA pipeline.
 
 ```
 Identity + KYC  →  Machine / Contract NFTs  →  Arb Vault  →  Security tokens + yield
 ```
+
+## Live deployments
+
+| Resource | URL |
+|----------|-----|
+| **Scaffold demo** (`/rwa` UI) | https://arbitrum-machine-rwa-scaffold.vercel.app/rwa |
+| **Debug contracts UI** | https://arbitrum-machine-rwa-scaffold.vercel.app/debug |
+| **Mintlify documentation** | https://arbitrum-machine-rwa-docs.vercel.app |
+
+Connect MetaMask to **Arbitrum Sepolia** to use the hosted demo. Docs and demo auto-deploy from this repo via Vercel.
 
 ## Repository layout
 
@@ -42,7 +52,7 @@ npm test
 npm run verify:workflow
 ```
 
-Docs: [sdk/README.md](./sdk/README.md) · [Manual testing (SDK)](./sdk/mintlify/workflows/manual-testing-sdk.mdx)
+Docs: [SDK README](./sdk/README.md) · [Manual testing (SDK)](https://arbitrum-machine-rwa-docs.vercel.app/workflows/manual-testing-sdk)
 
 ### Frontend + deploy (full stack)
 
@@ -63,9 +73,9 @@ yarn bootstrap:robinhood-testnet  # optional: seeds demo state
 yarn start
 ```
 
-Open [http://localhost:3000/rwa](http://localhost:3000/rwa) (MetaMask on Arbitrum Sepolia or Robinhood Chain Testnet).
+Open [http://localhost:3000/rwa](http://localhost:3000/rwa) locally, or try the [hosted demo](https://arbitrum-machine-rwa-scaffold.vercel.app/rwa) (MetaMask on Arbitrum Sepolia or Robinhood Chain Testnet).
 
-Docs: [Manual testing (Scaffold-ETH)](./sdk/mintlify/workflows/manual-testing-scaffold.mdx)
+Docs: [Manual testing (Scaffold-ETH)](https://arbitrum-machine-rwa-docs.vercel.app/workflows/manual-testing-scaffold)
 
 ### Contracts only (Hardhat)
 
@@ -80,7 +90,9 @@ See [contracts/TEST_GUIDE.md](./contracts/TEST_GUIDE.md) and [contracts/ARBITRUM
 
 ## Documentation
 
-Hosted-style docs (Mintlify):
+**Hosted docs:** https://arbitrum-machine-rwa-docs.vercel.app
+
+Local preview:
 
 ```bash
 cd sdk/mintlify
@@ -89,13 +101,13 @@ mintlify dev
 
 | Guide | Description |
 |-------|-------------|
-| [Introduction](./sdk/mintlify/introduction.mdx) | Framework overview and Sepolia addresses |
-| [Core modules](./sdk/mintlify/concepts/modules.mdx) | `onchainid`, `mnft`, `cnft`, `vault`, `rwanft` |
-| [Roles](./sdk/mintlify/concepts/roles.mdx) | Framework Owner, Claim Issuer, issuers, investors |
-| [Common flow](./sdk/mintlify/workflows/common-flow.mdx) | End-to-end SDK workflow |
-| [Smart contract testing](./sdk/mintlify/smart-contracts/guide.mdx) | Hardhat deploy and verification |
+| [Introduction](https://arbitrum-machine-rwa-docs.vercel.app/introduction) | Framework overview and Sepolia addresses |
+| [Core modules](https://arbitrum-machine-rwa-docs.vercel.app/concepts/modules) | `onchainid`, `mnft`, `cnft`, `vault`, `rwanft` |
+| [Roles](https://arbitrum-machine-rwa-docs.vercel.app/concepts/roles) | Framework Owner, Claim Issuer, issuers, investors |
+| [Common flow](https://arbitrum-machine-rwa-docs.vercel.app/workflows/common-flow) | End-to-end SDK workflow |
+| [Smart contract testing](https://arbitrum-machine-rwa-docs.vercel.app/smart-contracts/guide) | Hardhat deploy and verification |
 
-Synced copy under [`docs/mintlify/`](./docs/mintlify/) for publishing.
+Source files live under [`sdk/mintlify/`](./sdk/mintlify/). Synced copy under [`docs/mintlify/`](./docs/mintlify/) for publishing.
 
 ## SDK example
 
