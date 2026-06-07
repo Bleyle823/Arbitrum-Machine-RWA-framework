@@ -1,0 +1,66 @@
+import Section from "./Section";
+import { smallSphere, stars } from "../assets";
+import Heading from "./Heading";
+import PricingList from "./PricingList";
+import { LeftLine, RightLine } from "./design/Pricing";
+import { siteConfig } from "../constants";
+
+const Pricing = () => {
+  return (
+    <Section className="overflow-hidden" id="docs">
+      <div className="container relative z-2">
+        <div className="hidden relative justify-center mb-[6.5rem] lg:flex">
+          <img
+            src={smallSphere}
+            className="relative z-1"
+            width={255}
+            height={255}
+            alt=""
+          />
+          <div className="absolute top-1/2 left-1/2 w-[60rem] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+            <img
+              src={stars}
+              className="w-full"
+              width={950}
+              height={400}
+              alt=""
+            />
+          </div>
+        </div>
+
+        <Heading
+          tag="Mintlify documentation"
+          title="Guides for every integration path"
+          text="Full reference lives in sdk/mintlify. Run mintlify dev locally or browse on GitHub."
+        />
+
+        <div className="relative">
+          <PricingList />
+          <LeftLine />
+          <RightLine />
+        </div>
+
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mt-10">
+          <a
+            className="text-xs font-code font-bold tracking-wider uppercase border-b border-n-1 hover:text-color-1 transition-colors"
+            href={siteConfig.docsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Browse all documentation
+          </a>
+          <a
+            className="text-xs font-code font-bold tracking-wider uppercase border-b border-n-1/50 text-n-3 hover:text-n-1 transition-colors"
+            href={`${siteConfig.docsUrl}/introduction`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Framework introduction
+          </a>
+        </div>
+      </div>
+    </Section>
+  );
+};
+
+export default Pricing;
