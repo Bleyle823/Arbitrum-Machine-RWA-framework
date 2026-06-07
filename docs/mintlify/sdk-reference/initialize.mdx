@@ -1,6 +1,6 @@
 ---
 title: Installation & Initialization
-description: Install @arbitrum-machine/rwa-sdk and initialize for Arbitrum Sepolia or Arbitrum One.
+description: Install arbitrum-machine-rwa-sdk and initialize for Arbitrum Sepolia, Robinhood Chain Testnet, or Arbitrum One.
 ---
 
 ## TypeScript setup
@@ -15,7 +15,7 @@ npm pkg set type=module
 ### 2. Install packages
 
 ```bash
-npm install @arbitrum-machine/rwa-sdk ethers dotenv
+npm install arbitrum-machine-rwa-sdk ethers dotenv
 npm i -D typescript tsx @types/node
 ```
 
@@ -64,7 +64,7 @@ mkdir src && touch src/index.ts
 ```bash
 npm init -y
 npm pkg set type=module
-npm install @arbitrum-machine/rwa-sdk ethers dotenv
+npm install arbitrum-machine-rwa-sdk ethers dotenv
 mkdir src && touch src/index.js
 ```
 
@@ -76,6 +76,7 @@ Create `.env` and add `.env` to `.gitignore`:
 
 ```bash
 ARB_SEPOLIA_RPC_URL=https://sepolia-rollup.arbitrum.io/rpc
+ROBINHOOD_TESTNET_RPC_URL=https://rpc.testnet.chain.robinhood.com
 
 # Framework admin (IdFactory owner)
 ADMIN_PRIVATE_KEY=
@@ -101,7 +102,7 @@ Initialize the SDK for a specific Arbitrum network.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| **chainId** | `Chain` | Yes | `Chain.ARBITRUM_SEPOLIA` (421614) or `Chain.ARBITRUM_ONE` (42161) |
+| **chainId** | `Chain` | Yes | `Chain.ARBITRUM_SEPOLIA` (421614), `Chain.ROBINHOOD_CHAIN_TESTNET` (46630), or `Chain.ARBITRUM_ONE` (42161) |
 | **provider** | `Provider` | Yes | ethers `JsonRpcProvider` for read calls |
 | **manifest** | `RwaManifest` | No | Override bundled deployment manifest |
 
@@ -110,7 +111,7 @@ Initialize the SDK for a specific Arbitrum network.
 ```typescript
 import "dotenv/config";
 import { JsonRpcProvider } from "ethers";
-import { RWA, Chain, type SDKInit } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain, type SDKInit } from "arbitrum-machine-rwa-sdk";
 
 const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL!);
 const init: SDKInit = { chainId: Chain.ARBITRUM_SEPOLIA, provider };
@@ -125,7 +126,7 @@ console.log(sdk.getManifest());
 ```javascript
 import "dotenv/config";
 import { JsonRpcProvider } from "ethers";
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 
 const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
 const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });

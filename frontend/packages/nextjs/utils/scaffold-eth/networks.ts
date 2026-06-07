@@ -90,14 +90,23 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   [chains.celoSepolia.id]: {
     color: "#476520",
   },
+  46630: {
+    color: "#00c805",
+  },
 };
 
 /**
  * Gives the block explorer transaction URL, returns empty string if the network is a local chain
  */
 export function getBlockExplorerTxLink(chainId: number, txnHash: string) {
-  const chainNames = Object.keys(chains);
+  const configured = scaffoldConfig.targetNetworks.find(n => n.id === chainId);
+  const blockExplorerTxURL = configured?.blockExplorers?.default?.url;
 
+  if (blockExplorerTxURL) {
+    return `${blockExplorerTxURL}/tx/${txnHash}`;
+  }
+
+  const chainNames = Object.keys(chains);
   const targetChainArr = chainNames.filter(chainName => {
     const wagmiChain = chains[chainName as keyof typeof chains];
     return wagmiChain.id === chainId;
@@ -108,13 +117,13 @@ export function getBlockExplorerTxLink(chainId: number, txnHash: string) {
   }
 
   const targetChain = targetChainArr[0] as keyof typeof chains;
-  const blockExplorerTxURL = chains[targetChain]?.blockExplorers?.default?.url;
+  const fallbackUrl = chains[targetChain]?.blockExplorers?.default?.url;
 
-  if (!blockExplorerTxURL) {
+  if (!fallbackUrl) {
     return "";
   }
 
-  return `${blockExplorerTxURL}/tx/${txnHash}`;
+  return `${fallbackUrl}/tx/${txnHash}`;
 }
 
 /**

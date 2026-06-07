@@ -30,5 +30,5 @@ export function activeNetworkName(argv = process.argv): string {
 
 export function deploymentNetworkOrder(argv = process.argv): string[] {
   const active = activeNetworkName(argv);
-  return [...new Set([active, "arbitrumSepolia", "default", "localhost"])];
+  return [...new Set([active, "robinhoodChainTestnet", "arbitrumSepolia", "default", "localhost"])];
 }

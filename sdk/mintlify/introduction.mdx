@@ -1,19 +1,21 @@
 ---
 title: Introduction
-description: Arbitrum Machine RWA SDK — tokenize machines and fractionalize ownership with ONCHAINID + ERC-3643.
+description: Arbitrum Machine RWA SDK: tokenize machines and fractionalize ownership with ONCHAINID + ERC-3643.
 ---
 
-The **Arbitrum Machine Real World Asset (RWA) Framework** is on-chain infrastructure for representing physical assets—chiefly machines—as compliant digital securities on **Arbitrum**. It gives integrators a regulated path from asset registration through fractional ownership and yield distribution.
+The **Arbitrum Machine Real World Asset (RWA) Framework** is on-chain infrastructure for representing physical assets (chiefly machines) as compliant digital securities on **Arbitrum**. It gives integrators a regulated path from asset registration through fractional ownership and yield distribution.
 
-<img src="/images/overview.png" alt="Arbitrum Machine RWA framework — identity, Machine NFT, Arb Vault, and ERC-3643 security tokens" />
+[Why Machine RWA on Arbitrum →](/concepts/vision)
+
+<img src="/images/overview.png" alt="Arbitrum Machine RWA framework: identity, Machine NFT, Arb Vault, and ERC-3643 security tokens" />
 
 Three standards form the foundation:
 
-- [**ONCHAINID**](https://github.com/onchain-id/solidity) — Links wallet addresses to verified on-chain identities and KYC claims.
-- [**T-REX (ERC-3643)**](https://github.com/ERC-3643/ERC-3643) — Regulated security tokens with transfer rules enforced by an Identity Registry.
-- [**ERC-721**](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol) — Unique collateral: **Machine NFTs** (physical assets) and **Contract NFTs** (multi-party agreements).
+- [**ONCHAINID**](https://github.com/onchain-id/solidity): Links wallet addresses to verified on-chain identities and KYC claims.
+- [**T-REX (ERC-3643)**](https://github.com/ERC-3643/ERC-3643): Regulated security tokens with transfer rules enforced by an Identity Registry.
+- [**ERC-721**](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol): Unique collateral: **Machine NFTs** (physical assets) and **Contract NFTs** (multi-party agreements).
 
-Smart contracts live in the [Arbitrum Machine RWA framework](https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework) repository. The **`@arbitrum-machine/rwa-sdk`** npm package exposes them through a typed TypeScript API.
+Smart contracts live in the [Arbitrum Machine RWA framework](https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework) repository. The **`arbitrum-machine-rwa-sdk`** npm package exposes them through a typed TypeScript API.
 
 ## What the framework enables
 
@@ -54,6 +56,7 @@ Module-by-module detail: [Core Modules](/concepts/modules).
 |---------|----------|------|
 | Arbitrum One | 42161 | `Chain.ARBITRUM_ONE` |
 | Arbitrum Sepolia | 421614 | `Chain.ARBITRUM_SEPOLIA` |
+| Robinhood Chain Testnet | 46630 | `Chain.ROBINHOOD_CHAIN_TESTNET` |
 
 ## Contract addresses
 
@@ -80,12 +83,34 @@ feeModule: '0xbBb404e7c839486fAAB8e6510Cd0F4e6b4CAA7D1',
 Resolve at runtime:
 
 ```typescript
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 
 const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 console.log(sdk.getManifest());
 console.log(sdk.getAddresses());
 ```
+
+### Robinhood Chain Testnet (framework deployment)
+
+Framework contracts deployed on Robinhood Chain Testnet. Run `yarn bootstrap:robinhood-testnet` from `frontend/` to create vault, identities, and demo NFTs; then sync into the SDK.
+
+```js
+chainId: 46630,
+idFactory: '0x06A326c6F64984bfB07f4a0f1dcaF4D90a936c38',
+claimIssuer: '0xCAE0bB0E82BBCbeD3eB3089Df64cc4071b53524f',
+arbRwaNft: '0xf4e6f7408f2a760f3cbadb14c26fd2c90a3cb611',
+arbVaultFactory: '0x0b6e3595bbcef688fa2cc288732ae8ac09947398',
+feeToken: '0xc7e34d7722b056f6adf0a4371a6246bf26464189',
+feeModule: '0x98BE252e69b656B08e142d6FD5Ba70eEa0F0C220',
+```
+
+| Setting | Value |
+|---------|-------|
+| RPC | `https://rpc.testnet.chain.robinhood.com` |
+| Explorer | `https://explorer.testnet.chain.robinhood.com` |
+| Env var | `ROBINHOOD_TESTNET_RPC_URL` |
+
+Until bootstrap completes and addresses are synced, pass a custom `manifest` to `new RWA({ chainId: Chain.ROBINHOOD_CHAIN_TESTNET, …, manifest })`.
 
 ### Arbitrum One
 
@@ -93,8 +118,9 @@ Mainnet addresses ship with the SDK as deployments are published. Until then, pa
 
 ## Next steps
 
-- **[Core Modules](/concepts/modules)** — Module responsibilities and API links
-- **[Roles & Responsibilities](/concepts/roles)** — Framework Owner through Investor
-- **[SDK Reference](/sdk-reference/initialize)** — Install, initialize, and call the SDK
-- **[Manual Testing (SDK)](/workflows/manual-testing-sdk)** — Step-by-step without automation scripts
-- **[Smart Contract Testing](/smart-contracts/guide)** — Hardhat deploy and verification
+- **[Why Machine RWA](/concepts/vision)**: Vision, compliance design, and who should build what
+- **[Core Modules](/concepts/modules)**: Module responsibilities and API links
+- **[Roles & Responsibilities](/concepts/roles)**: Framework Owner through Investor
+- **[SDK Reference](/sdk-reference/initialize)**: Install, initialize, and call the SDK
+- **[Manual Testing (SDK)](/workflows/manual-testing-sdk)**: Step-by-step without automation scripts
+- **[Smart Contract Testing](/smart-contracts/guide)**: Hardhat deploy and verification

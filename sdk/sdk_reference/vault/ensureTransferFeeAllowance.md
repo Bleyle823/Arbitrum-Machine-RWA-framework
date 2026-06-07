@@ -27,7 +27,7 @@ Ensure an ERC20 allowance is set to pay the vault transfer fee for a given token
 #### TypeScript
 ```TypeScript
 import 'dotenv/config';
-import { RWA, Chain, type SDKInit } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain, type SDKInit } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
@@ -59,7 +59,7 @@ main().catch((err) => {
 #### JavaScript
 ```js
 import 'dotenv/config';
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {

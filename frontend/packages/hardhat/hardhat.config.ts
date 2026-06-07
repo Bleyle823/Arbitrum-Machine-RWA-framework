@@ -106,6 +106,12 @@ export default defineConfig({
       chainId: 421614,
       accounts: [deployerPrivateKey],
     },
+    robinhoodChainTestnet: {
+      type: "http",
+      url: process.env.ROBINHOOD_TESTNET_RPC_URL || "https://rpc.testnet.chain.robinhood.com",
+      chainId: 46630,
+      accounts: [deployerPrivateKey],
+    },
     scrollSepolia: {
       type: "http",
       url: "https://sepolia-rpc.scroll.io",

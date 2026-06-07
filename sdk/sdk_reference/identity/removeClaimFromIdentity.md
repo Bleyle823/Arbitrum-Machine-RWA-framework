@@ -22,7 +22,7 @@ Note: The `claimId` uniquely identifies a claim for an identity. It is derived f
 #### TypeScript
 ```Typescript
 import 'dotenv/config';
-import { RWA, Chain, type SDKInit, type GetIdentity, type RemoveClaimFromIdentity } from '@arbitrum-machine/rwa-sdk';
+import { RWA, Chain, type SDKInit, type GetIdentity, type RemoveClaimFromIdentity } from 'arbitrum-machine-rwa-sdk';
 import { JsonRpcProvider, AbiCoder, keccak256, Wallet } from "ethers";
 
 async function main() {
@@ -64,7 +64,7 @@ main().catch((err) => {
 #### JavaScript
 ```js
 import 'dotenv/config';
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, AbiCoder, keccak256, Wallet } from "ethers";
 
 async function main() {

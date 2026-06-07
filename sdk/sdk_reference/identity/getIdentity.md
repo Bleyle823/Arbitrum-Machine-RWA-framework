@@ -17,7 +17,7 @@ Fetch the ONCHAINID identity contract address associated with a given EOA (Exter
 #### TypeScript
 ```Typescript
 import 'dotenv/config';
-import { RWA, Chain, type SDKInit, type GetIdentity } from '@arbitrum-machine/rwa-sdk';
+import { RWA, Chain, type SDKInit, type GetIdentity } from 'arbitrum-machine-rwa-sdk';
 import { JsonRpcProvider } from "ethers";
 
 async function main() {
@@ -44,7 +44,7 @@ main().catch((err) => {
 #### JavaScript
 ```js
 import 'dotenv/config';
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider } from "ethers";
 
 async function main() {

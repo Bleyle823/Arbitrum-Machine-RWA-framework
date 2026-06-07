@@ -23,7 +23,7 @@ Sign a Contract NFT as a counterparty. This sends a transaction from the counter
 #### TypeScript
 ```TypeScript
 import 'dotenv/config';
-import { RWA, Chain, type SDKInit } from '@arbitrum-machine/rwa-sdk';
+import { RWA, Chain, type SDKInit } from 'arbitrum-machine-rwa-sdk';
 import { JsonRpcProvider, Wallet, keccak256, toUtf8Bytes } from 'ethers';
 
 async function main() {
@@ -59,7 +59,7 @@ main().catch((err) => {
 #### JavaScript
 ```js
 import 'dotenv/config';
-import { RWA, Chain } from '@arbitrum-machine/rwa-sdk';
+import { RWA, Chain } from 'arbitrum-machine-rwa-sdk';
 import { JsonRpcProvider, Wallet, keccak256, toUtf8Bytes } from 'ethers';
 
 async function main() {

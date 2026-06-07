@@ -31,6 +31,11 @@ module.exports = {
       chainId: 421614,
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
     },
+    robinhoodChainTestnet: {
+      url: process.env.ROBINHOOD_TESTNET_RPC_URL || "https://rpc.testnet.chain.robinhood.com",
+      chainId: 46630,
+      accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
+    },
     arbitrum: {
       url: process.env.ARB_RPC_URL || "https://arb1.arbitrum.io/rpc",
       chainId: 42161,

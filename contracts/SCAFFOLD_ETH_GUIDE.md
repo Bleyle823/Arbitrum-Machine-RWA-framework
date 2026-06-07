@@ -2,7 +2,7 @@
 
 > **Primary run guide:** see [../RUN_GUIDE.md](../RUN_GUIDE.md) for the full step-by-step (quick start, debug UI phases, env vars, troubleshooting).
 
-This page is a shorter SE-2-focused reference. Production target: **Arbitrum** — see [ARBITRUM.md](./ARBITRUM.md).
+This page is a shorter SE-2-focused reference. Production target: **Arbitrum**: see [ARBITRUM.md](./ARBITRUM.md).
 
 ---
 
@@ -10,11 +10,11 @@ This page is a shorter SE-2-focused reference. Production target: **Arbitrum** �
 
 An end-to-end compliant RWA path:
 
-1. **Onboard** — ONCHAINID proxy identities + KYC claims for Alice, Bob, Charlie  
-2. **Assets** — Machine NFTs (issuer) + multi-party Contract NFT  
-3. **Vault** — Admin creates vault, unpauses token, registers investors in T-REX `IdentityRegistry`  
-4. **Mint** — Alice collateralizes NFTs and mints ERC-3643 security tokens  
-5. **Transfer & yield** — Compliant transfers to Bob/Charlie, yield deposit and claims  
+1. **Onboard**: ONCHAINID proxy identities + KYC claims for Alice, Bob, Charlie  
+2. **Assets**: Machine NFTs (issuer) + multi-party Contract NFT  
+3. **Vault**: Admin creates vault, unpauses token, registers investors in T-REX `IdentityRegistry`  
+4. **Mint**: Alice collateralizes NFTs and mints ERC-3643 security tokens  
+5. **Transfer & yield**: Compliant transfers to Bob/Charlie, yield deposit and claims  
 
 | Layer | Contracts |
 |-------|-----------|
@@ -43,9 +43,9 @@ An end-to-end compliant RWA path:
 **Three terminals** (all from `frontend/`):
 
 ```bash
-yarn chain                                    # Terminal 1 — keep running
-yarn deploy --tags RwaFramework --reset       # Terminal 2 — deploy + debug bootstrap (see below)
-yarn start                                    # Terminal 3 — UI at http://localhost:3000
+yarn chain                                    # Terminal 1: keep running
+yarn deploy --tags RwaFramework --reset       # Terminal 2: deploy + debug bootstrap (see below)
+yarn start                                    # Terminal 3: UI at http://localhost:3000
 ```
 
 Default deploy runs **debug bootstrap**: ONCHAINID claims, `MachineNft` / `ContractNft`, vault + token, investor registration, and optional demo NFTs for Alice. You do **not** need a separate `yarn issue-claims` unless you redeployed with `SKIP_DEBUG_BOOTSTRAP=true`.
@@ -57,7 +57,7 @@ SKIP_DEBUG_BOOTSTRAP=true yarn deploy --tags RwaFramework --reset
 yarn issue-claims   # then manual Phase 0+ on /debug
 ```
 
-Open **http://localhost:3000/debug** — Contract UI for deployed contracts.
+Open **http://localhost:3000/debug**: Contract UI for deployed contracts.
 
 **Network:** Local Hardhat (`31337`). `scaffold.config.ts` targets `chains.hardhat`.
 
@@ -80,7 +80,7 @@ Deploy mints **10,000 MockFeeToken** to accounts **#1–#4** for fees.
 Deploy logs print demo IDs for collateral:
 
 ```
-Debug UI ready — use these IDs for depositAndMint:
+Debug UI ready: use these IDs for depositAndMint:
   machineTokenId: 202604042
   assetSerial: VEH-2026-CYBER-DLV-0042
   dealReference: CYBER-AUTO-DELIVERY-2026-0042
@@ -112,16 +112,16 @@ Switch the **burner wallet** in the header before each write.
 
 | Done automatically | You do in /debug |
 |--------------------|------------------|
-| Identities + KYC (666) for Alice, Bob, Charlie | — |
-| Admin machine roles (7, 8), `MachineNft`, `ContractNft` | — |
-| Vault, `Token`, unpause, `registerIdentity` ×3 | — |
+| Identities + KYC (666) for Alice, Bob, Charlie | n/a |
+| Admin machine roles (7, 8), `MachineNft`, `ContractNft` | n/a |
+| Vault, `Token`, unpause, `registerIdentity` ×3 | n/a |
 | Demo Machine NFT + completed Contract NFT for Alice (unless `SKIP_DEMO_ASSETS=true`) | Phases 6–9 below |
 
 **Your main manual steps:** approve vault → `depositAndMint` → transfers → yield.
 
 ---
 
-### Phase 0 — Bootstrap (Admin #0) — skip if default deploy
+### Phase 0: Bootstrap (Admin #0): skip if default deploy
 
 **Goal:** Register the protocol roles and deploy the NFT templates Alice will use as collateral.
 
@@ -137,13 +137,13 @@ Switch the **burner wallet** in the header before each write.
 4. **`ArbRwaNft.getMachineNftByIssuer`** → Admin address → save **MachineNft** address.  
    **What this does:** Read-only lookup of the Machine NFT contract created in step 3.
 
-> **Note:** You do **not** call `setIssuerIdentity` — that was removed. Identities come from ONCHAINID `IdFactory`; role checks use on-chain claim validation.
+> **Note:** You do **not** call `setIssuerIdentity`: that was removed. Identities come from ONCHAINID `IdFactory`; role checks use on-chain claim validation.
 
 **If `addMachineRegulator` or `addMachineIssuer` reverts:** Run `yarn issue-claims` again (or redeploy + issue-claims). Admin must have topics **8** and **7** respectively.
 
 ---
 
-### Phase 1 — Identities + KYC
+### Phase 1: Identities + KYC
 
 **Goal:** Give Alice, Bob, and Charlie ONCHAINID identities with KYC so T-REX can treat them as verified investors later.
 
@@ -160,13 +160,13 @@ Switch the **burner wallet** in the header before each write.
 
 ---
 
-### Phase 2 — Machine NFT (Alice #1 + Admin #0)
+### Phase 2: Machine NFT (Alice #1 + Admin #0)
 
 **Goal:** Tokenize a physical/logical “machine” asset as an NFT owned by Alice, with fees paid in MockFeeToken.
 
 **Alice (#1) on `MockFeeToken`:**
 
-- `approve(spender, amount)` → spender = **MachineNft** address, amount = registration fee (e.g. `119990000000000000000000` = 119,990 MockFeeToken units — Cybertruck MSRP stand-in).
+- `approve(spender, amount)` → spender = **MachineNft** address, amount = registration fee (e.g. `119990000000000000000000` = 119,990 MockFeeToken units: Cybertruck MSRP stand-in).
 
 **What this does:** Lets the MachineNft contract pull the registration fee from Alice when the issuer registers the fleet vehicle.
 
@@ -174,7 +174,7 @@ Switch the **burner wallet** in the header before each write.
 
 - `registerMachine(machineOwner, machineValue, tokenId, did)`  
   - `machineOwner` = Alice  
-  - `machineValue` = 119,990 ether units (`119990000000000000000000`) — MockFeeToken stand-in for Tesla Cybertruck valuation  
+  - `machineValue` = 119,990 ether units (`119990000000000000000000`): MockFeeToken stand-in for Tesla Cybertruck valuation  
   - `tokenId` = e.g. `202604042` (fleet inventory id)  
   - `did` = UTF-8 bytes of e.g. `did:arbitrum:machine:VEH-2026-CYBER-DLV-0042`
 
@@ -184,13 +184,13 @@ Switch the **burner wallet** in the header before each write.
 
 ---
 
-### Phase 3 — Contract NFT (Alice #1, Bob #2, Charlie #3)
+### Phase 3: Contract NFT (Alice #1, Bob #2, Charlie #3)
 
 **Goal:** Create a multi-party off-chain agreement NFT that all parties must sign before it counts as collateral.
 
 **Alice (#1) on `MockFeeToken`:**
 
-- `approve(ContractNftAddress, setupFee)` — setup fee = `InfoDesk.getValue(3)` (deploy sets `0.01 ether`).
+- `approve(ContractNftAddress, setupFee)`: setup fee = `InfoDesk.getValue(3)` (deploy sets `0.01 ether`).
 
 **What this does:** Pays the one-time contract NFT initialization fee.
 
@@ -214,19 +214,19 @@ Switch the **burner wallet** in the header before each write.
 
 ---
 
-### Phase 4 — Vault + security token (Admin #0) — skip if default deploy
+### Phase 4: Vault + security token (Admin #0): skip if default deploy
 
 **Goal:** Spin up an ERC-3643 T-REX security token, link vault/compliance, and make the token transferable.
 
 You need from deploy logs (or `deployedContracts.ts`):
 
-- **ClaimIssuer** — `ClaimIssuer ONCHAINID (KYC): 0x...`  
-- **Fee module proxy** — `NativeTransferFeeModule proxy: 0x...`
+- **ClaimIssuer**: `ClaimIssuer ONCHAINID (KYC): 0x...`  
+- **Fee module proxy**: `NativeTransferFeeModule proxy: 0x...`
 
-**Option A — one transaction (heavy gas):**  
+**Option A: one transaction (heavy gas):**  
 `ArbVaultFactory.createVault` with vault taker Alice, name/symbol, fee token, claim issuers `[claimIssuer]`, topics `[666]`, compliance `[feeModuleProxy]`.
 
-**Option B — two steps (matches tests, better for mainnet-sized bytecode):**
+**Option B: two steps (matches tests, better for mainnet-sized bytecode):**
 
 1. `deployTrexVault(name, symbol, [claimIssuer], [666], [feeModuleProxy])` → save **token** address.  
    **What this does:** Deploys the T-REX token + identity registry + compliance stack for this vault.
@@ -248,7 +248,7 @@ Then **`ArbVaultFactory.unpauseVaultToken(vaultAddress)`**.
 
 ---
 
-### Phase 5 — Register investors (Admin #0) — skip if default deploy
+### Phase 5: Register investors (Admin #0): skip if default deploy
 
 **Goal:** Link each investor’s ONCHAINID identity to this vault’s T-REX identity registry so transfers comply with ERC-3643.
 
@@ -265,12 +265,12 @@ For Alice, Bob, Charlie:
 
 ---
 
-### Phase 6 — Approve vault for NFTs (Alice #1)
+### Phase 6: Approve vault for NFTs (Alice #1)
 
 **Goal:** Allow the vault to take custody of NFTs during minting.
 
-On **`MachineNft`:** `approve(vaultAddress, machineTokenId)` — use `machineTokenId` from deploy log (default `202604042`).  
-On **`ContractNft`:** `approve(vaultAddress, contractId)` — use `contractId` from deploy log.
+On **`MachineNft`:** `approve(vaultAddress, machineTokenId)`: use `machineTokenId` from deploy log (default `202604042`).  
+On **`ContractNft`:** `approve(vaultAddress, contractId)`: use `contractId` from deploy log.
 
 **`vaultAddress`:** read from **`ArbVault`** contract card on /debug (or deploy log).
 
@@ -278,7 +278,7 @@ On **`ContractNft`:** `approve(vaultAddress, contractId)` — use `contractId` f
 
 ---
 
-### Phase 7 — Deposit and mint (Alice #1)
+### Phase 7: Deposit and mint (Alice #1)
 
 **Goal:** Lock collateral NFTs in the vault and mint ERC-3643 security tokens to Alice.
 
@@ -295,7 +295,7 @@ On **`ContractNft`:** `approve(vaultAddress, contractId)` — use `contractId` f
 
 ---
 
-### Phase 8 — Transfers (Alice #1 → Bob #2, Charlie #3)
+### Phase 8: Transfers (Alice #1 → Bob #2, Charlie #3)
 
 **Goal:** Move security tokens between KYC-registered investors; compliance and fee module run on each transfer.
 
@@ -311,7 +311,7 @@ On **`ContractNft`:** `approve(vaultAddress, contractId)` — use `contractId` f
 
 ---
 
-### Phase 9 — Yield (optional)
+### Phase 9: Yield (optional)
 
 **Goal:** Distribute yield in the fee token to token holders via `RewardDistributor`.
 
@@ -355,7 +355,7 @@ sequenceDiagram
 
 ## Advanced: Hardhat console (custom claims only)
 
-Use this only if you need claims beyond what `yarn issue-claims` issues. **Do not** use `RwaIdentity` — identities are ONCHAINID proxies.
+Use this only if you need claims beyond what `yarn issue-claims` issues. **Do not** use `RwaIdentity`: identities are ONCHAINID proxies.
 
 ```bash
 cd frontend/packages/hardhat
@@ -364,7 +364,7 @@ yarn hardhat console --network localhost
 
 Use helpers from `scripts/lib/claims.ts` (`addClaim`, `encodeKycData`, `encodeRoleData`) and addresses from `deployedContracts.ts` + deploy log for `ClaimIssuer`.
 
-Example pattern (TypeScript project — adapt to your ethers import):
+Example pattern (TypeScript project: adapt to your ethers import):
 
 ```javascript
 // IdFactory + ClaimIssuer from deployedContracts.ts / .env
@@ -398,7 +398,7 @@ await addClaim(alice, aliceIdentity, admin, claimIssuerAddr, 666n, await encodeK
 | `createIdentity` reverts | Caller must be **IdFactory owner** (Admin #0), not Alice |
 | `addMachineRegulator` reverts | Admin needs valid ONCHAINID claim **topic 8** → run `yarn issue-claims` |
 | `addMachineIssuer` reverts | Admin needs valid claim **topic 7** → run `yarn issue-claims` |
-| `setIssuerIdentity` not found | Removed — use ONCHAINID claims instead |
+| `setIssuerIdentity` not found | Removed: use ONCHAINID claims instead |
 | Machine registration fails | Alice must `approve` **MachineNft**, not treasury |
 | Transfer fails | Register identity in vault IR + approve **fee module** for fee |
 | Wrong ClaimIssuer in claims | `CLAIM_ISSUER_ADDRESS` in `.env` must match latest deploy |
@@ -419,7 +419,7 @@ await addClaim(alice, aliceIdentity, admin, claimIssuerAddr, 666n, await encodeK
 
 ---
 
-## Option A — Hardhat only (no UI)
+## Option A: Hardhat only (no UI)
 
 ```bash
 cd contracts
@@ -432,7 +432,7 @@ npm run demo:flow:node   # full flow against yarn chain
 
 ---
 
-## Option B — Scaffold ETH setup (first time)
+## Option B: Scaffold ETH setup (first time)
 
 See sections above for `yarn chain` / `yarn deploy` / `yarn issue-claims` / `yarn start`.
 

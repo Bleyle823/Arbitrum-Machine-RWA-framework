@@ -5,7 +5,7 @@ description: Merge a rwa-manifest.json into the bundled SDK manifest.
 
 ## `npm run sync-addresses`
 
-**Use npm in `sdk/`** — not Yarn (Yarn may pick up a parent folder's package manager and fail).
+**Use npm in `sdk/`**, not Yarn (Yarn may pick up a parent folder's package manager and fail).
 
 Reads a manifest JSON and optionally merges IdFactory / ClaimIssuer / ArbVaultFactory from Hardhat deployment artifacts into `src/addresses/arbitrumSepolia.json`.
 

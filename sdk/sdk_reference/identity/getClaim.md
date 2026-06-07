@@ -19,7 +19,7 @@ Note: The `claimId` is derived from the issuer contract address and the claim to
 #### TypeScript
 ```Typescript
 import 'dotenv/config';
-import { RWA, Chain, type SDKInit, type GetIdentity, type GetClaim } from '@arbitrum-machine/rwa-sdk';
+import { RWA, Chain, type SDKInit, type GetIdentity, type GetClaim } from 'arbitrum-machine-rwa-sdk';
 import { JsonRpcProvider, AbiCoder, keccak256 } from "ethers";
 
 async function main() {
@@ -57,7 +57,7 @@ main().catch((err) => {
 #### JavaScript
 ```js
 import 'dotenv/config';
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, AbiCoder, keccak256 } from "ethers";
 
 async function main() {

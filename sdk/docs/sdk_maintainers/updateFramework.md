@@ -19,7 +19,7 @@ This will create `dist` file that allows for `cjs`, `esm`, and `ts` interactions
 Now finally, we can pack together the build project in order to test a shippable executable file:
 ### Pack:
 ```
-npm pack -w @arbitrum-machine/rwa-sdk
+npm pack -w arbitrum-machine-rwa-sdk
 ```
 
 # Updates:

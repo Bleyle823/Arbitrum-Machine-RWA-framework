@@ -1,9 +1,9 @@
 ---
 title: Common Flow
-description: End-to-end RWA workflow on Arbitrum Sepolia — identity, assets, vault, mint, transfer, yield.
+description: End-to-end RWA workflow on Arbitrum Sepolia: identity, assets, vault, mint, transfer, yield.
 ---
 
-End-to-end integrator workflow for `@arbitrum-machine/rwa-sdk` on **Arbitrum Sepolia**.
+End-to-end integrator workflow for `arbitrum-machine-rwa-sdk` on **Arbitrum Sepolia**.
 
 ## Prerequisites
 
@@ -33,7 +33,7 @@ End-to-end integrator workflow for `@arbitrum-machine/rwa-sdk` on **Arbitrum Sep
 ```typescript
 import "dotenv/config";
 import { JsonRpcProvider, Wallet } from "ethers";
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 
 const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL!);
 const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });

@@ -1,8 +1,8 @@
-﻿# RWA Framework — Comprehensive Test Guide
+# RWA Framework: Comprehensive Test Guide
 
 **Primary deployment target: Arbitrum** ([ARBITRUM.md](./ARBITRUM.md)). This guide describes the full RWA workflow on any EVM chain using this Hardhat project (`rwa-hardhat/`, ERC-3643 T-REX + RWA vault/NFT layer).
 
-An optional **Track C** covers Arbitrum Sepolia / `@arbitrum-machine/rwa-sdk` SDK compatibility. The on-chain flow is the same; only RPC, fee token, and DID prefix differ.
+An optional **Track C** covers Arbitrum Sepolia / `arbitrum-machine-rwa-sdk` SDK compatibility. The on-chain flow is the same; only RPC, fee token, and DID prefix differ.
 
 ---
 
@@ -10,18 +10,18 @@ An optional **Track C** covers Arbitrum Sepolia / `@arbitrum-machine/rwa-sdk` SD
 
 | Requirement | Our contracts | Status |
 |-------------|---------------|--------|
-| ONCHAINID + KYC claims (`CT_KYC_APPROVED = 666`) | `Identity`, `ClaimIssuer`, `IdFactory` | ✅ |
-| Role claims `CT_MNFT_ISSUER = 7`, `CT_MNFT_REGULATOR = 8` | `RwaConstants`, SDK claim helpers | ✅ |
-| Machine Regulator appoints issuers via `ArbRwaNft.addMachineIssuer` | `ArbRwaNft` deploys `MachineNft` per issuer | ✅ |
-| Machine NFT + embedded DID, ERC-20 registration fee | `MachineNft.registerMachine` | ✅ |
-| Contract NFT draft → sign → complete | `ContractNft` | ✅ |
-| Vault factory deploys Vault + Token + RewardDistributor | `ArbVaultFactory.createVault` | ✅ |
-| Per-vault Identity Registry + KYC verification | `IdentityRegistry.isVerified` | ✅ |
-| T-REX transfer compliance + fee module | T-REX `Token` + `ModularCompliance`, `NativeTransferFeeModule` | ✅ |
-| Single `depositAndMint` per vault | `ArbVault.minted` guard | ✅ |
-| Yield deposit + claim + claimTo | `RewardDistributor` | ✅ |
-| InfoDesk as config hub (fees, implementations) | `InfoDesk` | ✅ |
-| 10-step common flow (identities → yield) | Covered below | ✅ |
+| ONCHAINID + KYC claims (`CT_KYC_APPROVED = 666`) | `Identity`, `ClaimIssuer`, `IdFactory` | ? |
+| Role claims `CT_MNFT_ISSUER = 7`, `CT_MNFT_REGULATOR = 8` | `RwaConstants`, SDK claim helpers | ? |
+| Machine Regulator appoints issuers via `ArbRwaNft.addMachineIssuer` | `ArbRwaNft` deploys `MachineNft` per issuer | ? |
+| Machine NFT + embedded DID, ERC-20 registration fee | `MachineNft.registerMachine` | ? |
+| Contract NFT draft ? sign ? complete | `ContractNft` | ? |
+| Vault factory deploys Vault + Token + RewardDistributor | `ArbVaultFactory.createVault` | ? |
+| Per-vault Identity Registry + KYC verification | `IdentityRegistry.isVerified` | ? |
+| T-REX transfer compliance + fee module | T-REX `Token` + `ModularCompliance`, `NativeTransferFeeModule` | ? |
+| Single `depositAndMint` per vault | `ArbVault.minted` guard | ? |
+| Yield deposit + claim + claimTo | `RewardDistributor` | ? |
+| InfoDesk as config hub (fees, implementations) | `InfoDesk` | ? |
+| 10-step common flow (identities ? yield) | Covered below | ? |
 
 ### Intentional differences (chain-agnostic deployment)
 
@@ -40,9 +40,9 @@ Choose one track based on what you are validating:
 
 | Track | What it tests | Command |
 |-------|---------------|---------|
-| **A — Contract unit (Hardhat)** | Solidity logic only, no SDK | `npm test` (from this directory) |
-| **B — SDK integration (local fork)** | Full `@arbitrum-machine/rwa-sdk` against your deployment | See §5 |
-| **C — SDK integration (Arbitrum Sepolia)** | Live testnet against your deployment | See §6 |
+| **A: Contract unit (Hardhat)** | Solidity logic only, no SDK | `npm test` (from this directory) |
+| **B: SDK integration (local fork)** | Full `arbitrum-machine-rwa-sdk` against your deployment | See �5 |
+| **C: SDK integration (Arbitrum Sepolia)** | Live testnet against your deployment | See �6 |
 
 ---
 
@@ -79,7 +79,7 @@ npm run compile
 
 ---
 
-## 4. Track A — Hardhat contract test (automated)
+## 4. Track A: Hardhat contract test (automated)
 
 This runs the abbreviated end-to-end flow in `test/RwaFullFlow.test.js`:
 
@@ -95,15 +95,15 @@ npm test
 3. Machine issuer role claim + `addMachineIssuer` + `registerMachine`
 4. Deploy compliance module proxy + `createVault` + `unpauseVaultToken`
 5. Register identities in vault IR
-6. `depositAndMint` → transfer with fee → assert balances
+6. `depositAndMint` ? transfer with fee ? assert balances
 
 **Expected:** `1 passing`
 
 ---
 
-## 5. Track B — Full SDK test on local Hardhat network
+## 5. Track B: Full SDK test on local Hardhat network
 
-### Step B.0 — Deploy framework
+### Step B.0: Deploy framework
 
 ```bash
 cd .
@@ -140,7 +140,7 @@ Copy `deployments/deployment-31337.json` into your client config (e.g. `addresse
 
 Wire `Chain.LOCAL` in SDK enums/config if not present, or test with raw addresses passed to each SDK method.
 
-### Step B.1 — Framework bootstrap (one-time, Admin)
+### Step B.1: Framework bootstrap (one-time, Admin)
 
 | # | Action | SDK / contract call | Verify |
 |---|--------|---------------------|--------|
@@ -148,30 +148,30 @@ Wire `Chain.LOCAL` in SDK enums/config if not present, or test with raw addresse
 | 2 | Deploy Contract NFT instance | `ArbRwaNft.deployContractNft()` or `addContractNft()` | Event `ContractNftAdded`; save address |
 | 3 | Issue machine issuer claim (topic 7) on ONCHAINID identity | `issueClaims.js` or manual `addClaim` | Required before `addMachineIssuer` |
 
-### Step B.2 — Machine issuer onboarding
+### Step B.2: Machine issuer onboarding
 
 Follow the machine issuer workflow (`sdk/sdk_reference/workflows/machine_issuer_flow.md`):
 
 | # | Who | SDK call | Verify |
 |---|-----|----------|--------|
-| 1 | Admin | `onchainid.createIdentity({ subject: issuer })` | `getIdentity` → `found` |
+| 1 | Admin | `onchainid.createIdentity({ subject: issuer })` | `getIdentity` ? `found` |
 | 2 | Claim Issuer | `onchainid.issueRoleClaim({ topic: CT_MNFT_ISSUER })` | Returns `{ claim, signature }` |
 | 3 | Issuer | `onchainid.addClaimToIdentity(...)` | `getClaim` returns KYC/role data |
 | 4 | Admin | `addMachineRegulator` + `addMachineIssuer` (claims validated on-chain) | No manual identity mapping |
 | 5 | Regulator | `rwanft.addMachineIssuer({ newMachineIssuer })` | Event `MachineIssuerAdded(issuer, machineNft)`; save **machineNft** address |
 
-### Step B.3 — Common flow (10 steps)
+### Step B.3: Common flow (10 steps)
 
 Matches the common flow (`sdk/sdk_reference/workflows/common_flow.md`):
 
-#### Phase 1 — Onboard participants
+#### Phase 1: Onboard participants
 
 | Step | Who | SDK | Expected result |
 |------|-----|-----|-----------------|
 | 1 | Admin | `createIdentity` for Alice, Bob, Charlie | `status: 'created'` or `'exists'` |
 | 2 | Claim Issuer + each user | `issueKycClaim` + `addClaimToIdentity` | `getClaim` succeeds; topic `666` |
 
-#### Phase 2 — Asset side
+#### Phase 2: Asset side
 
 | Step | Who | SDK | Expected result |
 |------|-----|-----|-----------------|
@@ -180,36 +180,36 @@ Matches the common flow (`sdk/sdk_reference/workflows/common_flow.md`):
 | 4a | Alice | `cnft.createContract({ contractNft, counterparties: [bob, charlie], contractHash, url })` | `contractId` from `ContractInitiated` |
 | 4b | Bob, Charlie | `cnft.signContract({ contractId })` each | Last sign emits `ContractCompleted` |
 
-#### Phase 3 — Vault & token
+#### Phase 3: Vault & token
 
 | Step | Who | SDK | Expected result |
 |------|-----|-----|-----------------|
-| 5a | Admin | `vault.createVault({ vaultController: alice, vaultFactory, infoDesk, trustedClaimIssuers, tokenName, tokenSymbol, payoutToken })` | `VaultCreated` → save vault, token, distributor |
+| 5a | Admin | `vault.createVault({ vaultController: alice, vaultFactory, infoDesk, trustedClaimIssuers, tokenName, tokenSymbol, payoutToken })` | `VaultCreated` ? save vault, token, distributor |
 | 5b | Admin | `vault.unpauseToken({ vault, vaultFactory })` | `status: 'unpaused'` |
 | 6 | Admin | `vault.registerIdentity` for Alice, Bob, Charlie | `status: 'registered'` each |
 
-#### Phase 4 — Collateralize & mint
+#### Phase 4: Collateralize & mint
 
 | Step | Who | SDK | Expected result |
 |------|-----|-----|-----------------|
 | 7 | Alice | `vault.nftApproval` for each machineId + contractId | `approved` |
 | 8 | Alice | `vault.depositAndMint({ rwaNfts: [mnft, cnft], tokenIds: [...], amount })` | `deposited_and_minted`; token balance > 0 |
 
-#### Phase 5 — Transfers & yield
+#### Phase 5: Transfers & yield
 
 | Step | Who | SDK | Expected result |
 |------|-----|-----|-----------------|
-| 9a | Alice | `vault.ensureTransferFeeAllowance` then `vault.transfer` → Bob | Bob token balance increases |
-| 9b | Alice | Same → Charlie | Charlie token balance increases |
+| 9a | Alice | `vault.ensureTransferFeeAllowance` then `vault.transfer` ? Bob | Bob token balance increases |
+| 9b | Alice | Same ? Charlie | Charlie token balance increases |
 | 10a | Alice | `vault.depositYield({ erc20: payoutToken, humanReadableAmount })` | Distributor balance up |
 | 10b | Bob | `vault.claimYield` | Bob receives ERC-20 yield |
 | 10c | Bob | `vault.claimYieldTo({ to: charlie })` | Charlie receives ERC-20 |
 
-Wire the same addresses into your application’s integration tests.
+Wire the same addresses into your application�s integration tests.
 
 ---
 
-## 6. Track C — Arbitrum Sepolia testnet (optional)
+## 6. Track C: Arbitrum Sepolia testnet (optional)
 
 Deploy this project on Arbitrum Sepolia. Use `deployments/deployment-<chainId>.json` with any client.
 
@@ -223,7 +223,7 @@ ARB_SEPOLIA_RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
 
 - Set `allowUnlimitedContractSize: true` when deploying `ArbVaultFactory` on testnets.
 - Fee token on the demo deployment is **MockFeeToken** (see `deployments/deployment-421614.json`).
-- Fund every test wallet with ETH for gas **and** enough fee-token balance for machine registration (fee ≈ machine value when `VAL_MACHINE_FEE_BPS = 10000`).
+- Fund every test wallet with ETH for gas **and** enough fee-token balance for machine registration (fee � machine value when `VAL_MACHINE_FEE_BPS = 10000`).
 
 Run your client integration tests against the Arbitrum Sepolia deployment JSON.
 
@@ -309,7 +309,7 @@ Run these to confirm regulation works:
 | `ERC20: insufficient allowance` on `registerMachine` | Wrong approve spender | Approve **MachineNft contract address** (returned by `registrationFeeAndAccount`) |
 | `Recipient not verified` on transfer | Missing vault IR registration | Admin calls `registerIdentity` for recipient |
 | `Compliance rejected` on transfer | Fee module allowance | Run `ensureTransferFeeAllowance` first |
-| `Already minted` | Second deposit attempt | Expected — one deposit per vault by design |
+| `Already minted` | Second deposit attempt | Expected: one deposit per vault by design |
 | Factory deploy fails (code too large) | 24 KB mainnet limit | Use Arbitrum Sepolia / `allowUnlimitedContractSize` or split factory |
 | Client `Unsupported chainId` | Address JSON missing | Add `deployments/deployment-<chainId>.json` to your app config |
 
@@ -319,9 +319,9 @@ Run these to confirm regulation works:
 
 1. `npm test` in `.` (Track A)
 2. Deploy via `scripts/deploy.js`; save JSON
-3. Bootstrap regulator + issuer (Track B.1–B.2)
+3. Bootstrap regulator + issuer (Track B.1�B.2)
 4. Run `npm run demo:flow` or your client against the deployment JSON
-5. Run negative tests (§8)
+5. Run negative tests (�8)
 6. External audit before mainnet
 
 ---

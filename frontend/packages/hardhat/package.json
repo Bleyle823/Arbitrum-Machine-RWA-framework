@@ -23,10 +23,13 @@
     "verify": "tsx scripts/runVerify.ts",
     "issue-claims": "tsx scripts/runHardhatScriptWithPK.ts scripts/issueClaims.ts --network default",
     "issue-claims:arbitrum-sepolia": "tsx scripts/runHardhatScriptWithPK.ts scripts/issueClaims.ts --network arbitrumSepolia",
+    "issue-claims:robinhood-testnet": "tsx scripts/runHardhatScriptWithPK.ts scripts/issueClaims.ts --network robinhoodChainTestnet",
     "bootstrap": "tsx scripts/runHardhatScriptWithPK.ts scripts/bootstrapRwa.ts",
     "seed:demo-assets": "tsx scripts/runHardhatScriptWithPK.ts scripts/seedDemoAssets.ts --network arbitrumSepolia",
+    "seed:demo-assets:robinhood-testnet": "tsx scripts/runHardhatScriptWithPK.ts scripts/seedDemoAssets.ts --network robinhoodChainTestnet",
     "pin:demo-agreement": "tsx scripts/pinDemoAgreement.ts",
-    "verify:demo-state": "hardhat run scripts/verifyDemoState.ts --network arbitrumSepolia"
+    "verify:demo-state": "hardhat run scripts/verifyDemoState.ts --network arbitrumSepolia",
+    "verify:demo-state:robinhood-testnet": "hardhat run scripts/verifyDemoState.ts --network robinhoodChainTestnet"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4",

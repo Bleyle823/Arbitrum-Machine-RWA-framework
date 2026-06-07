@@ -10,9 +10,9 @@ This workflow shows how to **add a new Machine Issuer** so that an address can c
 
 ## Prerequisites
 
-- **Machine Regulator** signer (e.g. `MACHINE_REGULATOR_PRIVATE_KEY`) — will issue the role claim and call `addMachineIssuer`.
-- **Claim Issuer** contract address (`CLAIM_ISSUER_CONTRACT_ADDRESS`) — the same Claim Issuer used for KYC; its signer can issue role claims (in the test the admin is both regulator and claim issuer).
-- **Candidate Machine Issuer** — the EOA you want to turn into a Machine Issuer (e.g. Alice). They must already have an **ONCHAINID identity**. Create one first with [Create Identity](../identity/createIdentity.md) if needed.
+- **Machine Regulator** signer (e.g. `MACHINE_REGULATOR_PRIVATE_KEY`): will issue the role claim and call `addMachineIssuer`.
+- **Claim Issuer** contract address (`CLAIM_ISSUER_CONTRACT_ADDRESS`): the same Claim Issuer used for KYC; its signer can issue role claims (in the test the admin is both regulator and claim issuer).
+- **Candidate Machine Issuer**: the EOA you want to turn into a Machine Issuer (e.g. Alice). They must already have an **ONCHAINID identity**. Create one first with [Create Identity](../identity/createIdentity.md) if needed.
 
 ## Steps
 
@@ -31,7 +31,7 @@ The **Claim Issuer** (or the same signer acting as claim issuer) issues a role c
   - `claimIssuerSigner`: Machine Regulator (or your Claim Issuer signer).
   - `claimIssuerContract`: `CLAIM_ISSUER_CONTRACT_ADDRESS`.
   - `subjectIdentity`: the candidate’s identity address from step 1.
-  - `roleTopic`: `ClaimTopics.CT_MNFT_ISSUER` (e.g. `7` — use the value from your SDK’s `ClaimTopics` enum).
+  - `roleTopic`: `ClaimTopics.CT_MNFT_ISSUER` (e.g. `7`: use the value from your SDK’s `ClaimTopics` enum).
   - `roleDescription`: e.g. `'Machine Issuer'`.
 
 You get back `{ claim, signature }`.
@@ -64,10 +64,10 @@ Result includes `status: 'added'`, `machineIssuer`, `machineNft` (the contract c
 
 | Step | Who acts | SDK call |
 |------|----------|----------|
-| 1 | ID Factory admin / — | `onchainid.getIdentity`; if needed `onchainid.createIdentity` |
+| 1 | ID Factory admin / n/a | `onchainid.getIdentity`; if needed `onchainid.createIdentity` |
 | 2 | Claim Issuer (e.g. Machine Regulator) | `onchainid.issueRoleClaim` (topic `CT_MNFT_ISSUER`) |
 | 3 | Candidate (identity owner) | `onchainid.addClaimToIdentity` |
 | 4 | Machine Regulator | `rwanft.addMachineIssuer` |
-| 5 | — | `rwanft.getMachineIssuers` (optional) |
+| 5 | n/a | `rwanft.getMachineIssuers` (optional) |
 
 For a single runnable example, see `tests/rwanft/rwanft.addMachineIssuer.int.test.ts`.

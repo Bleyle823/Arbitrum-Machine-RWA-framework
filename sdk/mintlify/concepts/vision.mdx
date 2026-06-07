@@ -1,0 +1,144 @@
+---
+title: Why Machine RWA on Arbitrum
+description: From machine tokenization pilots to a compliant, modular framework: identity, collateral, fractional shares, and yield on Arbitrum.
+---
+
+Machine tokenization has moved from experiment to production. Revenue-generating equipment (farms, robots, logistics assets, compute nodes) is increasingly represented onchain, with verified owners and programmable revenue sharing.
+
+That shift changed the question. Teams no longer ask whether a machine *can* be tokenized. They ask how to do it **compliantly**, **reproducibly**, and **at scale**.
+
+The **Arbitrum Machine RWA Framework** answers that with a standardized onchain structure and a single SDK (`arbitrum-machine-rwa-sdk`) that covers the full lifecycle, or any slice of it you need.
+
+---
+
+## From balance sheets to liquid infrastructure
+
+When machines become tradable units instead of opaque line items, finance connects directly to physical output.
+
+Onchain participants (people, companies, protocols, and increasingly autonomous agents) can hold assets, route capital, and coordinate around **productive capacity**, not just abstract tokens.
+
+Markets are getting comfortable with structured ownership of real equipment: fractional shares, performance-linked yield, and compliance-gated transfers. The next step is treating **machines themselves** as continuously financial objects (collateral, income streams, and portfolio building blocks), not one-off capex events.
+
+That opens design space integrators are already exploring:
+
+- Capital allocated across fleets based on utilization and yield
+- Machine-backed shares used as collateral in lending markets
+- Revenue reinvested into expansion or diversified machine portfolios
+- Secondary pricing at the **device** level, not only the corporate level
+- Insurance and risk products tied to specific assets and uptime
+
+The economic unit can shift from the company to the machine, with yield tied to what the asset actually produces.
+
+---
+
+## How this framework works
+
+The Arbitrum Machine RWA Framework gives each machine a **standardized onchain financial structure**:
+
+1. **Identity**: ONCHAINID links wallets to verified participants (KYC topic **666**).
+2. **Registration**: Machine NFTs carry DID metadata; Contract NFTs encode multi-party agreements.
+3. **Tokenization container**: An **Arb Vault** holds collateral and mints **ERC-3643 (T-REX)** security tokens.
+4. **Revenue routing**: A reward distributor allocates yield pro-rata to token holders.
+5. **Compliance**: Transfers and minting respect the vault Identity Registry; only verified addresses participate.
+
+A machine is registered with identity and metadata so it can be referenced consistently across apps. Operational and legal context (leasing, financing, operating agreements) attaches via **Contract NFTs** and off-chain documents hashed onchain.
+
+The Machine NFT is deposited into the vault and fractionalized into compliant ownership shares. Revenue from operations can be deposited and claimed according to ownership logic.
+
+Subject to your jurisdiction and licensing, issuers may also structure **pre-operational financing**: capital raised against a defined machine profile, with the NFT minted and linked when the asset goes live.
+
+### Roles in the lifecycle
+
+The framework separates responsibilities so real-world participants plug into the same pipeline:
+
+| Role | Function |
+|------|----------|
+| **Framework Owner** | Deploys core contracts, vault factory, trusted issuers |
+| **Machine Regulator** | Authorizes machine issuers |
+| **Machine Issuer** | Registers machines and assigns NFTs to owners |
+| **Claim Issuer** | Verifies identities and signs KYC claims |
+| **Vault controller** | Deposits collateral, mints tokens, may deposit yield |
+| **Investors** | Hold verified shares, receive transfers and yield |
+| **Integrators / agents** | Build apps and automations on top of the SDK |
+
+The **technical shape is fixed**; **financing models stay flexible**; leasing, revenue share, fixed-yield structures, and future instrument designs can sit on the same primitives.
+
+Details: [Roles & Responsibilities](/concepts/roles) · [Core Modules](/concepts/modules).
+
+---
+
+## Built for compliance by design
+
+Machines and robots are infrastructure: energy, mobility, production, compute. Markets around them need **trust at the asset layer**, not only at the exchange layer.
+
+This framework embeds compliance into the token itself:
+
+- **ONCHAINID** for participant identity
+- **Trusted Claim Issuers** for KYC and role claims
+- **ERC-3643 Identity Registry** per vault: transfers blocked for unverified wallets
+- **Auditable collateral**: Machine and Contract NFTs locked in vaults with onchain ownership history
+
+Regulators, marketplaces, and compliance providers can reason about **the same machine record** across venues. Jurisdiction-specific rules attach via claims, issuers, and off-chain policy, without rewriting the core contract architecture.
+
+Your legal and licensing obligations remain yours to implement; the stack gives you **hooks and enforcement points** on Arbitrum.
+
+---
+
+## Modular integration
+
+You do not need the full pipeline on day one.
+
+| Module | Use when you need… |
+|--------|-------------------|
+| `sdk.onchainid` | Identity creation, KYC claims, verification reads |
+| `sdk.mnft` | Machine registration and DID reads |
+| `sdk.cnft` | Multi-party contract NFTs |
+| `sdk.vault` | Deposit, mint, transfer, yield |
+| `sdk.rwanft` | Factory / issuer / regulator inspection |
+
+Use the [**Scaffold-ETH `/rwa` UI**](/workflows/manual-testing-scaffold) for demos, or the [**SDK alone**](/workflows/manual-testing-sdk) in your backend. Deploy reference contracts on **Arbitrum Sepolia** or **Robinhood Chain Testnet** and sync addresses into the SDK.
+
+---
+
+## A different growth model
+
+Machine RWA does not replace operating companies. It changes **how they fund growth**.
+
+Instead of raising equity to buy every device upfront:
+
+- **Fleet expansion** can be financed per machine or per vault
+- **Usage-based ownership** replaces all-or-nothing equipment sales
+- **Performance-linked yield** aligns investors with output, not only equity stories
+- **Secondary liquidity** can apply to operational assets, not just company shares
+
+Companies keep operational control; machines gain a standardized path to capital and distribution.
+
+---
+
+## Start building
+
+The framework lets you design around **real productivity** on **Arbitrum**: low fees, EVM tooling, and L2 scale.
+
+| Builder | Example use |
+|---------|-------------|
+| Robotics / hardware OEM | Register machines, fractionalize ownership per deployment |
+| DePIN / node networks | Tokenize nodes, route earnings to verified holders |
+| Manufacturers | Sell productive capacity or revenue participation |
+| Operators | Collateralize fleets with onchain performance history |
+| Platforms | Compliant machine-backed products on ERC-3643 rails |
+| Agents & backends | Portfolio logic via `arbitrum-machine-rwa-sdk` |
+
+**Get started:**
+
+```bash
+cd sdk
+npm install
+npm run build
+```
+
+- [Quickstart](/quickstart): install and verify Sepolia state  
+- [Common Flow](/workflows/common-flow): end-to-end SDK workflow  
+- [Manual Testing (SDK)](/workflows/manual-testing-sdk): hands-on, no batch scripts  
+- [Smart Contract Testing](/smart-contracts/guide): Hardhat deploy and tests  
+
+The repo is open source: [Arbitrum-Machine-RWA-framework on GitHub](https://github.com/Bleyle823/Arbitrum-Machine-RWA-framework).

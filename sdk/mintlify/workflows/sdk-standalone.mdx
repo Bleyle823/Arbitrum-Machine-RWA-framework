@@ -1,6 +1,6 @@
 ---
 title: SDK Standalone Testing
-description: Test the full RWA workflow from the sdk/ folder only — npm commands, no Yarn required.
+description: Test the full RWA workflow from the sdk/ folder only: npm commands, no Yarn required.
 ---
 
 You do **not** need Yarn to work in `sdk/`. Use **npm** for all SDK commands.
@@ -15,7 +15,7 @@ Running `yarn` inside `sdk/` may fail if a parent folder (e.g. your user home) h
 |------|---------------------------|
 | Unit tests (no chain) | No |
 | Read-only verify against bundled Sepolia deployment | No |
-| SDK writes (approve, mint, transfer, yield) | No — uses bundled `arbitrumSepolia.json` + your `.env` keys |
+| SDK writes (approve, mint, transfer, yield) | No: uses bundled `arbitrumSepolia.json` + your `.env` keys |
 | Refresh manifest after **your** redeploy | Only a manifest JSON file (see sync below) |
 
 Steps **1–6** (deploy framework, bootstrap identities/vault/NFTs) require a Hardhat deploy once. The repo ships a **pre-synced** Sepolia manifest so you can skip that and test SDK reads/writes immediately.
@@ -51,14 +51,14 @@ npm run build
 
 ## Command reference (every step)
 
-### A — SDK package health (no network)
+### A: SDK package health (no network)
 
 | # | Command | What it checks |
 |---|---------|----------------|
 | A1 | `npm run check-types` | TypeScript compiles |
 | A2 | `npm test` | Unit tests (init, build outputs) |
 
-### B — Read-only on-chain verification (Sepolia RPC only)
+### B: Read-only on-chain verification (Sepolia RPC only)
 
 | # | Command | Workflow sections verified |
 |---|---------|--------------------------|
@@ -72,7 +72,7 @@ node scripts/verify-workflow.mjs
 
 No private keys required for B1 (reads only).
 
-### C — SDK write steps (needs `.env` keys)
+### C: SDK write steps (needs `.env` keys)
 
 These map to [Common Flow](/workflows/common-flow) steps **7–10**:
 
@@ -101,7 +101,7 @@ After each phase, re-verify:
 npm run verify:workflow
 ```
 
-### D — Refresh bundled addresses (optional)
+### D: Refresh bundled addresses (optional)
 
 Only needed after **you** redeploy contracts and have a new `rwa-manifest.json`:
 
@@ -133,13 +133,13 @@ If you omit `--manifest`, the script looks for:
 
 ```mermaid
 flowchart TD
-  subgraph sdkOnly [sdk/ — npm only]
+  subgraph sdkOnly [sdk/: npm only]
     A1[npm install]
     A2[npm run build]
     B1[npm run verify:workflow]
     C1[npm run writes]
   end
-  subgraph onChain [Already on Sepolia — bundled manifest]
+  subgraph onChain [Already on Sepolia: bundled manifest]
     S1[Identities + KYC]
     S2[Machine + Contract NFT]
     S3[Vault + token + registry]
@@ -157,10 +157,10 @@ flowchart TD
 | 4 | Create + sign CNFT | Yes | `verify:workflow` §2 | `cnft.createContract` / `signContract` |
 | 5 | Vault + unpause | Yes | `verify:workflow` §3 | Hardhat admin (not in SDK yet) |
 | 6 | Register in IR | Yes | `verify:workflow` §1 | Hardhat admin (not in SDK yet) |
-| 7 | Approve vault for NFTs | No | — | `npm run writes -- --step 7` |
+| 7 | Approve vault for NFTs | No | n/a | `npm run writes -- --step 7` |
 | 8 | Deposit + mint tokens | No | `verify:workflow` §4 | `npm run writes -- --step 8` |
 | 9 | Transfer tokens | No | balances in verify | `npm run writes -- --step 9` |
-| 10 | Yield | No | — | `npm run writes -- --step 10` |
+| 10 | Yield | No | n/a | `npm run writes -- --step 10` |
 
 ---
 
@@ -172,7 +172,7 @@ From an empty clone, **SDK-only** path against the bundled Sepolia deployment:
 cd sdk
 npm install
 cp .env.example .env
-# edit .env — add ALICE_PRIVATE_KEY, BOB_PRIVATE_KEY, CHARLIE_PRIVATE_KEY
+# edit .env: add ALICE_PRIVATE_KEY, BOB_PRIVATE_KEY, CHARLIE_PRIVATE_KEY
 
 npm run build
 npm test
@@ -207,9 +207,9 @@ You never need to `cd frontend` to test the SDK if the bundled manifest matches 
 | `UsageError: configured to use pnpm` when running `yarn` | Use `npm run sync-addresses` instead of `yarn sync-addresses` |
 | `Cannot find module '../dist/index.js'` | Run `npm run build` first |
 | `Missing ALICE_PRIVATE_KEY` | Copy `sdk/.env.example` → `sdk/.env` and fill keys |
-| verify fails §1 (not verified) | Chain state differs from manifest — redeploy/bootstrap elsewhere or sync new manifest |
+| verify fails §1 (not verified) | Chain state differs from manifest: redeploy/bootstrap elsewhere or sync new manifest |
 | `writes --step 8` reverts | Run step 7 first; ensure Alice owns NFTs and is verified |
-| `claimTo would revert` / `Nothing to claim` on step 10 | `claimYield` already drained Bob's balance — script deposits twice (claim, then claimTo); re-run `node scripts/run-sdk-writes.mjs --step 10` |
+| `claimTo would revert` / `Nothing to claim` on step 10 | `claimYield` already drained Bob's balance: script deposits twice (claim, then claimTo); re-run `node scripts/run-sdk-writes.mjs --step 10` |
 
 ---
 

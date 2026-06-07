@@ -1,6 +1,6 @@
-﻿# RWA Arbitrum Contracts (standalone Hardhat)
+# RWA Arbitrum Contracts (standalone Hardhat)
 
-Self-contained Hardhat project for deploying the RWA framework on **Arbitrum** (or any EVM). No dependency on `Arbitrum-Machine-RWA-framework`, npm workspaces, or `@arbitrum-machine/rwa-sdk`.
+Self-contained Hardhat project for deploying the RWA framework on **Arbitrum** (or any EVM). No dependency on `Arbitrum-Machine-RWA-framework`, npm workspaces, or `arbitrum-machine-rwa-sdk`.
 
 You can copy this entire folder anywhere and run it with Node.js 18+.
 
@@ -12,7 +12,7 @@ npm install
 cp .env.example .env   # edit DEPLOYER_PRIVATE_KEY for live networks
 npm test
 npm run deploy:local
-npm run issue-claims:local   # after deploy — KYC + machine role claims
+npm run issue-claims:local   # after deploy: KYC + machine role claims
 ```
 
 Deploy output: `deployments/deployment-<chainId>.json` (includes ONCHAINID `idFactory` and `claimIssuer` addresses).
@@ -25,7 +25,7 @@ Deploy output: `deployments/deployment-<chainId>.json` (includes ONCHAINID `idFa
 npm run deploy:arbitrum-sepolia
 ```
 
-## What’s inside
+## What�s inside
 
 | Path | Purpose |
 |------|---------|
@@ -42,7 +42,7 @@ npm run deploy:arbitrum-sepolia
 
 - Solidity **0.8.17**, ERC-3643 T-REX (`src/vendor/erc3643/`)
 - ONCHAINID (`@onchain-id/solidity`)
-- Default DID prefix: `did:arbitrum:` — alternate prefixes via `InfoDesk.setValue(4, n)`
+- Default DID prefix: `did:arbitrum:`: alternate prefixes via `InfoDesk.setValue(4, n)`
 
 ## License
 

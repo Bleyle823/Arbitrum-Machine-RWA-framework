@@ -1,6 +1,8 @@
 # Arbitrum Machine RWA Framework
 
-On-chain infrastructure for tokenizing physical machines on **Arbitrum** — from verified identity and NFT collateral through ERC-3643 security tokens and yield distribution.
+On-chain infrastructure for tokenizing physical machines on **Arbitrum**: from verified identity and NFT collateral through ERC-3643 security tokens and yield distribution.
+
+**[Why Machine RWA →](./sdk/mintlify/concepts/vision.mdx)**: vision, compliance-by-design, and modular integration.
 
 The framework combines [**ONCHAINID**](https://github.com/onchain-id/solidity), [**T-REX (ERC-3643)**](https://github.com/ERC-3643/ERC-3643), and **ERC-721** (Machine NFT + Contract NFT) into a single compliant RWA pipeline.
 
@@ -13,10 +15,10 @@ Identity + KYC  →  Machine / Contract NFTs  →  Arb Vault  →  Security toke
 | Directory | Purpose | Package manager |
 |-----------|---------|-----------------|
 | [`contracts/`](./contracts/) | Standalone Hardhat contracts and unit tests | npm |
-| [`frontend/`](./frontend/) | Scaffold-ETH 2 app — deploy scripts, `/rwa` UI, `/debug` | Yarn |
-| [`sdk/`](./sdk/) | TypeScript SDK `@arbitrum-machine/rwa-sdk`, Mintlify docs, scripts | npm |
+| [`frontend/`](./frontend/) | Scaffold-ETH 2 app: deploy scripts, `/rwa` UI, `/debug` | Yarn |
+| [`sdk/`](./sdk/) | TypeScript SDK `arbitrum-machine-rwa-sdk`, Mintlify docs, scripts | npm |
 
-**Networks:** Arbitrum Sepolia (421614) for development; Arbitrum One (42161) for production.
+**Networks:** Arbitrum Sepolia (421614) and Robinhood Chain Testnet (46630) for development; Arbitrum One (42161) for production.
 
 ## What you can build
 
@@ -29,7 +31,7 @@ Identity + KYC  →  Machine / Contract NFTs  →  Arb Vault  →  Security toke
 
 ### SDK only (integrators)
 
-Test the workflow without the frontend — npm only in `sdk/`:
+Test the workflow without the frontend: npm only in `sdk/`:
 
 ```bash
 cd sdk
@@ -44,18 +46,24 @@ Docs: [sdk/README.md](./sdk/README.md) · [Manual testing (SDK)](./sdk/mintlify/
 
 ### Frontend + deploy (full stack)
 
-Deploy contracts and use the RWA UI on Sepolia:
+Deploy contracts and use the RWA UI on a testnet:
 
 ```bash
 cd frontend
 yarn install
 cp packages/hardhat/.env.example packages/hardhat/.env
+# Arbitrum Sepolia (default reference network)
 yarn deploy:arbitrum-sepolia
-yarn bootstrap:arbitrum-sepolia   # optional — seeds demo state
+yarn bootstrap:arbitrum-sepolia   # optional: seeds demo state
+
+# Robinhood Chain Testnet (chainId 46630)
+yarn deploy:robinhood-testnet
+yarn bootstrap:robinhood-testnet  # optional: seeds demo state
+
 yarn start
 ```
 
-Open [http://localhost:3000/rwa](http://localhost:3000/rwa) (MetaMask on Arbitrum Sepolia).
+Open [http://localhost:3000/rwa](http://localhost:3000/rwa) (MetaMask on Arbitrum Sepolia or Robinhood Chain Testnet).
 
 Docs: [Manual testing (Scaffold-ETH)](./sdk/mintlify/workflows/manual-testing-scaffold.mdx)
 
@@ -93,7 +101,7 @@ Synced copy under [`docs/mintlify/`](./docs/mintlify/) for publishing.
 
 ```typescript
 import { JsonRpcProvider } from "ethers";
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 
 const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL);
 const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
@@ -110,4 +118,4 @@ cd sdk && npm run sync-addresses && npm run build
 
 ## License
 
-Apache-2.0 — see [sdk/LICENSE](./sdk/LICENSE) and per-package licenses where applicable.
+Apache-2.0: see [sdk/LICENSE](./sdk/LICENSE) and per-package licenses where applicable.

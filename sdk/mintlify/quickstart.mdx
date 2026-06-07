@@ -8,7 +8,7 @@ description: Install the SDK and verify Arbitrum Sepolia state in minutes.
 ```bash
 npm init -y
 npm pkg set type=module
-npm install @arbitrum-machine/rwa-sdk ethers dotenv
+npm install arbitrum-machine-rwa-sdk ethers dotenv
 npm i -D typescript tsx @types/node
 ```
 
@@ -48,7 +48,7 @@ CHARLIE_PRIVATE_KEY=
 ```typescript
 import "dotenv/config";
 import { JsonRpcProvider } from "ethers";
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 
 const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL!);
 const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });

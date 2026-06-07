@@ -1,6 +1,6 @@
 ---
 title: Create Identity
-description: onchainid.createIdentity — deploy or fetch an ONCHAINID for an EOA.
+description: onchainid.createIdentity: deploy or fetch an ONCHAINID for an EOA.
 ---
 
 ## `onchainid.createIdentity(CreateIdentity)`
@@ -26,7 +26,7 @@ Create (or return existing) ONCHAINID identity for a subject EOA.
 ```typescript
 import "dotenv/config";
 import { JsonRpcProvider, Wallet } from "ethers";
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 
 const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL!);
 const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });

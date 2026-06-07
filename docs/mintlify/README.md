@@ -1,6 +1,6 @@
 # Mintlify documentation
 
-Developer docs for `@arbitrum-machine/rwa-sdk` — installation, workflows, and API reference.
+Developer docs for `arbitrum-machine-rwa-sdk`: installation, workflows, and API reference.
 
 ## Local preview
 

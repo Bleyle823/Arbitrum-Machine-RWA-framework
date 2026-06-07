@@ -5,7 +5,7 @@ Read the [user docs](../docs/users/introduction.md) first for framework backgrou
 ## Install from npm
 
 ```bash
-npm install @arbitrum-machine/rwa-sdk ethers
+npm install arbitrum-machine-rwa-sdk ethers
 ```
 
 ## Build from monorepo
@@ -40,7 +40,7 @@ Initialize the SDK for a specific Arbitrum network. Resolves contract addresses 
 ### TypeScript
 
 ```typescript
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider } from "ethers";
 
 const provider = new JsonRpcProvider(process.env.ARB_SEPOLIA_RPC_URL!);

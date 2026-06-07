@@ -17,7 +17,7 @@ Find a ContractNft address with available storage for a given contract ID. This 
 #### TypeScript
 ```TypeScript
 import 'dotenv/config';
-import { RWA, Chain, type SDKInit } from '@arbitrum-machine/rwa-sdk';
+import { RWA, Chain, type SDKInit } from 'arbitrum-machine-rwa-sdk';
 import { JsonRpcProvider } from 'ethers';
 
 async function main() {
@@ -41,7 +41,7 @@ main().catch((err) => {
 #### JavaScript
 ```js
 import 'dotenv/config';
-import { RWA, Chain } from '@arbitrum-machine/rwa-sdk';
+import { RWA, Chain } from 'arbitrum-machine-rwa-sdk';
 import { JsonRpcProvider } from 'ethers';
 
 async function main() {

@@ -22,7 +22,7 @@ Generate and sign a Role claim (Machine Regulator or Machine Issuer) for an ONCH
 #### TypeScript
 ```TypeScript
 import 'dotenv/config';
-import { RWA, Chain, ClaimTopics, type SDKInit, type GetIdentity, type IssueRoleClaim } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain, ClaimTopics, type SDKInit, type GetIdentity, type IssueRoleClaim } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
@@ -66,7 +66,7 @@ main().catch((err) => {
 #### JavaScript
 ```js
 import 'dotenv/config';
-import { RWA, Chain, ClaimTopics } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain, ClaimTopics } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {

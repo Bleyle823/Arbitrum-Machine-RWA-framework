@@ -1,4 +1,5 @@
 import * as chains from "viem/chains";
+import { robinhoodChainTestnet } from "~~/utils/scaffold-eth/chains/robinhoodChainTestnet";
 
 export type ScaffoldConfig = {
   targetNetworks: readonly chains.Chain[];
@@ -14,10 +15,13 @@ export const DEFAULT_ALCHEMY_API_KEY = "IZYEU2cWBgnFmgiTAgpWD";
 const arbitrumSepoliaRpc =
   process.env.NEXT_PUBLIC_ARB_SEPOLIA_RPC_URL || process.env.ARB_SEPOLIA_RPC_URL;
 
+const robinhoodTestnetRpc =
+  process.env.NEXT_PUBLIC_ROBINHOOD_TESTNET_RPC_URL || process.env.ROBINHOOD_TESTNET_RPC_URL;
+
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  // Local Hardhat for dev; Arbitrum Sepolia for testnet deploy
-  targetNetworks: [chains.hardhat, chains.arbitrumSepolia],
+  // Local Hardhat for dev; Robinhood / Arbitrum Sepolia for testnet deploy
+  targetNetworks: [chains.hardhat, robinhoodChainTestnet, chains.arbitrumSepolia],
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)
@@ -32,6 +36,7 @@ const scaffoldConfig = {
   // If you want to use a different RPC for a specific network, you can add it here.
   // The key is the chain ID, and the value is the HTTP RPC URL
   rpcOverrides: {
+    ...(robinhoodTestnetRpc ? { [robinhoodChainTestnet.id]: robinhoodTestnetRpc } : {}),
     ...(arbitrumSepoliaRpc ? { [chains.arbitrumSepolia.id]: arbitrumSepoliaRpc } : {}),
   },
 

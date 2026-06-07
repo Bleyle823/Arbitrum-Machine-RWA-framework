@@ -25,7 +25,7 @@ Generate and sign a KYC claim for an ONCHAINID identity. This does not broadcast
 #### TypeScript
 ```TypeScript
 import 'dotenv/config';
-import { RWA, Chain, type SDKInit, type GetIdentity, type IssueKycClaim } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain, type SDKInit, type GetIdentity, type IssueKycClaim } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
@@ -72,7 +72,7 @@ main().catch((err) => {
 #### JavaScript
 ```js
 import 'dotenv/config';
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {

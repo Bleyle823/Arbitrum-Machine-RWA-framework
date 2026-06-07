@@ -1,6 +1,7 @@
 export enum Chain {
   ARBITRUM_ONE = 42161,
   ARBITRUM_SEPOLIA = 421614,
+  ROBINHOOD_CHAIN_TESTNET = 46630,
 }
 
 export enum DECIMALS {

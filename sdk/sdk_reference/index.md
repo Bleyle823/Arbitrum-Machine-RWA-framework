@@ -20,13 +20,13 @@ Complete API documentation for the **Arbitrum Machine RWA SDK**. Function signat
 ### Installation
 
 ```bash
-npm install @arbitrum-machine/rwa-sdk ethers
+npm install arbitrum-machine-rwa-sdk ethers
 ```
 
 ### Initialization
 
 ```typescript
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider } from "ethers";
 
 const provider = new JsonRpcProvider("https://sepolia-rollup.arbitrum.io/rpc");
@@ -45,7 +45,7 @@ const sdk = new RWA({ chainId: Chain.ARBITRUM_SEPOLIA, provider });
 Pass a custom manifest after redeploy:
 
 ```typescript
-import { parseRwaManifest } from "@arbitrum-machine/rwa-sdk";
+import { parseRwaManifest } from "arbitrum-machine-rwa-sdk";
 
 const sdk = new RWA({
   chainId: Chain.ARBITRUM_SEPOLIA,

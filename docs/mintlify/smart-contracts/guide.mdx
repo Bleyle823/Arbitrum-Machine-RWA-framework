@@ -3,20 +3,20 @@ title: Smart Contract Testing
 description: Deploy, bootstrap, and verify the RWA framework on-chain without the TypeScript SDK.
 ---
 
-Use this guide when you want to **interact with contracts directly** — Hardhat scripts, `ethers`, Arbiscan, or the `/rwa` UI — rather than through `@arbitrum-machine/rwa-sdk`.
+Use this guide when you want to **interact with contracts directly** (Hardhat scripts, `ethers`, Arbiscan, or the `/rwa` UI) rather than through `arbitrum-machine-rwa-sdk`.
 
 ## Two Hardhat projects
 
 | Path | Use when |
 |------|----------|
 | `contracts/` | Fast **local unit tests** and a minimal standalone deploy (`npm test`, `npm run demo:flow`) |
-| `frontend/packages/hardhat/` | **Monorepo** deploy to Arbitrum Sepolia, bootstrap demo state, and Scaffold ETH UI |
+| `frontend/packages/hardhat/` | **Monorepo** deploy to Arbitrum Sepolia or Robinhood Chain Testnet, bootstrap demo state, and Scaffold ETH UI |
 
 Both share the same Solidity sources under `frontend/packages/hardhat/contracts/src/` (the `contracts/` folder is a portable copy for CI and standalone work).
 
 ---
 
-## Track 1 — Local unit tests (recommended first step)
+## Track 1: Local unit tests (recommended first step)
 
 Runs entirely on the in-memory Hardhat network. No RPC URL or private keys required.
 
@@ -50,28 +50,28 @@ Expect output similar to:
 
 ---
 
-## Track 2 — Local end-to-end demo script
+## Track 2: Local end-to-end demo script
 
 Same flow as the unit test, but as a **script you can step through** on a persistent local node.
 
-**Terminal 1** — start a node:
+**Terminal 1**: start a node:
 
 ```bash
 cd contracts
 npx hardhat node
 ```
 
-**Terminal 2** — run the demo:
+**Terminal 2**: run the demo:
 
 ```bash
 npx hardhat run scripts/fullFlowDemo.js --network localhost
 ```
 
-The script prints contract addresses and walks through identity creation, machine registration, vault setup, minting, transfers, and yield — all via direct `ethers` contract calls (no SDK).
+The script prints contract addresses and walks through identity creation, machine registration, vault setup, minting, transfers, and yield, all via direct `ethers` contract calls (no SDK).
 
 ---
 
-## Track 3 — Arbitrum Sepolia (live testnet)
+## Track 3: Arbitrum Sepolia (live testnet)
 
 Deploy and bootstrap the framework on a public network, then verify on-chain state.
 
@@ -89,7 +89,7 @@ ARB_SEPOLIA_RPC_URL=https://sepolia-rollup.arbitrum.io/rpc
 DEPLOYER_KEYSTORE_FILE=.secrets/deployer.keystore.json
 # or DEPLOYER_PRIVATE_KEY=0x...
 
-# Optional — full automated demo NFT seeding
+# Optional: full automated demo NFT seeding
 ALICE_PRIVATE_KEY=0x...
 BOB_PRIVATE_KEY=0x...
 CHARLIE_PRIVATE_KEY=0x...
@@ -102,7 +102,7 @@ cd frontend
 yarn account:import    # or yarn account:generate
 ```
 
-### Step 1 — Deploy framework contracts
+### Step 1: Deploy framework contracts
 
 From `frontend/`:
 
@@ -119,7 +119,7 @@ This deploys (via Rocketh / `deploy/00_deploy_rwa_framework.ts`):
 
 Artifacts are written to `frontend/packages/hardhat/deployments/arbitrumSepolia/*.json`.
 
-### Step 2 — Bootstrap vault, identities, and demo assets
+### Step 2: Bootstrap vault, identities, and demo assets
 
 ```bash
 yarn bootstrap:arbitrum-sepolia
@@ -137,7 +137,7 @@ Bootstrap runs `scripts/bootstrapRwa.ts` and:
 8. Optionally seeds demo Machine NFT + completed Contract NFT (when participant keys are set)
 9. Writes `frontend/packages/nextjs/public/rwa-manifest.json` for the UI
 
-### Step 3 — Verify on-chain state
+### Step 3: Verify on-chain state
 
 **Hardhat read-only check** (manifest + deployments):
 
@@ -161,6 +161,81 @@ node scripts/verify-workflow.mjs
 | `yarn seed:demo-assets` | Re-seed demo Machine/Contract NFTs if bootstrap skipped assets |
 | `yarn issue-claims:arbitrum-sepolia` | Re-issue KYC / role claims after redeploy |
 | `yarn hardhat-verify --network arbitrumSepolia` | Verify contracts on Arbiscan (`ETHERSCAN_API_KEY` in `.env`) |
+
+---
+
+## Track 4: Robinhood Chain Testnet (live testnet)
+
+Deploy the same RWA framework on **Robinhood Chain Testnet** (chain id **46630**).
+
+### Prerequisites
+
+- Node.js 18+ (monorepo recommends 22+)
+- Deployer wallet funded with **testnet ETH** on Robinhood Chain
+- Copy `frontend/packages/hardhat/.env.example` → `frontend/packages/hardhat/.env`
+
+Minimum setup:
+
+```bash
+# frontend/packages/hardhat/.env
+ROBINHOOD_TESTNET_RPC_URL=https://rpc.testnet.chain.robinhood.com
+DEPLOYER_KEYSTORE_FILE=.secrets/deployer.keystore.json
+# or DEPLOYER_PRIVATE_KEY=0x...
+```
+
+### Step 1: Deploy framework contracts
+
+From `frontend/`:
+
+```bash
+yarn deploy:robinhood-testnet
+```
+
+Artifacts are written to `frontend/packages/hardhat/deployments/robinhoodChainTestnet/*.json`.
+
+**Deployed framework addresses** (reference):
+
+| Contract | Address |
+|----------|---------|
+| `ArbRwaNft` | `0xf4e6f7408f2a760f3cbadb14c26fd2c90a3cb611` |
+| `ArbVaultFactory` | `0x0b6e3595bbcef688fa2cc288732ae8ac09947398` |
+| `IdFactory` | `0x06A326c6F64984bfB07f4a0f1dcaF4D90a936c38` |
+| `ClaimIssuer` | `0xCAE0bB0E82BBCbeD3eB3089Df64cc4071b53524f` |
+| `MockFeeToken` | `0xc7e34d7722b056f6adf0a4371a6246bf26464189` |
+| `NativeTransferFeeModule` | `0x98BE252e69b656B08e142d6FD5Ba70eEa0F0C220` |
+
+### Step 2: Bootstrap vault, identities, and demo assets
+
+```bash
+yarn bootstrap:robinhood-testnet
+```
+
+Same bootstrap flow as Arbitrum Sepolia (identities, KYC, vault, demo NFTs). Writes `packages/nextjs/public/rwa-manifest.json` when complete.
+
+### Step 3: Verify on-chain state
+
+```bash
+yarn verify:demo-state:robinhood-testnet
+```
+
+### Optional follow-ups
+
+| Command | Purpose |
+|---------|---------|
+| `yarn seed:demo-assets:robinhood-testnet` | Re-seed demo Machine/Contract NFTs |
+| `yarn issue-claims:robinhood-testnet` | Re-issue KYC / role claims after redeploy |
+
+### UI / MetaMask
+
+Add Robinhood Chain Testnet to MetaMask:
+
+| Field | Value |
+|-------|-------|
+| RPC URL | `https://rpc.testnet.chain.robinhood.com` |
+| Chain ID | `46630` |
+| Explorer | `https://explorer.testnet.chain.robinhood.com` |
+
+The Scaffold-ETH app includes Robinhood in `targetNetworks` (`scaffold.config.ts`). Set `NEXT_PUBLIC_ROBINHOOD_TESTNET_RPC_URL` in `packages/nextjs/.env.local` if you need a custom RPC.
 
 ---
 

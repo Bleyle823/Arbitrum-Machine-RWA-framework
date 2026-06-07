@@ -28,7 +28,7 @@ Deposit yield into a vault’s reward distributor. This approves the ERC20 amoun
 #### TypeScript
 ```TypeScript
 import 'dotenv/config';
-import { RWA, Chain, type SDKInit } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain, type SDKInit } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
@@ -60,7 +60,7 @@ main().catch((err) => {
 #### JavaScript
 ```js
 import 'dotenv/config';
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {

@@ -1,6 +1,6 @@
 ---
 title: Deploy & Bootstrap
-description: Hardhat deploy and bootstrap scripts for Arbitrum Sepolia.
+description: Hardhat deploy and bootstrap scripts for Arbitrum Sepolia and Robinhood Chain Testnet.
 ---
 
 Admin flows (vault creation, identity registry, unpause) run via **Hardhat scripts** in the monorepo, not yet as SDK write APIs.
@@ -19,15 +19,21 @@ yarn account:import
 From `frontend/`:
 
 ```bash
+# Arbitrum Sepolia (chainId 421614)
 yarn deploy:arbitrum-sepolia
+
+# Robinhood Chain Testnet (chainId 46630)
+yarn deploy:robinhood-testnet
 ```
 
-Writes artifacts to `packages/hardhat/deployments/arbitrumSepolia/`.
+Writes artifacts to `packages/hardhat/deployments/arbitrumSepolia/` or `packages/hardhat/deployments/robinhoodChainTestnet/`.
 
 ## Bootstrap vault + demo state
 
 ```bash
 yarn bootstrap:arbitrum-sepolia
+# or
+yarn bootstrap:robinhood-testnet
 ```
 
 Bootstrap typically:
@@ -46,6 +52,8 @@ Bootstrap typically:
 
 ```bash
 yarn verify:demo-state
+# Robinhood Chain Testnet
+yarn verify:demo-state:robinhood-testnet
 ```
 
 ## Sync addresses into SDK
@@ -64,6 +72,7 @@ This updates `src/addresses/arbitrumSepolia.json` from Hardhat deployment artifa
 See `frontend/packages/hardhat/.env.example` for:
 
 - `ARB_SEPOLIA_RPC_URL`
+- `ROBINHOOD_TESTNET_RPC_URL`
 - Deployer keystore / private key
 - `ALICE_PRIVATE_KEY`, `BOB_PRIVATE_KEY`, `CHARLIE_PRIVATE_KEY` (optional, for full demo seeding)
 - `ETHERSCAN_API_KEY` (optional, for verify)

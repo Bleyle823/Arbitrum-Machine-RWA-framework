@@ -28,7 +28,7 @@ Register an ONCHAINID for a user in the vault's Identity Registry. Must be calle
 #### TypeScript
 ```TypeScript
 import 'dotenv/config';
-import { RWA, Chain, type SDKInit } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain, type SDKInit } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {
@@ -63,7 +63,7 @@ main().catch((err) => {
 #### JavaScript
 ```js
 import 'dotenv/config';
-import { RWA, Chain } from "@arbitrum-machine/rwa-sdk";
+import { RWA, Chain } from "arbitrum-machine-rwa-sdk";
 import { JsonRpcProvider, Wallet } from "ethers";
 
 async function main() {

@@ -3,24 +3,24 @@ title: Core Modules
 description: ONCHAINID, Machine NFT, Contract NFT, RWA factory, and Vault modules in the Arbitrum Machine RWA SDK.
 ---
 
-The `@arbitrum-machine/rwa-sdk` exposes five modules on the `RWA` class. Each maps to a layer of the on-chain framework.
+The `arbitrum-machine-rwa-sdk` exposes five modules on the `RWA` class. Each maps to a layer of the on-chain framework.
 
 ---
 
 ## OnChainID Module (`sdk.onchainid`)
 
-The identity module manages ONCHAINID identities and claims — the foundation of compliance in the framework.
+The identity module manages ONCHAINID identities and claims: the foundation of compliance in the framework.
 
 **Purpose:** Create and manage on-chain identities, attach KYC claims, and verify investors against a vault Identity Registry.
 
 **Key capabilities:**
 
-- **Create identities** — Deploy an `Identity` contract linked to a user's wallet via `IdFactory`
-- **Retrieve identities** — Look up existing identity contracts by wallet address
-- **Add claims to identities** — Attach signed KYC claims (topic **666**) to identity contracts
-- **Verify investors** — Read `isVerified` on the vault's Identity Registry
+- **Create identities**: Deploy an `Identity` contract linked to a user's wallet via `IdFactory`
+- **Retrieve identities**: Look up existing identity contracts by wallet address
+- **Add claims to identities**: Attach signed KYC claims (topic **666**) to identity contracts
+- **Verify investors**: Read `isVerified` on the vault's Identity Registry
 
-Every participant — investor, machine issuer, or regulator — needs a verified identity with appropriate claims before interacting with vaults and security tokens.
+Every participant: investor, machine issuer, or regulator: needs a verified identity with appropriate claims before interacting with vaults and security tokens.
 
 → [Identity SDK Reference](/sdk-reference/identity/create-identity)
 
@@ -36,11 +36,11 @@ The Machine NFT module handles registration and reads for tokenized physical ass
 
 **Key capabilities:**
 
-- **Register machines** — Mint Machine NFTs with DID documents describing the physical asset (`registerMachine`)
-- **Read DID documents** — Retrieve machine metadata stored on-chain (`getMachineDid`)
-- **Read ownership** — Resolve the current owner of a machine token ID (`ownerOf`)
+- **Register machines**: Mint Machine NFTs with DID documents describing the physical asset (`registerMachine`)
+- **Read DID documents**: Retrieve machine metadata stored on-chain (`getMachineDid`)
+- **Read ownership**: Resolve the current owner of a machine token ID (`ownerOf`)
 
-Each Machine NFT contains a Decentralized Identifier (DID) document that uniquely identifies the physical machine — manufacturer, model, serial number, and other metadata. This creates an immutable link between the on-chain token and the real-world asset.
+Each Machine NFT contains a Decentralized Identifier (DID) document that uniquely identifies the physical machine: manufacturer, model, serial number, and other metadata. This creates an immutable link between the on-chain token and the real-world asset.
 
 Registration fees are paid in the demo **MockFeeToken** on Sepolia; the machine owner must approve the fee before the issuer registers.
 
@@ -56,10 +56,10 @@ The Contract NFT module manages digital agreements between multiple parties.
 
 **Key capabilities:**
 
-- **Compute contract IDs** — Derive the deterministic `contractId` from initiator, counterparties, hash, and URL
-- **Create contracts** — Initialize a contract with counterparties and document hash (`createContract` / `initContractAndSign`)
-- **Sign contracts** — Allow counterparties to sign and finalize agreements (`signContract`)
-- **Read contract state** — Resolve owner and lifecycle status (`getContractOwner`)
+- **Compute contract IDs**: Derive the deterministic `contractId` from initiator, counterparties, hash, and URL
+- **Create contracts**: Initialize a contract with counterparties and document hash (`createContract` / `initContractAndSign`)
+- **Sign contracts**: Allow counterparties to sign and finalize agreements (`signContract`)
+- **Read contract state**: Resolve owner and lifecycle status (`getContractOwner`)
 
 Contract NFTs store a hash of the agreement document (often on IPFS) and a URL to retrieve it. This preserves document integrity while keeping large files off-chain. Completed Contract NFTs can be deposited into vaults alongside Machine NFTs.
 
@@ -75,8 +75,8 @@ The RWA NFT factory module exposes read helpers for the top-level **ArbRwaNft** 
 
 **Key capabilities:**
 
-- **List machine regulators** — `getMachineRegulators()`
-- **List machine issuers** — `getMachineIssuers()`
+- **List machine regulators**: `getMachineRegulators()`
+- **List machine issuers**: `getMachineIssuers()`
 
 Administrative writes (`addMachineRegulator`, `addMachineIssuer`, block/unblock issuers) are performed by the Framework Owner via Hardhat bootstrap or `/debug` today. See [Roles & Responsibilities](/concepts/roles).
 
@@ -103,7 +103,7 @@ The Vault module fractionalizes collateral into security tokens and manages yiel
 | Deposit yield | `depositYield` | Fund the reward distributor |
 | Claim yield | `claimYield`, `claimYieldTo` | Pro-rata payout to holders |
 
-**Admin operations** (create vault, unpause token, register identities in IR) are handled by deploy/bootstrap scripts or `/debug` — not yet as SDK write methods. See [Maintainers: Deploy](/maintainers/deploy).
+**Admin operations** (create vault, unpause token, register identities in IR) are handled by deploy/bootstrap scripts or `/debug`: not yet as SDK write methods. See [Maintainers: Deploy](/maintainers/deploy).
 
 Security tokens comply with **T-REX (ERC-3643)**: only addresses verified on the vault Identity Registry can hold and transfer them.
 
@@ -128,6 +128,6 @@ Full role descriptions: [Roles & Responsibilities](/concepts/roles).
 
 ## Related
 
-- [Overview](/concepts/overview) — End-to-end asset lifecycle
-- [Common Flow](/workflows/common-flow) — Integrator workflow on Sepolia
-- [API Reference tab](/sdk-reference/initialize) — All implemented methods
+- [Overview](/concepts/overview): End-to-end asset lifecycle
+- [Common Flow](/workflows/common-flow): Integrator workflow on Sepolia
+- [API Reference tab](/sdk-reference/initialize): All implemented methods
